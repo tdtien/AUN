@@ -1,6 +1,16 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import { Container, Header, Content, Form, Icon, Item, Input,Left,Right,Body,Title,Button } from 'native-base';
+import {
+    Container,
+    Content,
+    Form,
+    Icon,
+    Item,
+    Input,
+    InputGroup,
+    Button,
+    Label,
+} from 'native-base';
 import {Actions} from "react-native-router-flux";
 
 type Props = {};
@@ -8,29 +18,26 @@ export default class Register extends Component<Props> {
     render() {
         return (
             <Container>
-                <Header>
-                    <Left>
-                        <Button transparent onPress = {() => Actions.login()}>
-                            <Icon name='arrow-back' />
-                        </Button>
-                    </Left>
-                    <Body>
-                        <Title>Header</Title>
-                    </Body>
-                    <Right />
-                </Header>
-                <Content>
-                    <Text style={styles.statusFont}>REGISTER</Text>
+                <Button transparent onPress = {() => Actions.pop()}>
+                    <Icon name='ios-arrow-back' />
+                </Button>
+                <Content style = {styles.content}>
                     <Form>
-                        <Item>
-                            <Input placeholder="Enter Email..." />
-                        </Item>
-                        <Item last>
-                            <Input placeholder="Enter Password..." />
-                        </Item>
+                        <InputGroup style={styles.dataInput}>
+                            <Icon name='person' style={styles.icon}/>
+                            <Input placeholder="Email" style = {styles.textInput}/>
+                        </InputGroup>
+                        <InputGroup style={styles.dataInput}>
+                            <Icon name='lock' style={styles.icon}/>
+                            <Input placeholder="Password" style = {styles.textInput}/>
+                        </InputGroup>
+                        <InputGroup style={styles.dataInput}>
+                            <Icon name='lock' style={styles.icon}/>
+                            <Input placeholder="Confirm Password" style = {styles.textInput}/>
+                        </InputGroup>
                     </Form>
-                    <Button rounded block info style = {styles.buttonStyle}>
-                        <Text style={styles.textStyle}>REGISTER</Text>
+                    <Button rounded block info style = {styles.button}>
+                        <Text style={styles.textButton}>SIGN UP</Text>
                     </Button>
                 </Content>
             </Container>
@@ -39,24 +46,26 @@ export default class Register extends Component<Props> {
 }
 
 const styles = StyleSheet.create({
-    statusFont: {
-        marginTop: 50,
-        marginBottom: 30,
-        fontSize: 40,
-        fontWeight: 'bold',
-        textShadowColor:'#585858',
-        textShadowOffset:{width: 1, height: 1},
-        textShadowRadius:10,
-        color: 'green',
-        height: 50,
-        textAlign: 'center',
+    content: {
+        paddingRight: 50,
+        paddingLeft: 50,
     },
-    textStyle: {
+    textButton: {
         margin: '5%',
         alignSelf: 'center',
         color: 'white',
     },
-    buttonStyle: {
+    button: {
         margin: '5%',
+    },
+    icon: {
+        fontSize:25,
+        color: 'black'
+    },
+    dataInput: {
+        marginBottom: 10
+    },
+    textInput: {
+        marginLeft: 5
     }
 });
