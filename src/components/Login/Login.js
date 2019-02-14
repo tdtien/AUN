@@ -14,6 +14,7 @@ import {
   Header
 } from "native-base";
 import { StyleSheet, Image } from "react-native";
+import {Actions} from 'react-native-router-flux'
 
 export default class Login extends Component {
   constructor(props) {
@@ -46,6 +47,9 @@ export default class Login extends Component {
                 <Button info block>
                   <Text>Sign In</Text>
                 </Button>
+                <Button info block style={styles.button} onPress = {() => Actions.register()}>
+                  <Text>Register</Text>
+                </Button>
               </Body>
             </ListItem>
           </Form>
@@ -71,5 +75,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     opacity: 0.9
+  },
+  button: {
+    marginTop: 15
   }
 });
