@@ -10,37 +10,91 @@ import {
     InputGroup,
     Button,
     Label,
+    Toast,
+    Root
 } from 'native-base';
 import {Actions} from "react-native-router-flux";
 
-type Props = {};
-export default class Register extends Component<Props> {
+export default class Register extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: '',
+            password: '',
+            confirmedPassword: ''
+        }
+    }
+
+    handleRegister = () => {
+        if (this.state.email === '' || this.state.password === '' || this.state.confirmedPassword === '') {
+            Toast.show({
+                text: "Please complete all information",
+                type: "warning",
+                buttonText: "Okay",
+                duration: 3000
+            });
+        } else if (this.state.password !== this.state.confirmedPassword) {
+            Toast.show({
+                text: "Password does not match",
+                type: "warning",
+                buttonText: "Okay",
+                duration: 3000
+            });
+        } else {
+            Toast.show({
+                text: "Register successful",
+                type: "success",
+                buttonText: "Okay"
+            });
+        }
+    };
+
     render() {
         return (
-            <Container>
-                <Button transparent onPress = {() => Actions.pop()}>
-                    <Icon name='ios-arrow-back' />
-                </Button>
-                <Content style = {styles.content}>
-                    <Form>
-                        <InputGroup style={styles.dataInput}>
-                            <Icon name='person' style={styles.icon}/>
-                            <Input placeholder="Email" style = {styles.textInput}/>
-                        </InputGroup>
-                        <InputGroup style={styles.dataInput}>
-                            <Icon name='lock' style={styles.icon}/>
-                            <Input placeholder="Password" style = {styles.textInput}/>
-                        </InputGroup>
-                        <InputGroup style={styles.dataInput}>
-                            <Icon name='lock' style={styles.icon}/>
-                            <Input placeholder="Confirm Password" style = {styles.textInput}/>
-                        </InputGroup>
-                    </Form>
-                    <Button rounded block info style = {styles.button}>
-                        <Text style={styles.textButton}>SIGN UP</Text>
+            <Root>
+                <Container>
+                    <Button transparent onPress = {() => Actions.pop()}>
+                        <Icon name='ios-arrow-back' />
                     </Button>
-                </Content>
-            </Container>
+                    <Content style = {styles.content}>
+                        <Form>
+                            <InputGroup style={styles.dataInput}>
+                                <Icon name='person' style={styles.icon}/>
+                                <Input
+                                    style = {styles.textInput}
+                                    placeholder="Email"
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                    onChangeText={email => this.setState({ email: email })}
+                                />
+                            </InputGroup>
+                            <InputGroup style={styles.dataInput}>
+                                <Icon name='lock' style={styles.icon}/>
+                                <Input
+                                    style = {styles.textInput}
+                                    placeholder="Password"
+                                    secureTextEntry
+                                    autoCapitalize="none"
+                                    onChangeText={password => this.setState({ password: password })}
+                                />
+                            </InputGroup>
+                            <InputGroup style={styles.dataInput}>
+                                <Icon name='lock' style={styles.icon}/>
+                                <Input
+                                    style = {styles.textInput}
+                                    placeholder="Confirm Password"
+                                    secureTextEntry
+                                    autoCapitalize="none"
+                                    onChangeText={confirmedPassword => this.setState({ confirmedPassword: confirmedPassword })}
+                                />
+                            </InputGroup>
+                        </Form>
+                        <Button rounded block info style = {styles.button} onPress = {() => this.handleRegister()}>
+                            <Text style={styles.textButton}>SIGN UP</Text>
+                        </Button>
+                    </Content>
+                </Container>
+            </Root>
         );
     }
 }
