@@ -13,10 +13,12 @@ import {
   View,
   Toast,
   Root,
-  Footer
+  Footer,
+  Spinner
 } from "native-base";
 import { StyleSheet, Image } from "react-native";
 import { Actions } from "react-native-router-flux";
+import Images from "../../assets/images";
 
 export default class Login extends Component {
   constructor(props) {
@@ -30,21 +32,22 @@ export default class Login extends Component {
 
   handleLogin = () => {
     this.setState({ isLoading: true });
-    console.log(this.state.email);
-    console.log(this.state.password);
     if (this.state.email === "") {
+      this.setState({isLoading: false})
       Toast.show({
         text: "Please enter your email address",
         type: "warning",
         buttonText: "Okay"
       });
     } else if (this.state.password === "") {
+      this.setState({isLoading: false})
       Toast.show({
         text: "Please enter your password",
         type: "warning",
         buttonText: "Okay"
       });
     } else {
+      this.setState({isLoading: false})
       Toast.show({
         text: "Login successful",
         type: "success",
@@ -59,50 +62,55 @@ export default class Login extends Component {
         <Container>
           <Content>
             <View style={styles.logoContainer}>
-              <Image
-                style={styles.logo}
-                source={require("../../assets/images/logo.jpg")}
-              />
+              <Image style={styles.logo} source={Images.logo} />
               <Text style={styles.title}>AUN Inspection System</Text>
             </View>
+            {this.state.isLoading ? (
+              <Spinner />
+            ) : (
+              <Form>
+                <Item stackedLabel>
+                  <Label>Email</Label>
+                  <Input
+                    keyboardType="email-address"
+                    onChangeText={email => this.setState({ email: email })}
+                    onSubmitEditing={() =>
+                      this.refs["passwordInput"]._root.focus()
+                    }
+                    returnKeyType="next"
+                    autoCapitalize="none"
+                  />
+                </Item>
+                <Item stackedLabel last>
+                  <Label>Password</Label>
+                  <Input
+                    autoCapitalize="none"
+                    secureTextEntry
+                    onChangeText={password =>
+                      this.setState({ password: password })
+                    }
+                    ref="passwordInput"
+                    returnKeyType="go"
+                    clearButtonMode="unless-editing"
+                  />
+                </Item>
+                <ListItem noBorder>
+                  <Body>
+                    <Button info block onPress={() => this.handleLogin()}>
+                      <Text>Sign In</Text>
+                    </Button>
+                  </Body>
+                </ListItem>
+                <ListItem noBorder>
+                  <Body>
+                    <Button info block onPress={() => Actions.register()}>
+                      <Text>Register</Text>
+                    </Button>
+                  </Body>
+                </ListItem>
+              </Form>
+            )}
           </Content>
-          <Form>
-            <Item stackedLabel>
-              <Label>Email</Label>
-              <Input
-                keyboardType="email-address"
-                onChangeText={email => this.setState({ email: email })}
-                onSubmitEditing={() => this.refs["passwordInput"]._root.focus()}
-                returnKeyType="next"
-                autoCapitalize="none"
-              />
-            </Item>
-            <Item stackedLabel last>
-              <Label>Password</Label>
-              <Input
-                autoCapitalize="none"
-                secureTextEntry
-                onChangeText={password => this.setState({ password: password })}
-                ref="passwordInput"
-                returnKeyType="go"
-                onSubmitEditing={() => this.handleLogin()}
-              />
-            </Item>
-            <ListItem noBorder>
-              <Body>
-                <Button info block onPress={() => this.handleLogin()}>
-                  <Text>Sign In</Text>
-                </Button>
-              </Body>
-            </ListItem>
-            <ListItem noBorder>
-              <Body>
-                <Button info block onPress={() => Actions.register()}>
-                  <Text>Register</Text>
-                </Button>
-              </Body>
-            </ListItem>
-          </Form>
         </Container>
       </Root>
     );
