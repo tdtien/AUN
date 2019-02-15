@@ -19,6 +19,7 @@ import {
 import { StyleSheet, Image } from "react-native";
 import { Actions } from "react-native-router-flux";
 import Images from "../../assets/images";
+import { validateEmail } from "../../commons/validation";
 
 export default class Login extends Component {
   constructor(props) {
@@ -33,23 +34,48 @@ export default class Login extends Component {
   handleLogin = () => {
     this.setState({ isLoading: true });
     if (this.state.email === "") {
-      this.setState({isLoading: false})
+      this.setState({ isLoading: false });
       Toast.show({
         text: "Please enter your email address",
         type: "warning",
         buttonText: "Okay"
       });
     } else if (this.state.password === "") {
-      this.setState({isLoading: false})
+      this.setState({ isLoading: false });
       Toast.show({
         text: "Please enter your password",
         type: "warning",
         buttonText: "Okay"
       });
     } else {
-      this.setState({isLoading: false})
+      this.setState({ isLoading: false });
+      if (!validateEmail(this.state.email)) {
+        Toast.show({
+          text: "Your email address is incorrect",
+          type: "danger",
+          buttonText: "Okay"
+        });
+      } else {
+        Toast.show({
+          text: "Login successful",
+          type: "success",
+          buttonText: "Okay"
+        });
+      }
+    }
+  };
+
+  validate = text => {
+    this.setState({ email: text });
+    if (!validateEmail(this.state.email)) {
       Toast.show({
-        text: "Login successful",
+        text: "Your email address is incorrect",
+        type: "danger",
+        buttonText: "Okay"
+      });
+    } else {
+      Toast.show({
+        text: "Your email address is correct",
         type: "success",
         buttonText: "Okay"
       });
@@ -69,19 +95,17 @@ export default class Login extends Component {
               <Spinner />
             ) : (
               <Form>
-                <Item stackedLabel>
+                <Item floatingLabel>
                   <Label>Email</Label>
                   <Input
                     keyboardType="email-address"
-                    onChangeText={email => this.setState({ email: email })}
-                    onSubmitEditing={() =>
-                      this.refs["passwordInput"]._root.focus()
-                    }
+                    onChangeText={email => this.validate(email)}
+                    onSubmitEditing={() => this.passwordInput._root.focus()}
                     returnKeyType="next"
                     autoCapitalize="none"
                   />
                 </Item>
-                <Item stackedLabel last>
+                <Item floatingLabel last>
                   <Label>Password</Label>
                   <Input
                     autoCapitalize="none"
@@ -89,9 +113,9 @@ export default class Login extends Component {
                     onChangeText={password =>
                       this.setState({ password: password })
                     }
-                    ref="passwordInput"
+                    getRef={input => (this.passwordInput = input)}
                     returnKeyType="go"
-                    clearButtonMode="unless-editing"
+                    onSubmitEditing={() => this.handleLogin()}
                   />
                 </Item>
                 <ListItem noBorder>
@@ -101,16 +125,15 @@ export default class Login extends Component {
                     </Button>
                   </Body>
                 </ListItem>
-                <ListItem noBorder>
-                  <Body>
-                    <Button info block onPress={() => Actions.register()}>
-                      <Text>Register</Text>
-                    </Button>
-                  </Body>
-                </ListItem>
               </Form>
             )}
           </Content>
+          <View style={styles.registerContainer}>
+            <Text style={{ fontSize: 15 }}>Don't have account yet?</Text>
+            <Button transparent info onPress={() => Actions.register()}>
+              <Text style={{ fontSize: 13 }}>Register now!</Text>
+            </Button>
+          </View>
         </Container>
       </Root>
     );
@@ -134,7 +157,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     opacity: 0.9
   },
-  button: {
-    marginTop: 15
+  registerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
