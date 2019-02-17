@@ -13,10 +13,9 @@ import {
   View,
   Toast,
   Root,
-  Footer,
   Spinner
 } from "native-base";
-import { StyleSheet, Image } from "react-native";
+import { StyleSheet, Image, StatusBar } from "react-native";
 import { Actions } from "react-native-router-flux";
 import Images from "../../assets/images";
 import { validateEmail } from "../../commons/validation";
@@ -61,6 +60,7 @@ export default class Login extends Component {
           type: "success",
           buttonText: "Okay"
         });
+        Actions.camera();
       }
     }
   };
@@ -85,6 +85,7 @@ export default class Login extends Component {
   render() {
     return (
       <Root>
+        <StatusBar backgroundColor="#FFF" barStyle="dark-content"/>
         <Container>
           <Content>
             <View style={styles.logoContainer}>
