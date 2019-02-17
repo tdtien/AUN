@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Alert} from 'react-native';
 import {
     Container,
     Content,
@@ -14,6 +14,8 @@ import {
     Root
 } from 'native-base';
 import {Actions} from "react-native-router-flux";
+import {requestRegister} from '../../api/accountApi'
+import {validateEmail, validatePassword} from "../../commons/validation";
 
 export default class Register extends Component {
     constructor(props) {
@@ -28,24 +30,47 @@ export default class Register extends Component {
     handleRegister = () => {
         if (this.state.email === '' || this.state.password === '' || this.state.confirmedPassword === '') {
             Toast.show({
-                text: "Please complete all information",
-                type: "warning",
-                buttonText: "Okay",
+                text: 'Please complete all information',
+                type: 'warning',
+                buttonText: 'Okay',
                 duration: 3000
             });
         } else if (this.state.password !== this.state.confirmedPassword) {
             Toast.show({
-                text: "Password does not match",
-                type: "warning",
-                buttonText: "Okay",
+                text: 'Password does not match',
+                type: 'warning',
+                buttonText: 'Okay',
                 duration: 3000
             });
         } else {
-            Toast.show({
-                text: "Register successful",
-                type: "success",
-                buttonText: "Okay"
-            });
+            if (!validateEmail(this.state.email)) {
+                Toast.show({
+                    text: "Your email is invalid",
+                    type: "danger",
+                    buttonText: "Okay",
+                    duration: 3000
+                });
+            } else if (!validatePassword(this.state.password)) {
+                Toast.show({
+                    text: "Your password must contain at least 8 characters and no special characters",
+                    type: "danger",
+                    buttonText: "Okay",
+                    duration: 3000
+                });
+            } else {
+                requestRegister(this.state.email, this.state.password)
+                    .then(result => {
+                        Alert.alert('Success','Register successful',
+                            [{text: 'OK', onPress: () => {Actions.pop()}}]);
+                    }).catch(error => {
+                    Toast.show({
+                        text: error.response.data.msg,
+                        type: 'danger',
+                        buttonText: 'Okay',
+                        duration: 3000
+                    });
+                })
+            }
         }
     };
 
