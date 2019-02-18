@@ -1,10 +1,10 @@
-import { Button, Container, Icon, Text, View } from "native-base";
+import { Button, Container, Text, View } from "native-base";
 import React, { Component } from "react";
-import { StatusBar, StyleSheet, Modal, Image } from "react-native";
+import { StatusBar, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { RNCamera } from "react-native-camera";
 import { Actions } from "react-native-router-flux";
-import ImageViewer from 'react-native-image-zoom-viewer';
-import Images from "../../assets/images";
+import ImageViewer from "react-native-image-zoom-viewer";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const PendingView = () => (
   <Container
@@ -21,21 +21,28 @@ export default class Camera extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      flashIcon: 'off',
+      flashIcon: "-off",
+      qualityIcon: "high",
       flashMode: RNCamera.Constants.FlashMode.off,
       imageUrl: [],
       imageDisplay: false,
-    }
-    // this.state.imageUrl.push({props: {source: Images.logo}})
+      quality: 1
+    };
   }
 
   render() {
     return (
       <View style={styles.container}>
         <StatusBar hidden />
-        {this.state.imageDisplay ? <Modal visible={this.state.imageDisplay} transparent={true}>
-          <ImageViewer imageUrls={this.state.imageUrl} enableSwipeDown onCancel={() => this.setState({imageDisplay: false})} />
-        </Modal> :
+        {this.state.imageDisplay ? (
+          <Modal visible={this.state.imageDisplay} transparent={true}>
+            <ImageViewer
+              imageUrls={this.state.imageUrl}
+              enableSwipeDown
+              onCancel={() => this.setState({ imageDisplay: false })}
+            />
+          </Modal>
+        ) : (
           <RNCamera
             style={styles.preview}
             type={RNCamera.Constants.Type.back}
@@ -45,65 +52,115 @@ export default class Camera extends Component {
               "We need your permission to use your camera phone"
             }
             captureAudio={false}
+            playSoundOnCapture={true}
+            ratio="16:9"
           >
-            {({ camera, status }) => {
-              if (status !== "READY") return <PendingView />;
+            {({ camera }) => {
               return (
                 <View style={{ flex: 1, justifyContent: "space-between" }}>
-                  <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                    <Button transparent onPress={() => Actions.pop()}>
-                      <Icon name='ios-arrow-back' style={{ color: "#fff", fontSize: 30 }} />
-                    </Button>
-                    <Button transparent onPress={() => this.changeFlashMode()}>
-                      <Icon name={'flash-' + this.state.flashIcon} style={{ color: "#fff", fontSize: 30 }} type="MaterialIcons" />
-                    </Button>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between"
+                    }}
+                  >
+                    <TouchableOpacity
+                      onPress={() => Actions.pop()}
+                      style={styles.button}
+                    >
+                      <Icon name="arrow-left" size={30} color="#fff" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.changeQuality()}
+                      style={styles.button}
+                    >
+                      <Icon
+                        name={"quality-" + this.state.qualityIcon}
+                        size={30}
+                        color="#fff"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.changeFlashMode()}
+                      style={styles.button}
+                    >
+                      <Icon
+                        name={"flash" + this.state.flashIcon}
+                        size={30}
+                        color="#fff"
+                      />
+                    </TouchableOpacity>
                   </View>
                   <View
                     style={{
                       flexDirection: "row",
-                      justifyContent: "center",
+                      justifyContent: "center"
                     }}
                   >
-                    <Button
+                    <TouchableOpacity
                       onPress={() => this.takePicture(camera)}
-                      icon
-                      transparent
-                      style={{ margin: 15 }}
+                      style={styles.button}
                     >
-                      <Icon
-                        style={{ fontSize: 40, color: "#fff" }}
-                        name="camera"
-                        type="FontAwesome5"
-                      />
-                    </Button>
+                      <Icon name="circle-slice-8" size={80} color="#fff" />
+                    </TouchableOpacity>
                   </View>
                 </View>
               );
             }}
           </RNCamera>
-        }
+        )}
       </View>
     );
   }
 
-  takePicture = async function (camera) {
-    const options = { quality: 0.5, base64: true };
+  takePicture = async camera => {
+    console.log(this.state.quality);
+    const options = { fixOrientation: true, quality: this.state.quality };
     const data = await camera.takePictureAsync(options);
-    this.state.imageUrl.unshift({url: data.uri})
-    this.setState({ imageDisplay: true })
+    this.state.imageUrl.unshift({ url: data.uri });
+    this.setState({ imageDisplay: true });
   };
 
   changeFlashMode = () => {
-    if (this.state.flashIcon === 'on') {
-      this.setState({ flashIcon: 'auto', flashMode: RNCamera.Constants.FlashMode.auto })
+    if (this.state.flashIcon === "") {
+      this.setState({
+        flashIcon: "-auto",
+        flashMode: RNCamera.Constants.FlashMode.auto
+      });
     }
-    if (this.state.flashIcon === 'auto') {
-      this.setState({ flashIcon: 'off', flashMode: RNCamera.Constants.FlashMode.off })
+    if (this.state.flashIcon === "-auto") {
+      this.setState({
+        flashIcon: "-off",
+        flashMode: RNCamera.Constants.FlashMode.off
+      });
     }
-    if (this.state.flashIcon === 'off') {
-      this.setState({ flashIcon: 'on', flashMode: RNCamera.Constants.FlashMode.on })
+    if (this.state.flashIcon === "-off") {
+      this.setState({
+        flashIcon: "",
+        flashMode: RNCamera.Constants.FlashMode.on
+      });
     }
-  }
+  };
+  changeQuality = () => {
+    if (this.state.qualityIcon === "high") {
+      this.setState({
+        quality: 0.5,
+        qualityIcon: "medium"
+      });
+    }
+    if (this.state.qualityIcon === "medium") {
+      this.setState({
+        quality: 0,
+        qualityIcon: "low"
+      });
+    }
+    if (this.state.qualityIcon === "low") {
+      this.setState({
+        quality: 1,
+        qualityIcon: "high"
+      });
+    }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -114,6 +171,9 @@ const styles = StyleSheet.create({
   },
   preview: {
     flex: 1,
-    flexDirection: "column",
+    flexDirection: "column"
   },
+  button: {
+    margin: 15
+  }
 });
