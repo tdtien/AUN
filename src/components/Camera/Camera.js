@@ -6,17 +6,6 @@ import { Actions } from "react-native-router-flux";
 import ImageViewer from "react-native-image-zoom-viewer";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-const PendingView = () => (
-  <Container
-    style={{
-      justifyContent: "center",
-      alignItems: "center"
-    }}
-  >
-    <Text>Waiting</Text>
-  </Container>
-);
-
 export default class Camera extends Component {
   constructor(props) {
     super(props);
@@ -114,8 +103,11 @@ export default class Camera extends Component {
   }
 
   takePicture = async camera => {
-    console.log(this.state.quality);
-    const options = { fixOrientation: true, quality: this.state.quality };
+    const options = {
+      fixOrientation: true,
+      quality: this.state.quality,
+      pauseAfterCapture: true
+    };
     const data = await camera.takePictureAsync(options);
     this.state.imageUrl.unshift({ url: data.uri });
     this.setState({ imageDisplay: true });
@@ -144,13 +136,13 @@ export default class Camera extends Component {
   changeQuality = () => {
     if (this.state.qualityIcon === "high") {
       this.setState({
-        quality: 0.5,
+        quality: 0.75,
         qualityIcon: "medium"
       });
     }
     if (this.state.qualityIcon === "medium") {
       this.setState({
-        quality: 0,
+        quality: 0.5,
         qualityIcon: "low"
       });
     }
