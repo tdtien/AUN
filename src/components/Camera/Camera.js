@@ -5,6 +5,7 @@ import { RNCamera } from "react-native-camera";
 import { Actions } from "react-native-router-flux";
 import ImageViewer from "react-native-image-zoom-viewer";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import ImagePicker from 'react-native-image-crop-picker';
 
 export default class Camera extends Component {
   constructor(props) {
@@ -32,72 +33,72 @@ export default class Camera extends Component {
             />
           </Modal>
         ) : (
-          <RNCamera
-            style={styles.preview}
-            type={RNCamera.Constants.Type.back}
-            flashMode={this.state.flashMode}
-            permissionDialogTitle={"Permission to use camera"}
-            permissionDialogMessage={
-              "We need your permission to use your camera phone"
-            }
-            captureAudio={false}
-            playSoundOnCapture={true}
-            ratio="16:9"
-          >
-            {({ camera }) => {
-              return (
-                <View style={{ flex: 1, justifyContent: "space-between" }}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between"
-                    }}
-                  >
-                    <TouchableOpacity
-                      onPress={() => Actions.pop()}
-                      style={styles.button}
+            <RNCamera
+              style={styles.preview}
+              type={RNCamera.Constants.Type.back}
+              flashMode={this.state.flashMode}
+              permissionDialogTitle={"Permission to use camera"}
+              permissionDialogMessage={
+                "We need your permission to use your camera phone"
+              }
+              captureAudio={false}
+              playSoundOnCapture={true}
+              ratio="16:9"
+            >
+              {({ camera }) => {
+                return (
+                  <View style={{ flex: 1, justifyContent: "space-between" }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between"
+                      }}
                     >
-                      <Icon name="arrow-left" size={30} color="#fff" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => this.changeQuality()}
-                      style={styles.button}
+                      <TouchableOpacity
+                        onPress={() => Actions.pop()}
+                        style={styles.button}
+                      >
+                        <Icon name="arrow-left" size={30} color="#fff" />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => this.changeQuality()}
+                        style={styles.button}
+                      >
+                        <Icon
+                          name={"quality-" + this.state.qualityIcon}
+                          size={30}
+                          color="#fff"
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => this.changeFlashMode()}
+                        style={styles.button}
+                      >
+                        <Icon
+                          name={"flash" + this.state.flashIcon}
+                          size={30}
+                          color="#fff"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "center"
+                      }}
                     >
-                      <Icon
-                        name={"quality-" + this.state.qualityIcon}
-                        size={30}
-                        color="#fff"
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => this.changeFlashMode()}
-                      style={styles.button}
-                    >
-                      <Icon
-                        name={"flash" + this.state.flashIcon}
-                        size={30}
-                        color="#fff"
-                      />
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => this.takePicture(camera)}
+                        style={styles.button}
+                      >
+                        <Icon name="circle-slice-8" size={80} color="#fff" />
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "center"
-                    }}
-                  >
-                    <TouchableOpacity
-                      onPress={() => this.takePicture(camera)}
-                      style={styles.button}
-                    >
-                      <Icon name="circle-slice-8" size={80} color="#fff" />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              );
-            }}
-          </RNCamera>
-        )}
+                );
+              }}
+            </RNCamera>
+          )}
       </View>
     );
   }
@@ -109,8 +110,15 @@ export default class Camera extends Component {
       pauseAfterCapture: true
     };
     const data = await camera.takePictureAsync(options);
-    this.state.imageUrl.unshift({ url: data.uri });
-    this.setState({ imageDisplay: true });
+    // this.setState({ imageDisplay: true });
+    ImagePicker.openCropper({
+      path: data.uri,
+      freeStyleCropEnabled: true,
+
+    }).then(image => {
+      this.state.imageUrl.unshift({ url: image.path });
+      this.setState({ imageDisplay: true })
+    });
   };
 
   changeFlashMode = () => {
