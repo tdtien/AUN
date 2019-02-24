@@ -112,9 +112,11 @@ export default class Camera extends Component {
     const data = await camera.takePictureAsync(options);
     // this.setState({ imageDisplay: true });
     ImagePicker.openCropper({
+      cropping: true,
       path: data.uri,
       freeStyleCropEnabled: true,
-
+      width: 800,
+      height: 800
     }).then(image => {
       this.state.imageUrl.unshift({ url: image.path });
       this.setState({ imageDisplay: true })
