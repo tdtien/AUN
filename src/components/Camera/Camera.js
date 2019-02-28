@@ -1,11 +1,11 @@
-import { Button, Container, Text, View } from "native-base";
 import React, { Component } from "react";
-import { StatusBar, StyleSheet, Modal, TouchableOpacity } from "react-native";
+import { StatusBar, StyleSheet, View, TouchableOpacity, CameraRoll } from "react-native";
 import { RNCamera } from "react-native-camera";
 import { Actions } from "react-native-router-flux";
-import ImageViewer from "react-native-image-zoom-viewer";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ImagePicker from 'react-native-image-crop-picker';
+import Permissions from 'react-native-permissions'
+
 
 export default class Camera extends Component {
   constructor(props) {
@@ -16,89 +16,103 @@ export default class Camera extends Component {
       flashMode: RNCamera.Constants.FlashMode.off,
       imageUrl: [],
       imageDisplay: false,
-      quality: 1
+      quality: 1,
+      sound: false,
+      soundIcon: "-outline"
     };
   }
+
+  componentDidMount() {
+    Permissions.request("camera")
+      .then(cameraResponse => {
+        console.log("camera permission: " + cameraResponse);
+        return (Permissions.request("storage"));
+      }).then(storageResponse => {
+        console.log("storage permission: " + storageResponse);
+      });
+  }
+
+
 
   render() {
     return (
       <View style={styles.container}>
         <StatusBar hidden />
-        {this.state.imageDisplay ? (
-          <Modal visible={this.state.imageDisplay} transparent={true}>
-            <ImageViewer
-              imageUrls={this.state.imageUrl}
-              enableSwipeDown
-              onCancel={() => this.setState({ imageDisplay: false })}
-            />
-          </Modal>
-        ) : (
-            <RNCamera
-              style={styles.preview}
-              type={RNCamera.Constants.Type.back}
-              flashMode={this.state.flashMode}
-              permissionDialogTitle={"Permission to use camera"}
-              permissionDialogMessage={
-                "We need your permission to use your camera phone"
-              }
-              captureAudio={false}
-              playSoundOnCapture={true}
-              ratio="16:9"
-            >
-              {({ camera }) => {
-                return (
-                  <View style={{ flex: 1, justifyContent: "space-between" }}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between"
-                      }}
-                    >
-                      <TouchableOpacity
-                        onPress={() => Actions.pop()}
-                        style={styles.button}
-                      >
-                        <Icon name="arrow-left" size={30} color="#fff" />
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => this.changeQuality()}
-                        style={styles.button}
-                      >
-                        <Icon
-                          name={"quality-" + this.state.qualityIcon}
-                          size={30}
-                          color="#fff"
-                        />
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => this.changeFlashMode()}
-                        style={styles.button}
-                      >
-                        <Icon
-                          name={"flash" + this.state.flashIcon}
-                          size={30}
-                          color="#fff"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "center"
-                      }}
-                    >
-                      <TouchableOpacity
-                        onPress={() => this.takePicture(camera)}
-                        style={styles.button}
-                      >
-                        <Icon name="circle-slice-8" size={80} color="#fff" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                );
-              }}
-            </RNCamera>
-          )}
+        <RNCamera
+          style={styles.preview}
+          type={RNCamera.Constants.Type.back}
+          flashMode={this.state.flashMode}
+          permissionDialogTitle={"Permission to use camera"}
+          permissionDialogMessage={
+            "We need your permission to use your camera phone"
+          }
+          captureAudio={false}
+          playSoundOnCapture={this.state.sound}
+          ratio="16:9"
+        >
+          {({ camera }) => {
+            return (
+              <View style={{ flex: 1, justifyContent: "space-between" }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between"
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => Actions.pop()}
+                    style={styles.button}
+                  >
+                    <Icon name="arrow-left" size={30} color="#fff" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => this.changeQuality()}
+                    style={styles.button}
+                  >
+                    <Icon
+                      name={"quality-" + this.state.qualityIcon}
+                      size={30}
+                      color="#fff"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => this.toggleSound()}
+                    style={styles.button}
+                  >
+                    <Icon
+                      name={"bell" + this.state.soundIcon}
+                      size={30}
+                      color="#fff"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => this.changeFlashMode()}
+                    style={styles.button}
+                  >
+                    <Icon
+                      name={"flash" + this.state.flashIcon}
+                      size={30}
+                      color="#fff"
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center"
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => this.takePicture(camera)}
+                    style={styles.button}
+                  >
+                    <Icon name="circle-slice-8" size={80} color="#fff" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            );
+          }}
+        </RNCamera>
       </View>
     );
   }
@@ -110,7 +124,6 @@ export default class Camera extends Component {
       pauseAfterCapture: true
     };
     const data = await camera.takePictureAsync(options);
-    // this.setState({ imageDisplay: true });
     ImagePicker.openCropper({
       cropping: true,
       path: data.uri,
@@ -118,9 +131,10 @@ export default class Camera extends Component {
       width: 800,
       height: 800
     }).then(image => {
-      this.state.imageUrl.unshift({ url: image.path });
-      this.setState({ imageDisplay: true })
-    });
+      CameraRoll.saveToCameraRoll(image.path, "photo");
+    }).catch(function (error) {
+      ImagePicker.clean();
+    })
   };
 
   changeFlashMode = () => {
@@ -143,6 +157,7 @@ export default class Camera extends Component {
       });
     }
   };
+
   changeQuality = () => {
     if (this.state.qualityIcon === "high") {
       this.setState({
@@ -163,6 +178,14 @@ export default class Camera extends Component {
       });
     }
   };
+
+  toggleSound = () => {
+    if (this.state.sound) {
+      this.setState({ sound: false, soundIcon: "-outline" });
+    } else {
+      this.setState({ sound: true, soundIcon: "" });
+    }
+  }
 }
 
 const styles = StyleSheet.create({
