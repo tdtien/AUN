@@ -55,11 +55,6 @@ export default class Login extends Component {
           buttonText: "Okay"
         });
       } else {
-        Toast.show({
-          text: "Login successful",
-          type: "success",
-          buttonText: "Okay"
-        });
         Actions.camera();
       }
     }
