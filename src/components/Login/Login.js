@@ -55,7 +55,7 @@ export default class Login extends Component {
           buttonText: "Okay"
         });
       } else {
-        Actions.camera();
+        Actions.merchant();
       }
     }
   };

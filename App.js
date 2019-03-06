@@ -4,6 +4,8 @@ import Login from './src/components/Login/Login';
 import Register from './src/components/Register/Register'
 import Camera from './src/components/Camera/Camera';
 import ImageModal from './src/components/ImageModal/ImageModal';
+import Merchant from './src/components/Merchant/Merchant';
+import MerchantDetail from './src/components/Merchant/MerchantDetail';
 
 export default class App extends Component {
   render() {
@@ -27,6 +29,14 @@ export default class App extends Component {
           <Scene
             key="imageModal"
             component={ImageModal}
+          />
+          <Scene 
+            key="merchant"
+            component={Merchant}
+          />
+          <Scene
+            key="merchantDetail"
+            component={MerchantDetail}
           />
         </Stack>
       </Router>
