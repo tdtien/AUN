@@ -17,6 +17,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Actions } from "react-native-router-flux";
 import MerchantDetailItem from "./MerchantDetailItem";
+import { merchantStyles } from "./MerchantStyle";
 
 export default class MerchantDetail extends Component {
     constructor(props) {
@@ -61,7 +62,7 @@ export default class MerchantDetail extends Component {
                         numColumns={2}
                     />
                 </ScrollView>
-                <TouchableOpacity style={styles.cameraButton} onPress={() => { Actions.camera() }}>
+                <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera() }}>
                     <Icon name={"camera"}
                         size={30}
                         color="white" />
@@ -72,15 +73,4 @@ export default class MerchantDetail extends Component {
 }
 
 const styles = StyleSheet.create({
-    cameraButton: {
-        position: 'absolute',
-        width: 80,
-        height: 80,
-        bottom: 20,
-        right: 20,
-        borderRadius: 80,
-        backgroundColor: 'rgb(22,172,143)',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
 });

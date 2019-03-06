@@ -12,6 +12,7 @@ import { Item, Icon as IconNB, Input, Header } from "native-base";
 import Icon from 'react-native-vector-icons/FontAwesome'
 import MerchantItem from "./MerchantItem";
 import { Actions } from "react-native-router-flux";
+import { merchantStyles } from "./MerchantStyle";
 
 let merchantList = [
     {
@@ -127,7 +128,7 @@ export default class Merchant extends Component {
                     searchBar
                     rounded
                 >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => null} >
+                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()} >
                         <IconNB name='menu' style={{ color: 'white' }} />
                     </TouchableOpacity>
                     <Item>
@@ -156,7 +157,7 @@ export default class Merchant extends Component {
                         onEndReachedThreshold={50}
                     />
                 </ScrollView>
-                <TouchableOpacity style={styles.cameraButton} onPress={() => { Actions.camera() }}>
+                <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera() }}>
                     <Icon name={"camera"}
                         size={30}
                         color="white" />
@@ -173,15 +174,4 @@ const styles = StyleSheet.create({
         paddingLeft: 5,
         paddingRight: 15
     },
-    cameraButton: {
-        position: 'absolute',
-        width: 60,
-        height: 60,
-        bottom: 20,
-        right: 20,
-        borderRadius: 60,
-        backgroundColor: 'rgb(22,172,143)',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
 });
