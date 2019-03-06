@@ -3,6 +3,7 @@ import { Router, Stack, Scene } from 'react-native-router-flux';
 import Login from './src/components/Login/Login';
 import Register from './src/components/Register/Register'
 import Camera from './src/components/Camera/Camera';
+import ImageModal from './src/components/ImageModal/ImageModal';
 
 export default class App extends Component {
   render() {
@@ -22,6 +23,10 @@ export default class App extends Component {
           <Scene
             key="camera"
             component={Camera}
+          />
+          <Scene
+            key="imageModal"
+            component={ImageModal}
           />
         </Stack>
       </Router>

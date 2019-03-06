@@ -131,7 +131,8 @@ export default class Camera extends Component {
       width: 800,
       height: 800
     }).then(image => {
-      CameraRoll.saveToCameraRoll(image.path, "photo");
+      Actions.imageModal({images: [{url: image.path}]});
+      // CameraRoll.saveToCameraRoll(image.path, "photo");
     }).catch(function (error) {
       ImagePicker.clean();
     })
