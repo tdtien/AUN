@@ -16,6 +16,7 @@ export default class App extends Component {
           <Scene
             key="login"
             component={Login}
+            initial
           />
           <Scene
             key="register"
@@ -36,7 +37,6 @@ export default class App extends Component {
             key="drawerMenu"
             contentComponent={SideMenu}
             drawerWidth={300}
-            initial
           >
             <Scene
               hideNavBar
@@ -47,7 +47,7 @@ export default class App extends Component {
           <Scene
               key="merchantDetail"
               component={MerchantDetail}
-            />
+          />
         </Stack>
       </Router>
     );

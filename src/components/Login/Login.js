@@ -15,7 +15,7 @@ import {
   Root,
   Spinner
 } from "native-base";
-import { StyleSheet, Image, StatusBar } from "react-native";
+import { StyleSheet, Image, StatusBar, ImageBackground } from "react-native";
 import { Actions } from "react-native-router-flux";
 import Images from "../../assets/images";
 import { validateEmail } from "../../commons/validation";
@@ -26,7 +26,8 @@ export default class Login extends Component {
     this.state = {
       email: "",
       password: "",
-      isLoading: false
+      isLoading: false,
+      isSplashScreenVisible: true,
     };
   }
 
@@ -77,7 +78,25 @@ export default class Login extends Component {
     }
   };
 
+  hideSplashScreen = () => {
+    this.setState({
+      isSplashScreenVisible: false,
+    })
+  };
+
+  componentDidMount() {
+    var that = this;
+    setTimeout(function(){
+      that.hideSplashScreen();
+    }, 2500);
+  }
+
   render() {
+    let splashScreen = (
+      <View style = {styles.splashScreenView}>
+        <Image style = {styles.splashImage} source = {Images.logo}/>
+      </View>
+    )
     return (
       <Root>
         <StatusBar backgroundColor="#FFF" barStyle="dark-content"/>
@@ -130,6 +149,9 @@ export default class Login extends Component {
               <Text style={{ fontSize: 13 }}>Register now!</Text>
             </Button>
           </View>
+          {
+            (this.state.isSplashScreenVisible === true) ? splashScreen : null
+          }
         </Container>
       </Root>
     );
@@ -157,5 +179,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center"
-  }
+  },
+  splashScreenView:{
+    flex:1,
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    margin: 0,
+    width: '100%',
+    height: '100%'
+},
+splashImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
 });
