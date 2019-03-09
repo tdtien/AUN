@@ -1,11 +1,30 @@
 import React, { Component } from "react";
-import { StatusBar, StyleSheet, View, TouchableOpacity, CameraRoll } from "react-native";
+import { StatusBar, StyleSheet, View, TouchableOpacity, Text, CameraRoll } from "react-native";
 import { RNCamera } from "react-native-camera";
 import { Actions } from "react-native-router-flux";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ImagePicker from 'react-native-image-crop-picker';
 import Permissions from 'react-native-permissions'
+import { AppCommon } from "../../commons/commons";
 
+const PendingView = () => (
+  <View
+    style={{
+      flex: 1,
+      backgroundColor: AppCommon.colors,
+    }}
+  >
+    <TouchableOpacity
+      onPress={() => Actions.pop()}
+      style={styles.button}
+    >
+      <Icon name="arrow-left" size={30} color="#fff" />
+    </TouchableOpacity>
+    <View style={{ flex: 2, justifyContent: "center", alignItems: "center" }}>
+      <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>Waiting for permissions</Text>
+    </View>
+  </View>
+);
 
 export default class Camera extends Component {
   constructor(props) {
@@ -32,8 +51,6 @@ export default class Camera extends Component {
       });
   }
 
-
-
   render() {
     return (
       <View style={styles.container}>
@@ -42,15 +59,12 @@ export default class Camera extends Component {
           style={styles.preview}
           type={RNCamera.Constants.Type.back}
           flashMode={this.state.flashMode}
-          permissionDialogTitle={"Permission to use camera"}
-          permissionDialogMessage={
-            "We need your permission to use your camera phone"
-          }
           captureAudio={false}
           playSoundOnCapture={this.state.sound}
           ratio="16:9"
         >
-          {({ camera }) => {
+          {({ camera, status }) => {
+            if (status !== 'READY') return <PendingView />;
             return (
               <View style={{ flex: 1, justifyContent: "space-between" }}>
                 <View
@@ -128,13 +142,14 @@ export default class Camera extends Component {
       cropping: true,
       path: data.uri,
       freeStyleCropEnabled: true,
-      width: 800,
-      height: 800
+      width: 1000,
+      height: 1000,
+      includeBase64: true
     }).then(image => {
-      Actions.imageModal({images: [{url: image.path}]});
-      // CameraRoll.saveToCameraRoll(image.path, "photo");
+      Actions.imageModal({ images: [{ url: image.path, base64: image.data }], index: 0 });
     }).catch(function (error) {
-      ImagePicker.clean();
+      console.log(error);
+      ImagePicker.cleanSingle(data.uri);
     })
   };
 
