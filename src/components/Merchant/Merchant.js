@@ -7,12 +7,19 @@ import {
     Alert,
     ScrollView,
     TouchableOpacity,
+    Text,
+    Dimensions,
+    Image
 } from "react-native";
 import { Item, Icon as IconNB, Input, Header } from "native-base";
 import Icon from 'react-native-vector-icons/FontAwesome'
 import MerchantItem from "./MerchantItem";
 import { Actions } from "react-native-router-flux";
 import { merchantStyles } from "./MerchantStyle";
+import RNFS from "react-native-fs";
+import { AppCommon } from "../../commons/commons";
+import MerchantDetail from "./MerchantDetail";
+import MerchantDetailItem from "./MerchantDetailItem";
 
 let merchantList = [
     {
@@ -97,17 +104,73 @@ export default class Merchant extends Component {
     };
 
     makeRemoteRequest = () => {
-        this.setState({
-            data: merchantList,
-            isLoading: false,
-            refreshing: false,
+         let mainPath = RNFS.ExternalDirectoryPath + AppCommon.root_dir;
+
+        RNFS.readDir(mainPath)
+        .then((result) => {
+            console.log(result);
+            const files = [];
+
+            if(result != undefined && result.length > 0){
+                // Alert.alert('Reading files', 'OK');
+                for(index in result) {
+                    const item = result[index];
+                    console.log(item);
+
+                    if(item.isFile()){
+                        console.log(index);
+                        files.push(item);
+                    }
+                }
+
+                if(files.length > 0) {
+                    // Alert.alert('Notification', 'Exist')
+                    console.log('Files: ' + files);
+                    this.setState({
+                        data: result,
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                }
+                else{
+                    // Alert.alert('Notification', 'Empty2')
+                    this.setState({
+                        data: [],
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                }
+            }
+            else{
+                // Alert.alert('Notification', 'Empty')
+                this.setState({
+                    data: [],
+                    isLoading: false,
+                    refreshing: false,
+                })
+            }
+        })
+        .catch(err => {
+            console.log('err in reading files');
+            console.log(err);
+            this.setState({
+                data: [],
+                isLoading: false,
+                refreshing: false,
+            })
         })
     };
 
     renderItem({ item }) {
+        const screenWidth = Dimensions.get('window').width;
+        let itemPadding = 10;
+        let itemWidth = (screenWidth - itemPadding * 4) / 2;
         return (
-            <MerchantItem item={item}>
-            </MerchantItem>
+            // <Merchant item={item}>
+            // </Merchant>
+            <View style={styles.container}>
+                <Image style={{ width: itemWidth, height: itemWidth * 1.4 }} source={{isStatic: true, uri: `file://${item.path}`}} />
+            </View>
         );
     }
 
@@ -149,12 +212,14 @@ export default class Merchant extends Component {
                 <ScrollView>
                     <FlatList
                         data={this.state.data}
+                        keyExtractor={(item, index) => index.toString()}
                         renderItem={this.renderItem.bind(this)}
                         ListFooterComponent={this.renderFooter}
                         onRefresh={this.handleRefresh}
                         refreshing={this.state.refreshing}
                         onEndReached={this.handleLoadMore}
                         onEndReachedThreshold={50}
+                        numColumns={2}
                     />
                 </ScrollView>
                 <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera() }}>
@@ -168,6 +233,12 @@ export default class Merchant extends Component {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor: "#F7F5F5",
+        padding: 10,
+    },
     menuButton: {
         alignItems: 'center',
         justifyContent: 'center',
