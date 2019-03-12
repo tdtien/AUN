@@ -31,7 +31,6 @@ export default class App extends Component {
             key="imageModal"
             component={ImageModal}
           />
-
           <Drawer
             hideNavBar
             key="drawerMenu"
@@ -42,11 +41,11 @@ export default class App extends Component {
               hideNavBar
               key="merchant"
               component={Merchant}
-            /> 
+            />
           </Drawer>
           <Scene
-              key="merchantDetail"
-              component={MerchantDetail}
+            key="merchantDetail"
+            component={MerchantDetail}
           />
         </Stack>
       </Router>

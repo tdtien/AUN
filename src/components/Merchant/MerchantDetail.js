@@ -18,14 +18,68 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import { Actions } from "react-native-router-flux";
 import MerchantDetailItem from "./MerchantDetailItem";
 import { merchantStyles } from "./MerchantStyle";
+import { AppCommon } from "../../commons/commons";
+import RNFS from "react-native-fs";
 
 export default class MerchantDetail extends Component {
     constructor(props) {
         super(props);
+        console.log('Path: ' + this.props.folderPath);
         this.state = {
+            data: [],
             columns: 2,
         }
     }
+
+    componentDidMount() {
+        this.makeRemoteRequest();
+    }
+
+    makeRemoteRequest = () => {
+        let path = this.props.folderPath;
+        RNFS.readDir(path)
+            .then((result) => {
+                const files = [];
+                if (result != undefined && result.length > 0) {
+                    for (index in result) {
+                        const item = result[index];
+                        if (item.isFile()) {
+                            files.push(item);
+                        }
+                    }
+                    if (files.length > 0) {
+                        this.setState({
+                            data: files,
+                            isLoading: false,
+                            refreshing: false,
+                        })
+                    }
+                    else {
+                        this.setState({
+                            data: [],
+                            isLoading: false,
+                            refreshing: false,
+                        })
+                    }
+                }
+                else {
+                    this.setState({
+                        data: [],
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                }
+            })
+            .catch(err => {
+                console.log('err in reading files');
+                console.log(err);
+                this.setState({
+                    data: [],
+                    isLoading: false,
+                    refreshing: false,
+                })
+            })
+    };
 
     renderItem({ item }) {
         return (
@@ -57,12 +111,13 @@ export default class MerchantDetail extends Component {
                 </Header>
                 <ScrollView>
                     <FlatList
-                        data={this.props.imageList}
+                        data={this.state.data}
+                        keyExtractor={(item, index) => index.toString()}
                         renderItem={this.renderItem.bind(this)}
                         numColumns={2}
                     />
                 </ScrollView>
-                <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera() }}>
+                <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera({directory: this.props.folderPath}) }}>
                     <Icon name={"camera"}
                         size={30}
                         color="white" />

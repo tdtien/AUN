@@ -10,29 +10,67 @@ import {
 } from "react-native";
 import { Actions } from "react-native-router-flux";
 import Icon from 'react-native-vector-icons/FontAwesome'
+import RNFS from 'react-native-fs'
+import moment from 'moment'
 
 export default class MerchantItem extends Component {
     constructor(props) {
         super(props);
-        console.log(this.props.item);
+        this.state = {
+            previewImagePath: {},
+            count: 0,
+            date: {},
+        }
     }
 
-    handleClickItem(imageList) {
-        Actions.merchantDetail({ imageList: imageList })
+    handleClickItem(path) {
+        Actions.merchantDetail({ folderPath: path })
     }
+
+    componentDidMount() {
+        this.makeRemoteRequest();
+    }
+
+    makeRemoteRequest = () => {
+        let path = this.props.item.path;
+        RNFS.readDir(path)
+            .then((result) => {
+                if (result != undefined && result.length > 0) {
+                    for (index in result) {
+                        const item = result[index];
+                        if (item.isFile()) {
+                            if (index == 0) {
+                                this.setState({
+                                    previewImagePath: item.path,
+                                    date: item.mtime
+                                })
+                            }
+                            this.setState({
+                                count: this.state.count + 1,
+                            })
+                        }
+
+                    }
+                }
+            })
+            .catch(err => {
+                console.log('err in reading files');
+                console.log(err);
+            })
+    };
 
     render() {
         return (
-            <TouchableHighlight onPress={() => this.handleClickItem(this.props.item.imageList)}>
+            <TouchableHighlight onPress={() => this.handleClickItem(`file://${this.props.item.path}`)}>
                 <View style={styles.container}>
-                    <Image style={styles.image} source={this.props.item.imageList[0].image} />
+                    <Image style={styles.image} source={{isStatic: true, uri: `file://${this.state.previewImagePath}`}} />
                     <View style={styles.information}>
-                        <Text style={styles.title}>{this.props.item.imageList[0].name}</Text>
+                        <Text style={styles.title}>{this.props.item.name}</Text>
                         <View style={styles.subTitle}>
-                            <Text style={styles.subText}>{this.props.item.imageList[0].date}</Text>
-                            <Text style={styles.subText}>{this.props.item.imageList[0].time}</Text>
+                            <Text style={styles.subText}>{moment(this.state.date).format('L')}</Text>
+                            <Text style={styles.subText}>{moment(this.state.date).format('LT')}</Text>
                             <View style={styles.badgeCount}>
-                                <Text style={styles.badgeText}>{this.props.item.count}</Text>
+                                <Text style={styles.badgeText}>{this.state.count}</Text>
                             </View>
                         </View>
                     </View>

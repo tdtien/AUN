@@ -9,6 +9,7 @@ import { AppCommon } from "../../commons/commons";
 export default class ImageModal extends Component {
     constructor(props) {
         super(props);
+        console.log('Props2: ' + this.props.directory);
         this.state = {
             visible: true,
         }
@@ -16,30 +17,61 @@ export default class ImageModal extends Component {
 
     handleSave = () => {
         //Save to folder
-        var milliseconds = (new Date).getTime();
         let mainPath = RNFS.ExternalDirectoryPath + AppCommon.root_dir;
+        var milliseconds = (new Date).getTime();
         let data = this.props.images[this.props.index].base64
+        let directory = this.props.directory;
         RNFS.exists(mainPath).then(function (response) {
             if (!response) {
+                //Create folder AUNMobile
                 RNFS.mkdir(mainPath).then(function (response) {
-                    RNFS.writeFile(mainPath + "/" + milliseconds + ".jpg", data, "base64")
+                    //Create foleder if props.derectory is null
+                    let imageName = milliseconds + ".jpg";
+                    if (directory === (undefined || null)) {
+                        let folderName = `New Doc ${milliseconds}`;
+                        let folderPath = mainPath + "/NewDoc" + milliseconds;
+                        RNFS.mkdir(folderPath).then(function (response) {
+                            RNFS.writeFile(folderPath + "/" + imageName, data, "base64")
+                                .then(function (response) {
+                                    Alert.alert('Successful!', 'Image has been saved.');
+                                }).catch(function (error) {
+                                    console.log(error);
+                                })
+                        })
+                    } else {
+                        RNFS.writeFile(directory + "/" + imageName, data, "base64")
                         .then(function (response) {
-                            Alert.alert('Successful!', 'Image has been saved.').then(function (response) {
-                                Actions.pop();
-                            });
+                            Alert.alert('Successful!', 'Image has been saved.');
                         }).catch(function (error) {
                             console.log(error);
                         })
+                    }
                 }).catch(function (error) {
                     console.log(error);
                 })
             } else {
-                RNFS.writeFile(mainPath + "/" + milliseconds + ".jpg", data, "base64")
+                let imageName = milliseconds + ".jpg";
+                if (directory === (undefined || null)) {
+                    let folderName = `New Doc ${milliseconds}`;
+                    let folderPath = mainPath + "/" + folderName;
+                    RNFS.mkdir(folderPath).then(function (response) {
+                        RNFS.writeFile(folderPath + "/" + imageName, data, "base64")
+                            .then(function (response) {
+                                Alert.alert('Successful!', 'Image has been saved.');
+                            }).catch(function (error) {
+                                console.log(error);
+                            })
+                    })
+                } else {
+                    RNFS.writeFile(directory + "/" + imageName, data, "base64")
                     .then(function (response) {
                         Alert.alert('Successful!', 'Image has been saved.');
                     }).catch(function (error) {
                         console.log(error);
                     })
+                }
+
+
             }
         })
     }

@@ -16,13 +16,14 @@ let itemWidth = 0;
 export default class MerchantDetailItem extends Component {
     constructor(props) {
         super(props);
+        console.log('Detail Item: ' + this.props.item);
     }
 
     render() {
         itemWidth = (screenWidth - itemPadding * 4) / this.props.columns;
         return (
             <View style={styles.container}>
-                <Image style={{ width: itemWidth, height: itemWidth * 1.4 }} source={this.props.item.image} />
+                <Image style={{ width: itemWidth, height: itemWidth * 1.4 }} source={{ isStatic: true, uri: `file://${this.props.item.path}` }} />
             </View>
         );
     }

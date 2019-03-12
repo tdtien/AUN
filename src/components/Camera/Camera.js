@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StatusBar, StyleSheet, View, TouchableOpacity, Text, CameraRoll } from "react-native";
+import { StatusBar, StyleSheet, View, TouchableOpacity, Text, CameraRoll, Alert } from "react-native";
 import { RNCamera } from "react-native-camera";
 import { Actions } from "react-native-router-flux";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -146,7 +146,7 @@ export default class Camera extends Component {
       height: 1000,
       includeBase64: true
     }).then(image => {
-      Actions.imageModal({ images: [{ url: image.path, base64: image.data }], index: 0 });
+      Actions.imageModal({ images: [{ url: image.path, base64: image.data }], index: 0, directory: this.props.directory });
     }).catch(function (error) {
       console.log(error);
       ImagePicker.cleanSingle(data.uri);
