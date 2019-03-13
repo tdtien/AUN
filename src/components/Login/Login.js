@@ -19,6 +19,7 @@ import { StyleSheet, Image, StatusBar, ImageBackground } from "react-native";
 import { Actions } from "react-native-router-flux";
 import Images from "../../assets/images";
 import { validateEmail } from "../../commons/validation";
+import { requestLogin } from "../../api/accountApi";
 
 export default class Login extends Component {
   constructor(props) {
@@ -56,7 +57,12 @@ export default class Login extends Component {
           buttonText: "Okay"
         });
       } else {
-        Actions.merchant();
+        requestLogin(this.state.email, this.state.password).then(res => {
+          console.log(res);
+          Actions.merchant();
+        }).catch(error => {
+          console.log(error);
+        })
       }
     }
   };
@@ -86,20 +92,20 @@ export default class Login extends Component {
 
   componentDidMount() {
     var that = this;
-    setTimeout(function(){
+    setTimeout(function () {
       that.hideSplashScreen();
     }, 2500);
   }
 
   render() {
     let splashScreen = (
-      <View style = {styles.splashScreenView}>
-        <Image style = {styles.splashImage} source = {Images.logo}/>
+      <View style={styles.splashScreenView}>
+        <Image style={styles.splashImage} source={Images.logo} />
       </View>
     )
     return (
       <Root>
-        <StatusBar backgroundColor="#FFF" barStyle="dark-content"/>
+        <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
         <Container>
           <Content>
             <View style={styles.logoContainer}>
@@ -109,39 +115,39 @@ export default class Login extends Component {
             {this.state.isLoading ? (
               <Spinner />
             ) : (
-              <Form>
-                <Item floatingLabel>
-                  <Label>Email</Label>
-                  <Input
-                    keyboardType="email-address"
-                    onChangeText={email => this.validate(email)}
-                    onSubmitEditing={() => this.passwordInput._root.focus()}
-                    returnKeyType="next"
-                    autoCapitalize="none"
-                  />
-                </Item>
-                <Item floatingLabel last>
-                  <Label>Password</Label>
-                  <Input
-                    autoCapitalize="none"
-                    secureTextEntry
-                    onChangeText={password =>
-                      this.setState({ password: password })
-                    }
-                    getRef={input => (this.passwordInput = input)}
-                    returnKeyType="go"
-                    onSubmitEditing={() => this.handleLogin()}
-                  />
-                </Item>
-                <ListItem noBorder>
-                  <Body>
-                    <Button info block onPress={() => this.handleLogin()}>
-                      <Text>Sign In</Text>
-                    </Button>
-                  </Body>
-                </ListItem>
-              </Form>
-            )}
+                <Form>
+                  <Item floatingLabel>
+                    <Label>Email</Label>
+                    <Input
+                      keyboardType="email-address"
+                      onChangeText={email => this.validate(email)}
+                      onSubmitEditing={() => this.passwordInput._root.focus()}
+                      returnKeyType="next"
+                      autoCapitalize="none"
+                    />
+                  </Item>
+                  <Item floatingLabel last>
+                    <Label>Password</Label>
+                    <Input
+                      autoCapitalize="none"
+                      secureTextEntry
+                      onChangeText={password =>
+                        this.setState({ password: password })
+                      }
+                      getRef={input => (this.passwordInput = input)}
+                      returnKeyType="go"
+                      onSubmitEditing={() => this.handleLogin()}
+                    />
+                  </Item>
+                  <ListItem noBorder>
+                    <Body>
+                      <Button info block onPress={() => this.handleLogin()}>
+                        <Text>Sign In</Text>
+                      </Button>
+                    </Body>
+                  </ListItem>
+                </Form>
+              )}
           </Content>
           <View style={styles.registerContainer}>
             <Text style={{ fontSize: 15 }}>Don't have account yet?</Text>
@@ -180,8 +186,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  splashScreenView:{
-    flex:1,
+  splashScreenView: {
+    flex: 1,
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',

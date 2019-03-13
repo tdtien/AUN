@@ -1,15 +1,19 @@
 import axios from 'axios';
 
-const apiServer = 'https://food-delivery-server.herokuapp.com';
-const loginURL = `${apiServer}/login`;
-const registerURL = `${apiServer}/register`;
+const userAPI = 'https://aun-api.herokuapp.com/user';
+const loginURL = `${userAPI}/login`;
+const registerURL = `${userAPI}/register`;
 
 export async function requestLogin(email, password) {
-    axios.post(loginURL, {email: email, password: password})
-    .then(function(response) {
-        console.log(response);
-    }).catch(function(error) {
-        console.log(error);
+    var info = {
+        userName: email,
+        passWord: password
+    }
+    var infoJSON = JSON.stringify(info);
+    return new Promise((resolve, reject) => {
+        axios.post(loginURL, infoJSON, {headers: {'Content-Type': 'application/json'}})
+        .then(res => resolve(res))
+        .catch(error => reject(error));
     })
 }
 
