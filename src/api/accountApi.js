@@ -6,7 +6,7 @@ const registerURL = `${userAPI}/register`;
 
 export async function requestLogin(email, password) {
     var info = {
-        userName: email,
+        email: email,
         passWord: password
     }
     var infoJSON = JSON.stringify(info);

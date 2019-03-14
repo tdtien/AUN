@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity} from "react-native";
 
 
 export default class SideMenu extends Component<{}> {
@@ -11,7 +11,9 @@ export default class SideMenu extends Component<{}> {
     render() {
         return (
             <View style={styles.container}>
-                <Text>menu items go here</Text>
+                <TouchableOpacity style={styles.button} onPress = {() => null}>
+                    <Text style = {styles.buttonText}>Log Out</Text>
+                </TouchableOpacity>
             </View>
         );
     }
@@ -28,5 +30,13 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         paddingBottom: 10,
     },
-
+    button: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: 'gray'
+    },
+    buttonText: {
+        fontSize: 25,
+        fontWeight: 'bold'
+    }
 });

@@ -28,6 +28,8 @@ export default class MerchantDetail extends Component {
         this.state = {
             data: [],
             columns: 2,
+            isLoading: false,
+            refreshing: false,
         }
     }
 
@@ -81,6 +83,17 @@ export default class MerchantDetail extends Component {
             })
     };
 
+    handleRefresh = () => {
+        this.setState(
+            {
+                refreshing: true
+            },
+            () => {
+                this.makeRemoteRequest();
+            }
+        );
+    };
+
     renderItem({ item }) {
         return (
             <MerchantDetailItem
@@ -91,7 +104,6 @@ export default class MerchantDetail extends Component {
     }
 
     render() {
-        const { columns } = this.state.columns;
         return (
             <View style={{ borderTopWidth: 0, borderBottomWidth: 0, flex: 1, backgroundColor: '#F7F5F5' }}>
                 <Header
@@ -99,27 +111,35 @@ export default class MerchantDetail extends Component {
                     style={{ backgroundColor: "#2196F3" }}
                     hasTabs
                 >
-                    <Left style={{ flex: 1 }}>
-                        <Button transparent onPress={() => Actions.pop()}>
-                            <Icon name="chevron-left" color="#fff" size={25} />
-                        </Button>
-                    </Left>
+                    <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
+                        <Icon
+                            name='chevron-left'
+                            size={25}
+                            color='white'
+                        />
+                    </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center" }}>Detail</Title>
+                        <Title style={{ alignSelf: "center" }}>{this.props.folderName}</Title>
                     </Body>
-                    <Right style={{ flex: 1 }} />
+                    <TouchableOpacity style={styles.headerButton} onPress={() => null} >
+                        <Icon
+                            name='file-pdf-o'
+                            size={30}
+                            color='white'
+                        />
+                    </TouchableOpacity>
                 </Header>
-                <ScrollView>
-                    <FlatList
-                        data={this.state.data}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={this.renderItem.bind(this)}
-                        numColumns={2}
-                    />
-                </ScrollView>
-                <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera({directory: this.props.folderPath}) }}>
+                <FlatList
+                    data={this.state.data}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={this.renderItem.bind(this)}
+                    onRefresh={this.handleRefresh}
+                    refreshing={this.state.refreshing}
+                    numColumns={this.state.columns}
+                />
+                <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera({ directory: this.props.folderPath }) }}>
                     <Icon name={"camera"}
-                        size={30}
+                        size={25}
                         color="white" />
                 </TouchableOpacity>
             </View>
@@ -128,4 +148,10 @@ export default class MerchantDetail extends Component {
 }
 
 const styles = StyleSheet.create({
+    headerButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingLeft: 5,
+        paddingRight: 10
+    }
 });

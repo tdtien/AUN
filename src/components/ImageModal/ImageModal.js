@@ -21,59 +21,27 @@ export default class ImageModal extends Component {
         var milliseconds = (new Date).getTime();
         let data = this.props.images[this.props.index].base64
         let directory = this.props.directory;
-        RNFS.exists(mainPath).then(function (response) {
-            if (!response) {
-                //Create folder AUNMobile
-                RNFS.mkdir(mainPath).then(function (response) {
-                    //Create foleder if props.derectory is null
-                    let imageName = milliseconds + ".jpg";
-                    if (directory === (undefined || null)) {
-                        let folderName = `New Doc ${milliseconds}`;
-                        let folderPath = mainPath + "/NewDoc" + milliseconds;
-                        RNFS.mkdir(folderPath).then(function (response) {
-                            RNFS.writeFile(folderPath + "/" + imageName, data, "base64")
-                                .then(function (response) {
-                                    Alert.alert('Successful!', 'Image has been saved.');
-                                }).catch(function (error) {
-                                    console.log(error);
-                                })
-                        })
-                    } else {
-                        RNFS.writeFile(directory + "/" + imageName, data, "base64")
-                        .then(function (response) {
-                            Alert.alert('Successful!', 'Image has been saved.');
-                        }).catch(function (error) {
-                            console.log(error);
-                        })
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                })
-            } else {
-                let imageName = milliseconds + ".jpg";
-                if (directory === (undefined || null)) {
-                    let folderName = `New Doc ${milliseconds}`;
-                    let folderPath = mainPath + "/" + folderName;
-                    RNFS.mkdir(folderPath).then(function (response) {
-                        RNFS.writeFile(folderPath + "/" + imageName, data, "base64")
-                            .then(function (response) {
-                                Alert.alert('Successful!', 'Image has been saved.');
-                            }).catch(function (error) {
-                                console.log(error);
-                            })
-                    })
-                } else {
-                    RNFS.writeFile(directory + "/" + imageName, data, "base64")
+
+        let imageName = milliseconds + ".jpg";
+        if (directory === (undefined || null)) {
+            let folderName = `New Doc ${milliseconds}`;
+            let folderPath = mainPath + "/" + folderName;
+            RNFS.mkdir(folderPath).then(function (response) {
+                RNFS.writeFile(folderPath + "/" + imageName, data, "base64")
                     .then(function (response) {
                         Alert.alert('Successful!', 'Image has been saved.');
                     }).catch(function (error) {
                         console.log(error);
                     })
-                }
-
-
-            }
-        })
+            })
+        } else {
+            RNFS.writeFile(directory + "/" + imageName, data, "base64")
+            .then(function (response) {
+                Alert.alert('Successful!', 'Image has been saved.');
+            }).catch(function (error) {
+                console.log(error);
+            })
+        }
     }
 
     render() {

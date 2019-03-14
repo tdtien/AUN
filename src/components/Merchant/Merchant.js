@@ -17,43 +17,6 @@ import { merchantStyles } from "./MerchantStyle";
 import RNFS from "react-native-fs";
 import { AppCommon } from "../../commons/commons";
 
-
-let merchantList = [
-    {
-        "key": "1",
-        "count": 2,
-        "imageList": [
-            {
-                "key": "image1",
-                "image": require("../../assets/imgTest/imageTest1.jpg"),
-                "name": "Image Test 1",
-                "date": "01/03/2019",
-                "time": "16:41"
-            },
-            {
-                "key": "image2",
-                "image": require("../../assets/imgTest/imageTest2.jpg"),
-                "name": "Image Test 2",
-                "date": "02/03/2019",
-                "time": "16:42"
-            },
-        ]
-    },
-    {
-        "key": "2",
-        "count": 1,
-        "imageList": [
-            {
-                "key": "image3",
-                "image": require("../../assets/imgTest/imageTest3.jpg"),
-                "name": "Image Test 3",
-                "date": "03/03/2019",
-                "time": "16:43"
-            }
-        ]
-    },
-];
-
 export default class Merchant extends Component {
     constructor(props) {
         super(props);
@@ -102,23 +65,42 @@ export default class Merchant extends Component {
 
     makeRemoteRequest = () => {
         let mainPath = RNFS.ExternalDirectoryPath + AppCommon.root_dir;
-        RNFS.readDir(mainPath)
-            .then((result) => {
-                const folders = [];
-                if (result != undefined && result.length > 0) {
-                    for (index in result) {
-                        const item = result[index];
-                        const files = [];
-                        if (item.isDirectory()) {
-                            folders.push(item);
+
+        RNFS.exists(mainPath).then((response) => {
+            if (!response) {
+                RNFS.mkdir(mainPath).then((response) => {
+                    this.setState({
+                        data: [],
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                })
+            } else {
+                RNFS.readDir(mainPath)
+                .then((result) => {
+                    const folders = [];
+                    if (result != undefined && result.length > 0) {
+                        for (index in result) {
+                            const item = result[index];
+                            const files = [];
+                            if (item.isDirectory()) {
+                                folders.push(item);
+                            }
                         }
-                    }
-                    if (folders.length > 0) {
-                        this.setState({
-                            data: folders,
-                            isLoading: false,
-                            refreshing: false,
-                        })
+                        if (folders.length > 0) {
+                            this.setState({
+                                data: folders,
+                                isLoading: false,
+                                refreshing: false,
+                            })
+                        }
+                        else {
+                            this.setState({
+                                data: [],
+                                isLoading: false,
+                                refreshing: false,
+                            })
+                        }
                     }
                     else {
                         this.setState({
@@ -127,24 +109,19 @@ export default class Merchant extends Component {
                             refreshing: false,
                         })
                     }
-                }
-                else {
+                })
+                .catch(err => {
+                    console.log('err in reading files');
+                    console.log(err);
                     this.setState({
                         data: [],
                         isLoading: false,
                         refreshing: false,
                     })
-                }
-            })
-            .catch(err => {
-                console.log('err in reading files');
-                console.log(err);
-                this.setState({
-                    data: [],
-                    isLoading: false,
-                    refreshing: false,
                 })
-            })
+            }
+        })
+        
     };
 
     renderItem({ item }) {
@@ -189,8 +166,7 @@ export default class Merchant extends Component {
                         />
                     </Item>
                 </Header>
-                <ScrollView>
-                    <FlatList
+                <FlatList
                         data={this.state.data}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={this.renderItem.bind(this)}
@@ -200,7 +176,6 @@ export default class Merchant extends Component {
                         onEndReached={this.handleLoadMore}
                         onEndReachedThreshold={50}
                     />
-                </ScrollView>
                 <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera({ directory: null }) }}>
                     <Icon name={"camera"}
                         size={30}

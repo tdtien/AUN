@@ -141,7 +141,7 @@ export default class Login extends Component {
                   </Item>
                   <ListItem noBorder>
                     <Body>
-                      <Button info block onPress={() => this.handleLogin()}>
+                      <Button info block onPress={() => Actions.merchant()}>
                         <Text>Sign In</Text>
                       </Button>
                     </Body>
