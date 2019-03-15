@@ -15,13 +15,15 @@ import {
   Root,
   Spinner
 } from "native-base";
-import { StyleSheet, Image, StatusBar, ImageBackground } from "react-native";
+import { StyleSheet, Image, StatusBar } from "react-native";
 import { Actions } from "react-native-router-flux";
 import Images from "../../assets/images";
 import { validateEmail } from "../../commons/validation";
 import { requestLogin } from "../../api/accountApi";
+import { connect } from "react-redux";
+import { loginAccount } from "../../actions/account";
 
-export default class Login extends Component {
+class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -49,8 +51,8 @@ export default class Login extends Component {
         buttonText: "Okay"
       });
     } else {
-      this.setState({ isLoading: false });
       if (!validateEmail(this.state.email)) {
+        this.setState({ isLoading: false });
         Toast.show({
           text: "Your email address is incorrect",
           type: "danger",
@@ -58,9 +60,19 @@ export default class Login extends Component {
         });
       } else {
         requestLogin(this.state.email, this.state.password).then(res => {
-          console.log(res);
-          Actions.merchant();
+          this.setState({ isLoading: false, email: '', password: '' });
+          if (res.hasOwnProperty('token')) {
+            this.props.login({id: res.id, token: res.token});
+            Actions.merchant();
+          } else {
+            Toast.show({
+              text: res.msg,
+              type: "danger",
+              buttonText: "Okay"
+            });
+          }
         }).catch(error => {
+          this.setState({ isLoading: false, email: '', password: '' });
           console.log(error);
         })
       }
@@ -141,7 +153,7 @@ export default class Login extends Component {
                   </Item>
                   <ListItem noBorder>
                     <Body>
-                      <Button info block onPress={() => Actions.merchant()}>
+                      <Button info block onPress={() => this.handleLogin()}>
                         <Text>Sign In</Text>
                       </Button>
                     </Body>
@@ -202,3 +214,24 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 });
+
+const mapDispatchToProps = dispatch => {
+  return {
+    login: item => {
+      dispatch(loginAccount(item));
+    }
+  };
+};
+
+const mapStateToProps = state => {
+  return {
+    id: state.account.id,
+    token: state.account.token,
+    isLoggedIn: state.account.isLoggedIn
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login);

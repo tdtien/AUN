@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 const userAPI = 'https://aun-api.herokuapp.com/user';
 const loginURL = `${userAPI}/login`;
 const registerURL = `${userAPI}/register`;
@@ -11,9 +9,20 @@ export async function requestLogin(email, password) {
     }
     var infoJSON = JSON.stringify(info);
     return new Promise((resolve, reject) => {
-        axios.post(loginURL, infoJSON, {headers: {'Content-Type': 'application/json'}})
-        .then(res => resolve(res))
-        .catch(error => reject(error));
+        fetch('https://aun-api.herokuapp.com/user/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: infoJSON
+        })
+            .then(response => response.json())
+            .then((responseJson) => {
+                resolve(responseJson);
+            })
+            .catch((error) => {
+                reject(error);
+            })
     })
 }
 

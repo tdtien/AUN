@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Router, Stack, Scene, Drawer } from 'react-native-router-flux';
+import { Router, Stack, Scene, Drawer, Actions } from 'react-native-router-flux';
 import Login from './src/components/Login/Login';
 import Register from './src/components/Register/Register'
 import Camera from './src/components/Camera/Camera';
