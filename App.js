@@ -7,6 +7,7 @@ import ImageModal from './src/components/ImageModal/ImageModal';
 import Merchant from './src/components/Merchant/Merchant';
 import MerchantDetail from './src/components/Merchant/MerchantDetail';
 import SideMenu from './src/components/SideMenu/SideMenu';
+import PDFViewer from './src/components/PDFViewer/PDFViewer';
 
 export default class App extends Component {
   render() {
@@ -46,6 +47,10 @@ export default class App extends Component {
           <Scene
             key="merchantDetail"
             component={MerchantDetail}
+          />
+           <Scene
+            key="pdfViewer"
+            component={PDFViewer}
           />
         </Stack>
       </Router>
