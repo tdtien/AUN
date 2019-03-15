@@ -1,7 +1,16 @@
 import React from 'react';
-import { StyleSheet, Dimensions, View } from 'react-native';
-
+import { StyleSheet, Dimensions, View, TouchableOpacity } from 'react-native';
+import {
+    Header,
+    Left,
+    Body,
+    Button,
+    Title,
+    Right,
+} from "native-base";
 import Pdf from 'react-native-pdf';
+import Icon from 'react-native-vector-icons/FontAwesome'
+import { Actions } from "react-native-router-flux";
 
 export default class PDFViewer extends React.Component {
     constructor(props) {
@@ -10,17 +19,33 @@ export default class PDFViewer extends React.Component {
     }
 
     render() {
-        const source = {uri:'http://samples.leanpub.com/thereactnativebook-sample.pdf',cache:true};
-        //const source = require('./test.pdf');  // ios only
-        //const source = {uri:'bundle-assets://test.pdf'};
-
-        //const source = {uri:'file:///sdcard/test.pdf'};
-        //const source = {uri:"data:application/pdf;base64,..."};
-
-        // const source = {uri: `${this.props.filePath}`}
+        const source = {uri: this.props.filePath};
 
         return (
             <View style={styles.container}>
+            <Header
+                    androidStatusBarColor="#2196F3"
+                    style={{ backgroundColor: "#2196F3" }}
+                    hasTabs
+                >
+                    <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
+                        <Icon
+                            name='chevron-left'
+                            size={25}
+                            color='white'
+                        />
+                    </TouchableOpacity>
+                    <Body style={{ flex: 1 }}>
+                        <Title style={{ alignSelf: "center" }}>{this.props.fileName}</Title>
+                    </Body>
+                    <TouchableOpacity style={styles.headerButton} onPress={() => null} >
+                        <Icon
+                            name='upload'
+                            size={30}
+                            color='white'
+                        />
+                    </TouchableOpacity>
+                </Header>
                 <Pdf
                     source={source}
                     onLoadComplete={(numberOfPages,filePath)=>{
@@ -41,12 +66,18 @@ export default class PDFViewer extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        marginTop: 25,
+        borderTopWidth: 0, 
+        borderBottomWidth: 0,
+        backgroundColor: '#F7F5F5'
     },
     pdf: {
         flex:1,
         width:Dimensions.get('window').width,
+    },
+    headerButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingLeft: 5,
+        paddingRight: 10
     }
 });
