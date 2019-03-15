@@ -103,6 +103,36 @@ export default class MerchantDetail extends Component {
         );
     }
 
+    fileToBase64(uri) {
+        let base64 = '';
+        RNFS.readFile(uri, 'base64').then((response) => {
+            base64 = response;
+            console.log('base64: ' + base64);
+        }).catch((error) => {
+            console.log('error: ' + error);
+        })
+    }
+
+    handleExport2Pdf = () => {
+        var x = [];
+        x.push("base64");
+        fetch('https://aun-api.herokuapp.com/user/convert2Pdf2', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NTI3MDU1NjMsImVtYWlsIjoiMTUxMjY1NUBzdHVkZW50LmhjbXVzLmVkdS52biJ9.p6fL6_yQxBRGLz7HDxH87cElf1KzdwllgmUZv3D9FeY'
+            },
+            body: JSON.stringify(x)
+        })
+            .then((response) => response.json())
+            .then((responseJson) => {
+                console.log(responseJson);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
     render() {
         return (
             <View style={{ borderTopWidth: 0, borderBottomWidth: 0, flex: 1, backgroundColor: '#F7F5F5' }}>
