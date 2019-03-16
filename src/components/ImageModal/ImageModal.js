@@ -24,7 +24,7 @@ export default class ImageModal extends Component {
 
         let imageName = milliseconds + ".jpg";
         if (directory === (undefined || null)) {
-            let folderName = `New Doc ${milliseconds}`;
+            let folderName = `New_Doc_${milliseconds}`;
             let folderPath = mainPath + "/" + folderName;
             RNFS.mkdir(folderPath).then(function (response) {
                 RNFS.writeFile(folderPath + "/" + imageName, data, "base64")

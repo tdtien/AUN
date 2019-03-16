@@ -25,7 +25,6 @@ function fileToBase64(uri) {
     console.log('uri: ' + uri);
     return new Promise((resolve, reject) => {
         RNFS.readFile(uri, 'base64').then((response) => {
-            // console.log('response: ' + response);
             resolve(response);
         }).catch((error) => {
             console.log('error: ' + error);
@@ -35,7 +34,7 @@ function fileToBase64(uri) {
 
 }
 
-async function folderToBase64(files: Array) {
+async function folderToBase64(files) {
     var array = [];
     for (let item of files) {
         await fileToBase64(`file://${item.path}`)
@@ -55,8 +54,6 @@ async function folderToBase64(files: Array) {
 export default class MerchantDetail extends Component {
     constructor(props) {
         super(props);
-        console.log('Path: ' + this.props.folderPath);
-        // console.log('Token in detail: ' + this.props.token);
         this.state = {
             data: [],
             columns: 2,
@@ -67,6 +64,10 @@ export default class MerchantDetail extends Component {
     }
 
     componentDidMount() {
+        this.makeRemoteRequest();
+    }
+
+    componentWillUpdate() {
         this.makeRemoteRequest();
     }
 

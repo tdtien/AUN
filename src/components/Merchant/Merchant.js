@@ -61,6 +61,10 @@ export default class Merchant extends Component {
         //
     };
 
+    componentWillUpdate() {
+        this.makeRemoteRequest();
+    }
+
     renderFooter = () => {
         if (!this.state.isLoading) return null;
         return (
