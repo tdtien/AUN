@@ -7,7 +7,8 @@ import {
     Alert,
     ScrollView,
     TouchableOpacity,
-    Text
+    Text,
+    BackHandler
 } from "react-native";
 import { Item, Icon as IconNB, Input, Header } from "native-base";
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -32,7 +33,18 @@ export default class Merchant extends Component {
         };
     }
     componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.makeRemoteRequest();
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        if (Actions.currentScene === '_merchant')
+            return true;
+        return false;
     }
 
     handleRefresh = () => {
