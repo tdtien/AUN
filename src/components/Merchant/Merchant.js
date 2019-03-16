@@ -20,6 +20,7 @@ import { AppCommon } from "../../commons/commons";
 export default class Merchant extends Component {
     constructor(props) {
         super(props);
+        // console.log('Token in merchant: ' + this.props.token);
         this.state = {
             isLoading: true,
             data: [],

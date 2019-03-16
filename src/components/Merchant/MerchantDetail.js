@@ -56,6 +56,7 @@ export default class MerchantDetail extends Component {
     constructor(props) {
         super(props);
         console.log('Path: ' + this.props.folderPath);
+        // console.log('Token in detail: ' + this.props.token);
         this.state = {
             data: [],
             columns: 2,
@@ -136,7 +137,6 @@ export default class MerchantDetail extends Component {
     }
 
     handleExport2Pdf = () => {
-        let x = [];
         folderToBase64(this.state.data)
             .then(result => {
                 console.log('Array: ' + result);
@@ -144,7 +144,7 @@ export default class MerchantDetail extends Component {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NTI3MjQyMjQsImVtYWlsIjoiMTUxMjY1NUBzdHVkZW50LmhjbXVzLmVkdS52biJ9.tCP20OKFMw4je3rBrMuPd9suG9-c77eSeodWtSyuNA4'
+                        'authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NTI3OTY1MzEsImVtYWlsIjoiMTUxMjY1NUBzdHVkZW50LmhjbXVzLmVkdS52biJ9.ocJG2qEqQ7gc5yFaSyZKovux-u3_ziNzykv6bNvnLiU'
                     },
                     body: JSON.stringify(result)
                 })
@@ -156,7 +156,7 @@ export default class MerchantDetail extends Component {
                         })
                         let folderPath = RNFS.ExternalDirectoryPath + AppCommon.pdf_dir;
                         // let filePath = folderPath + "/" + this.props.folderName + ".pdf";
-                        let fileName = 'file.pdf';
+                        let fileName = this.props.folderName + ".pdf";
                         let filePath = folderPath + "/" + fileName;
                         RNFS.exists(folderPath).then((response) => {
                             if (!response) {
@@ -164,6 +164,7 @@ export default class MerchantDetail extends Component {
                                     RNFS.writeFile(filePath, this.state.byteArray, "base64")
                                         .then(function (response) {
                                             console.log('Pdf is saved');
+                                            // Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, token: this.props.token });
                                             Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName });
                                         }).catch(function (error) {
                                             console.log(error);
@@ -173,6 +174,7 @@ export default class MerchantDetail extends Component {
                                 RNFS.writeFile(filePath, this.state.byteArray, "base64")
                                     .then(function (response) {
                                         console.log('Pdf is saved');
+                                        // Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, token: this.props.token  });
                                         Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName });
                                     }).catch(function (error) {
                                         console.log(error);

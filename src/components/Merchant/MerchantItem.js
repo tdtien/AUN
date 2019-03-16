@@ -24,7 +24,7 @@ export default class MerchantItem extends Component {
     }
 
     handleClickItem(path) {
-        Actions.merchantDetail({ folderPath: path, folderName: this.props.item.name })
+        Actions.merchantDetail({ folderPath: path, folderName: this.props.item.name})
     }
 
     componentDidMount() {
