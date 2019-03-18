@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Router, Stack, Scene, Drawer, Actions } from 'react-native-router-flux';
+import { Router, Stack, Scene, Drawer } from 'react-native-router-flux';
 import Login from './src/components/Login/Login';
 import Register from './src/components/Register/Register'
 import Camera from './src/components/Camera/Camera';
@@ -8,8 +8,10 @@ import Merchant from './src/components/Merchant/Merchant';
 import MerchantDetail from './src/components/Merchant/MerchantDetail';
 import SideMenu from './src/components/SideMenu/SideMenu';
 import PDFViewer from './src/components/PDFViewer/PDFViewer';
+import { connect } from "react-redux";
 
-export default class App extends Component {
+
+class App extends Component {
   render() {
     return (
       <Router>
@@ -17,6 +19,7 @@ export default class App extends Component {
           <Scene
             key="login"
             component={Login}
+            initial={!this.props.isLoggedIn}
           />
           <Scene
             key="register"
@@ -36,7 +39,7 @@ export default class App extends Component {
             key="drawerMenu"
             contentComponent={SideMenu}
             drawerWidth={300}
-            initial
+            initial={this.props.isLoggedIn}
           >
             <Scene
               hideNavBar
@@ -48,7 +51,7 @@ export default class App extends Component {
             key="merchantDetail"
             component={MerchantDetail}
           />
-           <Scene
+          <Scene
             key="pdfViewer"
             component={PDFViewer}
           />
@@ -57,3 +60,13 @@ export default class App extends Component {
     );
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    id: state.account.id,
+    token: state.account.token,
+    isLoggedIn: state.account.isLoggedIn
+  };
+};
+
+export default connect(mapStateToProps)(App);
