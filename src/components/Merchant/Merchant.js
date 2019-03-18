@@ -41,6 +41,10 @@ export default class Merchant extends Component {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.makeRemoteRequest();
+    }
+
     handleBackButton() {
         if (Actions.currentScene === '_merchant')
             return true;
@@ -60,10 +64,6 @@ export default class Merchant extends Component {
     handleLoadMore = () => {
         //
     };
-
-    componentWillUpdate() {
-        this.makeRemoteRequest();
-    }
 
     renderFooter = () => {
         if (!this.state.isLoading) return null;
@@ -94,22 +94,30 @@ export default class Merchant extends Component {
                 })
             } else {
                 RNFS.readDir(mainPath)
-                .then((result) => {
-                    const folders = [];
-                    if (result != undefined && result.length > 0) {
-                        for (index in result) {
-                            const item = result[index];
-                            const files = [];
-                            if (item.isDirectory()) {
-                                folders.push(item);
+                    .then((result) => {
+                        const folders = [];
+                        if (result != undefined && result.length > 0) {
+                            for (index in result) {
+                                const item = result[index];
+                                const files = [];
+                                if (item.isDirectory()) {
+                                    folders.push(item);
+                                }
                             }
-                        }
-                        if (folders.length > 0) {
-                            this.setState({
-                                data: folders,
-                                isLoading: false,
-                                refreshing: false,
-                            })
+                            if (folders.length > 0) {
+                                this.setState({
+                                    data: folders,
+                                    isLoading: false,
+                                    refreshing: false,
+                                })
+                            }
+                            else {
+                                this.setState({
+                                    data: [],
+                                    isLoading: false,
+                                    refreshing: false,
+                                })
+                            }
                         }
                         else {
                             this.setState({
@@ -118,27 +126,19 @@ export default class Merchant extends Component {
                                 refreshing: false,
                             })
                         }
-                    }
-                    else {
+                    })
+                    .catch(err => {
+                        console.log('err in reading files');
+                        console.log(err);
                         this.setState({
                             data: [],
                             isLoading: false,
                             refreshing: false,
                         })
-                    }
-                })
-                .catch(err => {
-                    console.log('err in reading files');
-                    console.log(err);
-                    this.setState({
-                        data: [],
-                        isLoading: false,
-                        refreshing: false,
                     })
-                })
             }
         })
-        
+
     };
 
     renderItem({ item }) {
@@ -184,15 +184,15 @@ export default class Merchant extends Component {
                     </Item>
                 </Header>
                 <FlatList
-                        data={this.state.data}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={this.renderItem.bind(this)}
-                        ListFooterComponent={this.renderFooter}
-                        onRefresh={this.handleRefresh}
-                        refreshing={this.state.refreshing}
-                        onEndReached={this.handleLoadMore}
-                        onEndReachedThreshold={50}
-                    />
+                    data={this.state.data}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={this.renderItem.bind(this)}
+                    ListFooterComponent={this.renderFooter}
+                    onRefresh={this.handleRefresh}
+                    refreshing={this.state.refreshing}
+                    onEndReached={this.handleLoadMore}
+                    onEndReachedThreshold={50}
+                />
                 <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera({ directory: null }) }}>
                     <Icon name={"camera"}
                         size={30}

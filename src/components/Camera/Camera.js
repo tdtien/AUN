@@ -55,7 +55,10 @@ export default class Camera extends Component {
                   }}
                 >
                   <TouchableOpacity
-                    onPress={() => Actions.pop()}
+                    onPress={() => {
+                      setTimeout(()=> {Actions.refresh({refresh: true})}, 500); 
+                      Actions.pop();
+                    }}
                     style={styles.button}
                   >
                     <Icon name="arrow-left" size={30} color="#fff" />

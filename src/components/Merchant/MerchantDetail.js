@@ -67,7 +67,7 @@ export default class MerchantDetail extends Component {
         this.makeRemoteRequest();
     }
 
-    componentWillUpdate() {
+    componentWillReceiveProps(nextProps) {
         this.makeRemoteRequest();
     }
 
