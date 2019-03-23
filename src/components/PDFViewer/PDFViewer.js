@@ -11,8 +11,9 @@ import {
 import Pdf from 'react-native-pdf';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Actions } from "react-native-router-flux";
+import {connect} from 'react-redux';
 
-export default class PDFViewer extends React.Component {
+class PDFViewer extends React.Component {
     constructor(props) {
         super(props);
         console.log('File Path: ' + this.props.filePath);
@@ -26,13 +27,12 @@ export default class PDFViewer extends React.Component {
             name: this.props.fileName,
             type: 'multipart/form-data'
         });
-        console.log('aaaaaaaaa');
         fetch('https://aun-api.herokuapp.com/user/uploadfile', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'multipart/form-data',
-                'authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NTI3OTc3MjgsImVtYWlsIjoiMTUxMjY1NUBzdHVkZW50LmhjbXVzLmVkdS52biJ9.facwdGj_PqhqyYWkd4B8mExf9Gun0RHagMCUemuhF1k'
+                'authorization': this.props.token
             },
             body: data
         })
@@ -96,6 +96,14 @@ export default class PDFViewer extends React.Component {
         )
     }
 }
+
+const mapStateToProps = state => {
+    return {
+      token: state.account.token,
+    };
+  };
+  
+export default connect(mapStateToProps)(PDFViewer);
 
 const styles = StyleSheet.create({
     container: {

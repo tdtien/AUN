@@ -20,6 +20,7 @@ import MerchantDetailItem from "./MerchantDetailItem";
 import { merchantStyles } from "./MerchantStyle";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
+import {connect} from 'react-redux'
 
 function fileToBase64(uri) {
     console.log('uri: ' + uri);
@@ -51,7 +52,7 @@ async function folderToBase64(files) {
 }
 
 
-export default class MerchantDetail extends Component {
+class MerchantDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -145,7 +146,7 @@ export default class MerchantDetail extends Component {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'authorization': 'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NTI3OTY1MzEsImVtYWlsIjoiMTUxMjY1NUBzdHVkZW50LmhjbXVzLmVkdS52biJ9.ocJG2qEqQ7gc5yFaSyZKovux-u3_ziNzykv6bNvnLiU'
+                        'authorization': this.props.token
                     },
                     body: JSON.stringify(result)
                 })
@@ -235,6 +236,14 @@ export default class MerchantDetail extends Component {
         );
     }
 }
+
+const mapStateToProps = state => {
+    return {
+      token: state.account.token,
+    };
+  };
+  
+export default connect(mapStateToProps)(MerchantDetail);
 
 const styles = StyleSheet.create({
     headerButton: {

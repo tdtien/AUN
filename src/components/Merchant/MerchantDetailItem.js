@@ -16,7 +16,6 @@ let itemWidth = 0;
 export default class MerchantDetailItem extends Component {
     constructor(props) {
         super(props);
-        console.log('Detail Item: ' + this.props.item);
     }
 
     render() {
