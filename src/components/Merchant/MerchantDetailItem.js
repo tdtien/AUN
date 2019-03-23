@@ -1,14 +1,11 @@
 import React, { Component } from "react";
 import {
     View,
-    ImageBackground,
-    Text,
     StyleSheet,
-    TouchableHighlight,
-    Alert,
+    TouchableOpacity,
     Image, Dimensions,
 } from "react-native";
-import Icon from 'react-native-vector-icons/FontAwesome'
+import { Actions } from "react-native-router-flux";
 
 const screenWidth = Dimensions.get('window').width;
 let itemPadding = 10;
@@ -18,12 +15,24 @@ export default class MerchantDetailItem extends Component {
         super(props);
     }
 
+    handleImageModal = () => {
+        var dataProps = [];
+        for (var i = 0; i < this.props.data.length; i++) {
+            let image = { url: `file://${this.props.data[i].path}`, base64: this.props.dataBase64[i] };
+            dataProps.push(image);
+        }
+        console.log(this.props.dataBase64.length)
+        console.log(dataProps);
+        console.log(this.props.data.indexOf(this.props.item));
+        return dataProps;
+    }
+
     render() {
         itemWidth = (screenWidth - itemPadding * 4) / this.props.columns;
         return (
-            <View style={styles.container}>
+            <TouchableOpacity style={styles.container} onPress={() => Actions.imageModal({ images: this.handleImageModal(), index: this.props.data.indexOf(this.props.item) })}>
                 <Image style={{ width: itemWidth, height: itemWidth * 1.4 }} source={{ isStatic: true, uri: `file://${this.props.item.path}` }} />
-            </View>
+            </TouchableOpacity>
         );
     }
 }

@@ -14,13 +14,13 @@ import {
     Title,
     Right,
 } from "native-base";
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Actions } from "react-native-router-flux";
 import MerchantDetailItem from "./MerchantDetailItem";
 import { merchantStyles } from "./MerchantStyle";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 
 function fileToBase64(uri) {
     console.log('uri: ' + uri);
@@ -47,7 +47,6 @@ async function folderToBase64(files) {
                 reject(error);
             })
     }
-    console.log('Array: ' + array);
     return array;
 }
 
@@ -60,7 +59,8 @@ class MerchantDetail extends Component {
             columns: 2,
             isLoading: false,
             refreshing: false,
-            byteArray: {}
+            byteArray: {},
+            dataBase64: []
         }
     }
 
@@ -89,6 +89,12 @@ class MerchantDetail extends Component {
                             data: files,
                             isLoading: false,
                             refreshing: false,
+                        })
+                        folderToBase64(files).then(res => {
+                            console.log(res.length);
+                            this.setState({dataBase64: res})
+                        }).catch(err => {
+                            console.log(err);
                         })
                     }
                     else {
@@ -134,6 +140,8 @@ class MerchantDetail extends Component {
             <MerchantDetailItem
                 item={item}
                 columns={this.state.columns}
+                data={this.state.data}
+                dataBase64 = {this.state.dataBase64}
             />
         );
     }
@@ -202,21 +210,13 @@ class MerchantDetail extends Component {
                     hasTabs
                 >
                     <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
-                        <Icon
-                            name='chevron-left'
-                            size={25}
-                            color='white'
-                        />
+                        <Icon name="arrow-left" size={30} color="#fff" />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center" }}>{this.props.folderName}</Title>
                     </Body>
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
-                        <Icon
-                            name='file-pdf-o'
-                            size={30}
-                            color='white'
-                        />
+                        <Icon name="export" size={30} color="#fff" />
                     </TouchableOpacity>
                 </Header>
                 <FlatList
@@ -239,10 +239,10 @@ class MerchantDetail extends Component {
 
 const mapStateToProps = state => {
     return {
-      token: state.account.token,
+        token: state.account.token,
     };
-  };
-  
+};
+
 export default connect(mapStateToProps)(MerchantDetail);
 
 const styles = StyleSheet.create({
