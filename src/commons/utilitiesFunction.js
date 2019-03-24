@@ -13,3 +13,31 @@ export function createFolder(mainPath) {
         return true;
     })
 }
+
+export function fileToBase64(uri) {
+    console.log('uri: ' + uri);
+    return new Promise((resolve, reject) => {
+        RNFS.readFile(uri, 'base64').then((response) => {
+            resolve(response);
+        }).catch((error) => {
+            console.log('error: ' + error);
+            reject(error);
+        })
+    })
+
+}
+
+export async function folderToBase64(files) {
+    var array = [];
+    for (let item of files) {
+        await fileToBase64(`file://${item.path}`)
+            .then(result => {
+                // console.log('Result: ' + result);
+                array.push(result);
+            }).catch(error => {
+                console.log('Error: ' + error);
+                reject(error);
+            })
+    }
+    return array;
+}

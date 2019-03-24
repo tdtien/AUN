@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, ActivityIndicator, View, TouchableOpacity, Alert } from "react-native";
+import { Modal, ActivityIndicator, View, TouchableOpacity, Alert, StatusBar } from "react-native";
 import ImageViewer from "react-native-image-zoom-viewer";
 import { Actions } from "react-native-router-flux";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -36,47 +36,50 @@ export default class ImageModal extends Component {
             })
         } else {
             RNFS.writeFile(directory + "/" + imageName, data, "base64")
-            .then(function (response) {
-                Alert.alert('Successful!', 'Image has been saved.');
-            }).catch(function (error) {
-                console.log(error);
-            })
+                .then(function (response) {
+                    Alert.alert('Successful!', 'Image has been saved.');
+                }).catch(function (error) {
+                    console.log(error);
+                })
         }
     }
 
     render() {
         return (
-            <Modal visible={this.state.visible}>
-                <ImageViewer
-                    enableSwipeDown
-                    imageUrls={this.props.images}
-                    loadingRender={() => (
-                        <ActivityIndicator color="#424242" animating />
-                    )}
-                    index={this.props.index}
-                    renderHeader={() => (
-                        <View style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between"
-                        }}
-                        >
-                            <TouchableOpacity
-                                onPress={() => Actions.pop()}
-                                style={{ margin: 15 }}
+            <View>
+                <StatusBar backgroundColor="black" />
+                <Modal visible={this.state.visible}>
+                    <ImageViewer
+                        enableSwipeDown
+                        imageUrls={this.props.images}
+                        loadingRender={() => (
+                            <ActivityIndicator color="#424242" animating />
+                        )}
+                        index={this.props.index}
+                        renderHeader={() => (
+                            <View style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between"
+                            }}
                             >
-                                <Icon name="arrow-left" size={30} color="#fff" />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => this.handleSave()}
-                                style={{ margin: 15 }}
-                            >
-                                <Icon name="content-save" size={30} color="#fff" />
-                            </TouchableOpacity>
-                        </View>
-                    )}
-                    onSwipeDown={() => Actions.pop()}
-                />
-            </Modal>
+                                <TouchableOpacity
+                                    onPress={() => Actions.pop()}
+                                    style={{ margin: 15 }}
+                                >
+                                    <Icon name="arrow-left" size={30} color="#fff" />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => this.handleSave()}
+                                    style={{ margin: 15 }}
+                                >
+                                    <Icon name="content-save" size={30} color="#fff" />
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        onSwipeDown={() => Actions.pop()}
+                    />
+                </Modal>
+            </View>
         );
     }
 }

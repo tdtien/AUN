@@ -21,35 +21,7 @@ import { merchantStyles } from "./MerchantStyle";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
 import { connect } from 'react-redux'
-
-function fileToBase64(uri) {
-    console.log('uri: ' + uri);
-    return new Promise((resolve, reject) => {
-        RNFS.readFile(uri, 'base64').then((response) => {
-            resolve(response);
-        }).catch((error) => {
-            console.log('error: ' + error);
-            reject(error);
-        })
-    })
-
-}
-
-async function folderToBase64(files) {
-    var array = [];
-    for (let item of files) {
-        await fileToBase64(`file://${item.path}`)
-            .then(result => {
-                // console.log('Result: ' + result);
-                array.push(result);
-            }).catch(error => {
-                console.log('Error: ' + error);
-                reject(error);
-            })
-    }
-    return array;
-}
-
+import { folderToBase64 } from "../../commons/utilitiesFunction";
 
 class MerchantDetail extends Component {
     constructor(props) {
@@ -59,8 +31,7 @@ class MerchantDetail extends Component {
             columns: 2,
             isLoading: false,
             refreshing: false,
-            byteArray: {},
-            dataBase64: []
+            byteArray: {}
         }
     }
 
@@ -89,12 +60,6 @@ class MerchantDetail extends Component {
                             data: files,
                             isLoading: false,
                             refreshing: false,
-                        })
-                        folderToBase64(files).then(res => {
-                            console.log(res.length);
-                            this.setState({dataBase64: res})
-                        }).catch(err => {
-                            console.log(err);
                         })
                     }
                     else {
@@ -141,7 +106,6 @@ class MerchantDetail extends Component {
                 item={item}
                 columns={this.state.columns}
                 data={this.state.data}
-                dataBase64 = {this.state.dataBase64}
             />
         );
     }
