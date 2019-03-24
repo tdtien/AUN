@@ -22,6 +22,7 @@ import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
 import { connect } from 'react-redux'
 import { folderToBase64 } from "../../commons/utilitiesFunction";
+import Loader from '../Loader/Loader'
 
 class MerchantDetail extends Component {
     constructor(props) {
@@ -111,6 +112,9 @@ class MerchantDetail extends Component {
     }
 
     handleExport2Pdf = () => {
+        this.setState({
+            isLoading: true
+        })
         folderToBase64(this.state.data)
             .then(result => {
                 console.log('Array: ' + result);
@@ -126,7 +130,8 @@ class MerchantDetail extends Component {
                     .then((responseJson) => {
                         console.log('Export to pdf');
                         this.setState({
-                            byteArray: responseJson.dataBase64
+                            byteArray: responseJson.dataBase64,
+                            isLoading: false
                         })
                         let folderPath = RNFS.ExternalDirectoryPath + AppCommon.pdf_dir;
                         // let filePath = folderPath + "/" + this.props.folderName + ".pdf";
@@ -157,9 +162,15 @@ class MerchantDetail extends Component {
                         })
                     })
                     .catch((error) => {
+                        this.setState({
+                            isLoading: false
+                        })
                         console.error(error);
                     });
             }).catch(error => {
+                this.setState({
+                    isLoading: false
+                })
                 console.log('Error when convert to pdf: ' + error);
                 Alert.alert('Error', 'Error when convert to pdf');
             })
@@ -196,6 +207,9 @@ class MerchantDetail extends Component {
                         size={25}
                         color="white" />
                 </TouchableOpacity>
+                {  
+                    <Loader loading={this.state.isLoading}/>
+                }
             </View>
         );
     }

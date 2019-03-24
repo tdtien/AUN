@@ -11,16 +11,23 @@ import {
 import Pdf from 'react-native-pdf';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Actions } from "react-native-router-flux";
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
+import Loader from '../Loader/Loader'
 
 class PDFViewer extends React.Component {
     constructor(props) {
         super(props);
         console.log('File Path: ' + this.props.filePath);
         // console.log('Token in pdf: ' + this.props.token);
+        this.state = {
+            isLoading: false
+        }
     }
 
     handleUploadPdf = () => {
+        this.setState({
+            isLoading: true
+        })
         var data = new FormData();
         data.append('file', {
             uri: this.props.filePath,
@@ -38,6 +45,9 @@ class PDFViewer extends React.Component {
         })
             .then((response) => response.json())
             .then((responseJson) => {
+                this.setState({
+                    isLoading: false
+                })
                 console.log(responseJson);
                 if (responseJson.msg === 'Upload file successful')
                     Alert.alert('Success', responseJson.msg);
@@ -91,7 +101,11 @@ class PDFViewer extends React.Component {
                     onError={(error) => {
                         console.log(error);
                     }}
-                    style={styles.pdf} />
+                    style={styles.pdf}
+                />
+                {
+                    <Loader loading={this.state.isLoading} />
+                }
             </View>
         )
     }
@@ -99,10 +113,10 @@ class PDFViewer extends React.Component {
 
 const mapStateToProps = state => {
     return {
-      token: state.account.token,
+        token: state.account.token,
     };
-  };
-  
+};
+
 export default connect(mapStateToProps)(PDFViewer);
 
 const styles = StyleSheet.create({
