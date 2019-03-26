@@ -193,6 +193,9 @@ class MerchantDetail extends Component {
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
                         <Icon name="export" size={30} color="#fff" />
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.headerLastButton} onPress={() => null} >
+                        <Icon name="dots-vertical" size={30} color="#fff" />
+                    </TouchableOpacity>
                 </Header>
                 <FlatList
                     data={this.state.data}
@@ -207,8 +210,8 @@ class MerchantDetail extends Component {
                         size={25}
                         color="white" />
                 </TouchableOpacity>
-                {  
-                    <Loader loading={this.state.isLoading}/>
+                {
+                    <Loader loading={this.state.isLoading} />
                 }
             </View>
         );
@@ -228,6 +231,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingLeft: 5,
-        paddingRight: 10
+        paddingRight: 5
+    },
+    headerLastButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingLeft: 5,
+        paddingRight: 0
     }
 });
