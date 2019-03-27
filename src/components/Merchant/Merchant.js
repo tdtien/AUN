@@ -17,6 +17,7 @@ import { Actions } from "react-native-router-flux";
 import { merchantStyles } from "./MerchantStyle";
 import RNFS from "react-native-fs";
 import { AppCommon } from "../../commons/commons";
+import CameraButton from "./CameraButton";
 
 export default class Merchant extends Component {
     constructor(props) {
@@ -193,11 +194,9 @@ export default class Merchant extends Component {
                     onEndReached={this.handleLoadMore}
                     onEndReachedThreshold={50}
                 />
-                <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera({ directory: null }) }}>
-                    <Icon name={"camera"}
-                        size={30}
-                        color="white" />
-                </TouchableOpacity>
+                <CameraButton
+                    folderPath={null}
+                />
             </View>
         );
     }

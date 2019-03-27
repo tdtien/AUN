@@ -23,6 +23,7 @@ import RNFS from "react-native-fs";
 import { connect } from 'react-redux'
 import { folderToBase64 } from "../../commons/utilitiesFunction";
 import Loader from '../Loader/Loader'
+import CameraButton from "./CameraButton";
 
 class MerchantDetail extends Component {
     constructor(props) {
@@ -205,11 +206,9 @@ class MerchantDetail extends Component {
                     refreshing={this.state.refreshing}
                     numColumns={this.state.columns}
                 />
-                <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => { Actions.camera({ directory: this.props.folderPath }) }}>
-                    <Icon name={"camera"}
-                        size={25}
-                        color="white" />
-                </TouchableOpacity>
+                <CameraButton
+                    folderPath={this.props.folderPath}
+                />
                 {
                     <Loader loading={this.state.isLoading} />
                 }

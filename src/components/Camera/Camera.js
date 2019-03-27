@@ -5,6 +5,7 @@ import { Actions } from "react-native-router-flux";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ImagePicker from 'react-native-image-crop-picker';
 import Permissions from 'react-native-permissions'
+import ZoomView from "./ZoomView";
 
 export default class Camera extends Component {
   constructor(props) {
@@ -17,7 +18,8 @@ export default class Camera extends Component {
       imageDisplay: false,
       quality: 1,
       sound: false,
-      soundIcon: "-outline"
+      soundIcon: "-outline",
+      zoom: 0
     };
   }
 
@@ -35,82 +37,89 @@ export default class Camera extends Component {
     return (
       <View style={styles.container}>
         <StatusBar hidden />
-        <RNCamera
-          style={styles.preview}
-          type={RNCamera.Constants.Type.back}
-          flashMode={this.state.flashMode}
-          permissionDialogTitle={'Permission to use camera'}
-          permissionDialogMessage={'We need your permission to use your camera phone'}
-          captureAudio={false}
-          playSoundOnCapture={this.state.sound}
-          ratio="16:9"
+        <ZoomView
+          onZoomStart={() => { }}
+          onZoomEnd={() => { }}
+          onZoomProgress={zoom => this.setState({ zoom: zoom })}
         >
-          {({ camera }) => {
-            return (
-              <View style={{ flex: 1, justifyContent: "space-between" }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between"
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      setTimeout(()=> {Actions.refresh({refresh: true})}, 500); 
-                      Actions.pop();
+          <RNCamera
+            style={styles.preview}
+            type={RNCamera.Constants.Type.back}
+            flashMode={this.state.flashMode}
+            permissionDialogTitle={'Permission to use camera'}
+            permissionDialogMessage={'We need your permission to use your camera phone'}
+            captureAudio={false}
+            playSoundOnCapture={this.state.sound}
+            ratio="16:9"
+            zoom={this.state.zoom}
+          >
+            {({ camera }) => {
+              return (
+                <View style={{ flex: 1, justifyContent: "space-between" }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between"
                     }}
-                    style={styles.button}
                   >
-                    <Icon name="arrow-left" size={30} color="#fff" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => this.changeQuality()}
-                    style={styles.button}
+                    <TouchableOpacity
+                      onPress={() => {
+                        setTimeout(() => { Actions.refresh({ refresh: true }) }, 500);
+                        Actions.pop();
+                      }}
+                      style={styles.button}
+                    >
+                      <Icon name="arrow-left" size={30} color="#fff" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.changeQuality()}
+                      style={styles.button}
+                    >
+                      <Icon
+                        name={"quality-" + this.state.qualityIcon}
+                        size={30}
+                        color="#fff"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.toggleSound()}
+                      style={styles.button}
+                    >
+                      <Icon
+                        name={"bell" + this.state.soundIcon}
+                        size={30}
+                        color="#fff"
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.changeFlashMode()}
+                      style={styles.button}
+                    >
+                      <Icon
+                        name={"flash" + this.state.flashIcon}
+                        size={30}
+                        color="#fff"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "center"
+                    }}
                   >
-                    <Icon
-                      name={"quality-" + this.state.qualityIcon}
-                      size={30}
-                      color="#fff"
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => this.toggleSound()}
-                    style={styles.button}
-                  >
-                    <Icon
-                      name={"bell" + this.state.soundIcon}
-                      size={30}
-                      color="#fff"
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => this.changeFlashMode()}
-                    style={styles.button}
-                  >
-                    <Icon
-                      name={"flash" + this.state.flashIcon}
-                      size={30}
-                      color="#fff"
-                    />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => this.takePicture(camera)}
+                      style={styles.button}
+                    >
+                      <Icon name="circle-slice-8" size={80} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "center"
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={() => this.takePicture(camera)}
-                    style={styles.button}
-                  >
-                    <Icon name="circle-slice-8" size={80} color="#fff" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            );
-          }}
-        </RNCamera>
+              );
+            }}
+          </RNCamera>
+        </ZoomView>
       </View>
     );
   }

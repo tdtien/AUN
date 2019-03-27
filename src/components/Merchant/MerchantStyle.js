@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { AppCommon } from '../../commons/commons';
 
 export const merchantStyles = StyleSheet.create({
     cameraButton: {
@@ -8,7 +9,7 @@ export const merchantStyles = StyleSheet.create({
         bottom: 20,
         right: 20,
         borderRadius: 60,
-        backgroundColor: 'rgb(22,172,143)',
+        backgroundColor: AppCommon.colors,
         alignItems: 'center',
         justifyContent: 'center',
     }
