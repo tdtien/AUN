@@ -3,13 +3,13 @@ package com.aun;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.imagepicker.ImagePickerPackage;
 import org.wonday.pdf.RCTPdfView;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.rnfs.RNFSPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.anyline.RNImageToPDF.RNImageToPdfPackage;
-import org.reactnative.camera.RNCameraPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -30,13 +30,13 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ImagePickerPackage(),
             new RCTPdfView(),
             new RNFetchBlobPackage(),
             new RNFSPackage(),
             new PickerPackage(),
             new VectorIconsPackage(),
-            new RNImageToPdfPackage(),
-            new RNCameraPackage()
+            new RNImageToPdfPackage()
       );
     }
 

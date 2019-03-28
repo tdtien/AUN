@@ -1,12 +1,12 @@
 import RNFS from 'react-native-fs'
+import { Actions } from 'react-native-router-flux';
 
 export function createFolder(mainPath) {
-    RNFS.exists(mainPath).then(function(response) {
-        if (!response)
-        {
-            RNFS.mkdir(mainPath).then(function(response) {
+    RNFS.exists(mainPath).then(function (response) {
+        if (!response) {
+            RNFS.mkdir(mainPath).then(function (response) {
                 return true;
-            }).catch(function(error) {
+            }).catch(function (error) {
                 return false;
             })
         }
@@ -40,4 +40,9 @@ export async function folderToBase64(files) {
             })
     }
     return array;
+}
+
+export function popWithUpdate() {
+    setTimeout(() => { Actions.refresh({ refresh: true }) }, 500);
+    Actions.pop();
 }

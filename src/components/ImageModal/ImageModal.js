@@ -5,6 +5,7 @@ import { Actions } from "react-native-router-flux";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import RNFS from "react-native-fs";
 import { AppCommon } from "../../commons/commons";
+import { popWithUpdate } from "../../commons/utilitiesFunction";
 
 export default class ImageModal extends Component {
     constructor(props) {
@@ -63,7 +64,7 @@ export default class ImageModal extends Component {
                             }}
                             >
                                 <TouchableOpacity
-                                    onPress={() => Actions.pop()}
+                                    onPress={() => popWithUpdate()}
                                     style={{ margin: 15 }}
                                 >
                                     <Icon name="arrow-left" size={30} color="#fff" />
@@ -76,7 +77,7 @@ export default class ImageModal extends Component {
                                 </TouchableOpacity>
                             </View>
                         )}
-                        onSwipeDown={() => Actions.pop()}
+                        onSwipeDown={() => popWithUpdate()}
                     />
                 </Modal>
             </View>
