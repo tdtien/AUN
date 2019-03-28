@@ -9,7 +9,6 @@ import SideMenu from './src/components/SideMenu/SideMenu';
 import PDFViewer from './src/components/PDFViewer/PDFViewer';
 import { connect } from "react-redux";
 
-
 class App extends Component {
   render() {
     return (

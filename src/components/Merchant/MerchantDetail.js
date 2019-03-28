@@ -4,7 +4,7 @@ import {
     FlatList,
     StyleSheet,
     ActivityIndicator,
-    Alert, Dimensions, ScrollView, TouchableOpacity
+    Alert, Dimensions, ScrollView, TouchableOpacity, Text
 } from "react-native";
 import {
     Header,
@@ -24,6 +24,14 @@ import { connect } from 'react-redux'
 import { folderToBase64 } from "../../commons/utilitiesFunction";
 import Loader from '../Loader/Loader'
 import CameraButton from "./CameraButton";
+import {
+    MenuContext,
+    Menu,
+    MenuOptions,
+    MenuOption,
+    MenuTrigger
+} from 'react-native-popup-menu';
+
 
 class MerchantDetail extends Component {
     constructor(props) {
@@ -177,6 +185,10 @@ class MerchantDetail extends Component {
             })
     }
 
+    handleSelectMultipleImages = () => {
+
+    }
+
     render() {
         return (
             <View style={{ borderTopWidth: 0, borderBottomWidth: 0, flex: 1, backgroundColor: '#F7F5F5' }}>
@@ -194,9 +206,21 @@ class MerchantDetail extends Component {
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
                         <Icon name="export" size={30} color="#fff" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.headerLastButton} onPress={() => null} >
-                        <Icon name="dots-vertical" size={30} color="#fff" />
-                    </TouchableOpacity>
+                    <View style={styles.headerLastButton}>
+                        <Menu>
+                            <MenuTrigger>
+                                <Icon name="dots-vertical" size={30} color="#fff" />
+                            </MenuTrigger>
+                            <MenuOptions>
+                                <MenuOption onSelect={() => this.handleSelectMultipleImages()}>
+                                    <View style={styles.popupItem}>
+                                        <Icon name="checkbox-marked" size={30} color="#2F4F4F" />
+                                        <Text style={styles.popupItemText}>Select</Text>
+                                    </View>
+                                </MenuOption>
+                            </MenuOptions>
+                        </Menu>
+                    </View>
                 </Header>
                 <FlatList
                     data={this.state.data}
@@ -237,5 +261,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 5,
         paddingRight: 0
+    },
+    popupItem: {
+        flex: 1,
+        flexDirection: 'row',
+        marginVertical: 10,
+        marginHorizontal: 20,
+        alignItems: 'center',
+    },
+    popupItemText: {
+        paddingLeft: 25,
+        fontSize: 17,
+        color: '#2F4F4F'
     }
 });
