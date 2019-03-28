@@ -22,6 +22,7 @@ import { validateEmail } from "../../commons/validation";
 import { requestLogin } from "../../api/accountApi";
 import { connect } from "react-redux";
 import { loginAccount } from "../../actions/account";
+import Loader from "../Loader/Loader";
 
 class Login extends Component {
   constructor(props) {
@@ -51,48 +52,22 @@ class Login extends Component {
         buttonText: "Okay"
       });
     } else {
-      if (!validateEmail(this.state.email)) {
+      requestLogin(this.state.email, this.state.password).then(res => {
         this.setState({ isLoading: false });
-        Toast.show({
-          text: "Your email address is incorrect",
-          type: "danger",
-          buttonText: "Okay"
-        });
-      } else {
-        requestLogin(this.state.email, this.state.password).then(res => {
-          this.setState({ isLoading: false, email: '', password: '' });
-          if (res.hasOwnProperty('token')) {
-            this.props.login({id: res.id, token: res.token});
-            Actions.merchant();
-          } else {
-            Toast.show({
-              text: res.msg,
-              type: "danger",
-              buttonText: "Okay"
-            });
-          }
-        }).catch(error => {
-          this.setState({ isLoading: false, email: '', password: '' });
-          console.log(error);
-        })
-      }
-    }
-  };
-
-  validate = text => {
-    this.setState({ email: text });
-    if (!validateEmail(this.state.email)) {
-      Toast.show({
-        text: "Your email address is incorrect",
-        type: "danger",
-        buttonText: "Okay"
-      });
-    } else {
-      Toast.show({
-        text: "Your email address is correct",
-        type: "success",
-        buttonText: "Okay"
-      });
+        if (res.hasOwnProperty('token')) {
+          this.props.login({ id: res.id, token: res.token });
+          Actions.merchant();
+        } else {
+          Toast.show({
+            text: res.msg,
+            type: "danger",
+            buttonText: "Okay"
+          });
+        }
+      }).catch(error => {
+        this.setState({ isLoading: false });
+        console.log(error);
+      })
     }
   };
 
@@ -124,42 +99,36 @@ class Login extends Component {
               <Image style={styles.logo} source={Images.logo} />
               <Text style={styles.title}>AUN Inspection System</Text>
             </View>
-            {this.state.isLoading ? (
-              <Spinner />
-            ) : (
-                <Form>
-                  <Item floatingLabel>
-                    <Label>Email</Label>
-                    <Input
-                      keyboardType="email-address"
-                      onChangeText={email => this.validate(email)}
-                      onSubmitEditing={() => this.passwordInput._root.focus()}
-                      returnKeyType="next"
-                      autoCapitalize="none"
-                    />
-                  </Item>
-                  <Item floatingLabel last>
-                    <Label>Password</Label>
-                    <Input
-                      autoCapitalize="none"
-                      secureTextEntry
-                      onChangeText={password =>
-                        this.setState({ password: password })
-                      }
-                      getRef={input => (this.passwordInput = input)}
-                      returnKeyType="go"
-                      onSubmitEditing={() => this.handleLogin()}
-                    />
-                  </Item>
-                  <ListItem noBorder>
-                    <Body>
-                      <Button info block onPress={() => this.handleLogin()}>
-                        <Text>Sign In</Text>
-                      </Button>
-                    </Body>
-                  </ListItem>
-                </Form>
-              )}
+            <Form>
+              <Item floatingLabel>
+                <Label>Email</Label>
+                <Input
+                  keyboardType="email-address"
+                  onChangeText={email => this.setState({ email: email })}
+                  onSubmitEditing={() => this.passwordInput._root.focus()}
+                  returnKeyType="next"
+                  autoCapitalize="none"
+                />
+              </Item>
+              <Item floatingLabel last>
+                <Label>Password</Label>
+                <Input
+                  autoCapitalize="none"
+                  secureTextEntry
+                  onChangeText={password => this.setState({ password: password })}
+                  getRef={input => (this.passwordInput = input)}
+                  returnKeyType="go"
+                  onSubmitEditing={() => this.handleLogin()}
+                />
+              </Item>
+              <ListItem noBorder>
+                <Body>
+                  <Button info block onPress={() => this.handleLogin()}>
+                    <Text>Sign In</Text>
+                  </Button>
+                </Body>
+              </ListItem>
+            </Form>
           </Content>
           <View style={styles.registerContainer}>
             <Text style={{ fontSize: 15 }}>Don't have account yet?</Text>
@@ -170,6 +139,7 @@ class Login extends Component {
           {
             (this.state.isSplashScreenVisible === true) ? splashScreen : null
           }
+          <Loader loading={this.state.isLoading} />
         </Container>
       </Root>
     );

@@ -9,7 +9,7 @@ import com.RNFetchBlob.RNFetchBlobPackage;
 import com.rnfs.RNFSPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
-import com.anyline.RNImageToPDF.RNImageToPdfPackage;
+
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -35,8 +35,7 @@ public class MainApplication extends Application implements ReactApplication {
             new RNFetchBlobPackage(),
             new RNFSPackage(),
             new PickerPackage(),
-            new VectorIconsPackage(),
-            new RNImageToPdfPackage()
+            new VectorIconsPackage()
       );
     }
 
