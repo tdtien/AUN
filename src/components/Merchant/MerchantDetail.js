@@ -4,7 +4,7 @@ import {
     FlatList,
     StyleSheet,
     ActivityIndicator,
-    Alert, Dimensions, ScrollView, TouchableOpacity, Text
+    Alert, Dimensions, ScrollView, TouchableOpacity, Text, Image
 } from "react-native";
 import {
     Header,
@@ -16,7 +16,6 @@ import {
 } from "native-base";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Actions } from "react-native-router-flux";
-import MerchantDetailItem from "./MerchantDetailItem";
 import { merchantStyles } from "./MerchantStyle";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
@@ -31,17 +30,23 @@ import {
     MenuOption,
     MenuTrigger
 } from 'react-native-popup-menu';
+import { CheckBox } from 'react-native-elements'
 
-
+const screenWidth = Dimensions.get('window').width;
+const columns = 2;
+const imageMargin = 10;
+const imageWidth = (screenWidth - imageMargin * 4) / columns;
+const checkboxSize = imageWidth / 6;
 class MerchantDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
             data: [],
-            columns: 2,
             isLoading: false,
             refreshing: false,
-            byteArray: {}
+            byteArray: {},
+            isCheckBoxVisible: false,
+            selectedCheckList: [],
         }
     }
 
@@ -110,13 +115,57 @@ class MerchantDetail extends Component {
         );
     };
 
+    handleImageModal = (item) => {
+        folderToBase64(this.state.data).then(response => {
+            var dataProps = [];
+            for (var i = 0; i < this.state.data.length; i++) {
+                let image = { url: `file://${this.state.data[i].path}`, base64: response[i] };
+                dataProps.push(image);
+            }
+            console.log(dataProps);
+            var props = { images: dataProps, index: this.state.data.indexOf(item), mode: "edit" };
+            Actions.imageModal(props);
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+
+    handleSelectMultipleImages = () => {
+        this.setState({
+            isCheckBoxVisible: !this.state.isCheckBoxVisible,
+            selectedCheckList: []
+        })
+    }
+
+
+    handleCheckBoxPressed = (item) => {
+        let tmp = this.state.selectedCheckList;
+        if (tmp.includes(item)) {
+            tmp.splice(tmp.indexOf(item), 1);
+        } else {
+            tmp.push(item);
+        }
+        this.setState({
+            selectedCheckList: tmp
+        });
+    }
+
     renderItem({ item }) {
         return (
-            <MerchantDetailItem
-                item={item}
-                columns={this.state.columns}
-                data={this.state.data}
-            />
+            <TouchableOpacity style={styles.imageItem} onPress={() => this.handleImageModal(item)}>
+                <Image style={{ width: imageWidth, height: imageWidth * 1.4 }} source={{ isStatic: true, uri: `file://${item.path}` }} />
+                {
+                    this.state.isCheckBoxVisible &&
+                    <CheckBox
+                        center
+                        containerStyle={styles.checkbox}
+                        checked={this.state.selectedCheckList.includes(item) ? true : false}
+                        onPress={() => this.handleCheckBoxPressed(item)}
+                        size={checkboxSize}
+                        checkedColor={'white'}
+                    />
+                }
+            </TouchableOpacity>
         );
     }
 
@@ -124,7 +173,8 @@ class MerchantDetail extends Component {
         this.setState({
             isLoading: true
         })
-        folderToBase64(this.state.data)
+        let exportData = (this.state.isCheckBoxVisible) ? this.state.selectedCheckList : this.state.data;
+        folderToBase64(exportData)
             .then(result => {
                 console.log('Array: ' + result);
                 fetch('https://aun-api.herokuapp.com/user/convert2Pdf3', {
@@ -185,11 +235,18 @@ class MerchantDetail extends Component {
             })
     }
 
-    handleSelectMultipleImages = () => {
-
-    }
-
     render() {
+        let checkboxTitle = (!this.state.isCheckBoxVisible) ? 'Select' : 'Deselect'
+        let exportButton = (this.state.isCheckBoxVisible && (this.state.selectedCheckList.length === 0)) ?
+            (
+                <TouchableOpacity disabled={true} style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
+                    <Icon name="export" size={30} color="#B0C4DE" />
+                </TouchableOpacity>
+            ) : (
+                <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
+                    <Icon name="export" size={30} color="#fff" />
+                </TouchableOpacity>
+            )
         return (
             <View style={{ borderTopWidth: 0, borderBottomWidth: 0, flex: 1, backgroundColor: '#F7F5F5' }}>
                 <Header
@@ -203,9 +260,9 @@ class MerchantDetail extends Component {
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center" }}>{this.props.folderName}</Title>
                     </Body>
-                    <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
-                        <Icon name="export" size={30} color="#fff" />
-                    </TouchableOpacity>
+                    {
+                        exportButton
+                    }
                     <View style={styles.headerLastButton}>
                         <Menu>
                             <MenuTrigger>
@@ -215,7 +272,7 @@ class MerchantDetail extends Component {
                                 <MenuOption onSelect={() => this.handleSelectMultipleImages()}>
                                     <View style={styles.popupItem}>
                                         <Icon name="checkbox-marked" size={30} color="#2F4F4F" />
-                                        <Text style={styles.popupItemText}>Select</Text>
+                                        <Text style={styles.popupItemText}>{checkboxTitle}</Text>
                                     </View>
                                 </MenuOption>
                             </MenuOptions>
@@ -223,12 +280,13 @@ class MerchantDetail extends Component {
                     </View>
                 </Header>
                 <FlatList
+                    extraData={this.state}
                     data={this.state.data}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={this.renderItem.bind(this)}
                     onRefresh={this.handleRefresh}
                     refreshing={this.state.refreshing}
-                    numColumns={this.state.columns}
+                    numColumns={columns}
                 />
                 <CameraButton
                     folderPath={this.props.folderPath}
@@ -273,5 +331,17 @@ const styles = StyleSheet.create({
         paddingLeft: 25,
         fontSize: 17,
         color: '#2F4F4F'
-    }
+    },
+    checkbox: {
+        position: 'absolute',
+        right: -10,
+        top: -5
+    },
+    imageItem: {
+        flex: 1,
+        flexDirection: 'row',
+        position: 'relative',
+        backgroundColor: "#F7F5F5",
+        margin: 10,
+    },
 });
