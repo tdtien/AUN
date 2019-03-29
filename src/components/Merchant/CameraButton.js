@@ -34,7 +34,7 @@ export default class CameraButton extends Component {
                     height: 2560,
                     includeBase64: true
                 }).then(image => {
-                    Actions.imageModal({ images: [{ url: image.path, base64: image.data }], index: 0, directory: this.props.folderPath });
+                    Actions.imageModal({ images: [{ url: image.path, base64: image.data }], index: 0, directory: this.props.folderPath, mode: "save" });
                 }).catch(function (error) {
                     console.log(error);
                 })

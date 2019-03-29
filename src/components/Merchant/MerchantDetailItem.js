@@ -24,7 +24,7 @@ export default class MerchantDetailItem extends Component {
                 dataProps.push(image);
             }
             console.log(dataProps);
-            var props = {images: dataProps, index: this.props.data.indexOf(this.props.item)};
+            var props = {images: dataProps, index: this.props.data.indexOf(this.props.item), mode: "edit"};
             Actions.imageModal(props);
         }).catch(error => {
             console.log(error);
