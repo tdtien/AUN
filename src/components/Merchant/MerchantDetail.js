@@ -151,21 +151,30 @@ class MerchantDetail extends Component {
     }
 
     renderItem({ item }) {
-        return (
-            <TouchableOpacity style={styles.imageItem} onPress={() => this.handleImageModal(item)}>
+        let detailImageItem = (this.state.isCheckBoxVisible) ? (
+            <TouchableOpacity style={styles.imageItem} onPress={() => this.handleCheckBoxPressed(item)}>
                 <Image style={{ width: imageWidth, height: imageWidth * 1.4 }} source={{ isStatic: true, uri: `file://${item.path}` }} />
-                {
-                    this.state.isCheckBoxVisible &&
-                    <CheckBox
-                        center
-                        containerStyle={styles.checkbox}
-                        checked={this.state.selectedCheckList.includes(item) ? true : false}
-                        onPress={() => this.handleCheckBoxPressed(item)}
-                        size={checkboxSize}
-                        checkedColor={'white'}
-                    />
-                }
+                <CheckBox
+                    center
+                    containerStyle={styles.checkbox}
+                    checked={this.state.selectedCheckList.includes(item) ? true : false}
+                    onPress={() => this.handleCheckBoxPressed(item)}
+                    size={checkboxSize}
+                    checkedColor={'white'}
+                />
             </TouchableOpacity>
+        ) : (
+                <TouchableOpacity style={styles.imageItem} onPress={() => this.handleImageModal(item)}>
+                    <Image style={{ width: imageWidth, height: imageWidth * 1.4 }} source={{ isStatic: true, uri: `file://${item.path}` }} />
+                </TouchableOpacity>
+            )
+        return (
+            <View>
+                {
+                    detailImageItem
+                }
+            </View>
+
         );
     }
 
