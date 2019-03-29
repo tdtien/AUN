@@ -102,7 +102,7 @@ export default class Merchant extends Component {
                                 const item = result[index];
                                 const files = [];
                                 if (item.isDirectory()) {
-                                    folders.push(item);
+                                    folders.unshift(item);
                                 }
                             }
                             if (folders.length > 0) {

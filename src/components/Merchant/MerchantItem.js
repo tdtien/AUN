@@ -67,8 +67,7 @@ export default class MerchantItem extends Component {
                     <View style={styles.information}>
                         <Text style={styles.title}>{this.props.item.name}</Text>
                         <View style={styles.subTitle}>
-                            <Text style={styles.subText}>{moment(this.state.date).format('L')}</Text>
-                            <Text style={styles.subText}>{moment(this.state.date).format('LT')}</Text>
+                            <Text style={styles.subText}>{moment(this.state.date).format('DD/MM/YYYY HH:mm')}</Text>
                             <View style={styles.badgeCount}>
                                 <Text style={styles.badgeText}>{this.state.count}</Text>
                             </View>

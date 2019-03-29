@@ -37,7 +37,6 @@ export default class CameraButton extends Component {
                     Actions.imageModal({ images: [{ url: image.path, base64: image.data }], index: 0, directory: this.props.folderPath });
                 }).catch(function (error) {
                     console.log(error);
-                    ImagePicker.cleanSingle(data.uri);
                 })
             }
         });
