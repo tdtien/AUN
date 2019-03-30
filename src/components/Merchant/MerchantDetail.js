@@ -54,6 +54,10 @@ class MerchantDetail extends Component {
         this.makeRemoteRequest();
     }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
     componentWillReceiveProps(nextProps) {
         this.makeRemoteRequest();
     }
@@ -123,7 +127,7 @@ class MerchantDetail extends Component {
                 dataProps.push(image);
             }
             console.log(dataProps);
-            var props = { images: dataProps, index: this.state.data.indexOf(item), mode: "edit" };
+            var props = { images: dataProps, index: this.state.data.indexOf(item), mode: "edit", folderPath: this.props.folderPath };
             Actions.imageModal(props);
         }).catch(error => {
             console.log(error);

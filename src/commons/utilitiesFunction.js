@@ -23,7 +23,6 @@ export function fileToBase64(uri) {
             reject(error);
         })
     })
-
 }
 
 export async function folderToBase64(files) {
@@ -55,4 +54,9 @@ export function deleteItem(mainPath) {
 export function popWithUpdate() {
     setTimeout(() => { Actions.refresh({ refresh: true }) }, 500);
     Actions.pop();
+}
+
+export function popToMerchantWithUpdate() {
+    setTimeout(() => { Actions.refresh({ refresh: true }) }, 500);
+    Actions.merchant();
 }

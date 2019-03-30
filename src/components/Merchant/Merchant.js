@@ -18,11 +18,12 @@ import { merchantStyles } from "./MerchantStyle";
 import RNFS from "react-native-fs";
 import { AppCommon } from "../../commons/commons";
 import CameraButton from "./CameraButton";
+import { deleteItem } from '../../commons/utilitiesFunction'
+import Loader from '../Loader/Loader';
 
 export default class Merchant extends Component {
     constructor(props) {
         super(props);
-        // console.log('Token in merchant: ' + this.props.token);
         this.state = {
             isLoading: true,
             data: [],
@@ -61,9 +62,6 @@ export default class Merchant extends Component {
                 this.makeRemoteRequest();
             }
         );
-    };
-    handleLoadMore = () => {
-        //
     };
 
     renderFooter = () => {
@@ -144,9 +142,28 @@ export default class Merchant extends Component {
 
     renderItem({ item }) {
         return (
-            <MerchantItem item={item}>
+            <MerchantItem item={item} action={this.handleDeleteItem}>
             </MerchantItem>
         );
+    }
+
+    handleDeleteItem = (item) => {
+        this.setState({
+            isLoading: true
+        })
+        deleteItem(`file://${item.path}`).then(result => {
+            let temp = this.state.data;
+            temp.splice(temp.indexOf(item), 1);
+            this.setState({
+                data: temp,
+                isLoading: false
+            })
+        }).catch(error => {
+            this.setState({
+                isLoading: false
+            })
+            Alert.alert('Error', error.message);
+        })
     }
 
     handleSearch = () => {
@@ -197,6 +214,9 @@ export default class Merchant extends Component {
                 <CameraButton
                     folderPath={null}
                 />
+                {
+                    <Loader loading={this.state.isLoading} />
+                }
             </View>
         );
     }

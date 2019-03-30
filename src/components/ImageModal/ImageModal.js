@@ -4,9 +4,10 @@ import ImageViewer from "react-native-image-zoom-viewer";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import RNFS from "react-native-fs";
 import { AppCommon } from "../../commons/commons";
-import { popWithUpdate, deleteItem } from "../../commons/utilitiesFunction";
+import { popWithUpdate, deleteItem, popToMerchantWithUpdate } from "../../commons/utilitiesFunction";
 import Loader from "../Loader/Loader";
 import ImagePicker from 'react-native-image-crop-picker';
+import { Actions } from "react-native-router-flux";
 
 export default class ImageModal extends Component {
     constructor(props) {
@@ -79,7 +80,7 @@ export default class ImageModal extends Component {
     }
 
     handleDelete = () => {
-        Alert.alert('Delete image', 'Are you sure to delete this picture?', [
+        Alert.alert('Delete image', 'Are you sure you want to delete this picture?', [
             {
                 text: 'Cancel',
                 style: "cancel",
@@ -97,11 +98,20 @@ export default class ImageModal extends Component {
                         console.log('Delete Success');
                         let temp = this.state.images;
                         temp.splice(this.state.currentIndex, 1);
-                        this.setState({
-                            images: temp,
-                            currentIndex: 0,
-                            isLoading: false
-                        });
+                        //if temp is empty, delete original folder
+                        if (temp.length === 0) {
+                            console.log('Folder empty');
+                            deleteItem(this.props.folderPath).then(result => {
+                                console.log('Delete original folder success');
+                                popToMerchantWithUpdate();
+                            })
+                        } else {
+                            this.setState({
+                                images: temp,
+                                currentIndex: 0,
+                                isLoading: false
+                            });
+                        }
                     }).catch(error => {
                         console.log('Delete Error: ' + error.message);
                         this.setState({
