@@ -15,7 +15,6 @@ export function createFolder(mainPath) {
 }
 
 export function fileToBase64(uri) {
-    console.log('uri: ' + uri);
     return new Promise((resolve, reject) => {
         RNFS.readFile(uri, 'base64').then((response) => {
             resolve(response);
@@ -32,7 +31,6 @@ export async function folderToBase64(files) {
     for (let item of files) {
         await fileToBase64(`file://${item.path}`)
             .then(result => {
-                // console.log('Result: ' + result);
                 array.push(result);
             }).catch(error => {
                 console.log('Error: ' + error);
@@ -40,6 +38,18 @@ export async function folderToBase64(files) {
             })
     }
     return array;
+}
+
+export function deleteItem(mainPath) {
+    return new Promise((resolve, reject) => {
+        RNFS.unlink(mainPath).then((response) => {
+            console.log('Delete response: ' + response);
+            resolve(response);
+        }).catch((error) => {
+            console.log('Delete error: ' + error);
+            reject(error);
+        })
+    })
 }
 
 export function popWithUpdate() {

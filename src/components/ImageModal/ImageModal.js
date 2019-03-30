@@ -4,10 +4,9 @@ import ImageViewer from "react-native-image-zoom-viewer";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import RNFS from "react-native-fs";
 import { AppCommon } from "../../commons/commons";
-import { popWithUpdate } from "../../commons/utilitiesFunction";
+import { popWithUpdate, deleteItem } from "../../commons/utilitiesFunction";
 import Loader from "../Loader/Loader";
 import ImagePicker from 'react-native-image-crop-picker';
-
 
 export default class ImageModal extends Component {
     constructor(props) {
@@ -79,6 +78,42 @@ export default class ImageModal extends Component {
         })
     }
 
+    handleDelete = () => {
+        Alert.alert('Delete image', 'Are you sure to delete this picture?', [
+            {
+                text: 'Cancel',
+                style: "cancel",
+                onPress: () => null,
+            },
+            {
+                text: 'OK',
+                onPress: () => {
+                    this.setState({
+                        isLoading: true,
+                    })
+                    let path = this.state.images[this.state.currentIndex].url;
+                    console.log('Current path: ' + path);
+                    deleteItem(path).then(result => {
+                        console.log('Delete Success');
+                        let temp = this.state.images;
+                        temp.splice(this.state.currentIndex, 1);
+                        this.setState({
+                            images: temp,
+                            currentIndex: 0,
+                            isLoading: false
+                        });
+                    }).catch(error => {
+                        console.log('Delete Error: ' + error.message);
+                        this.setState({
+                            isLoading: false,
+                        });
+                        Alert.alert('Error', error.message);
+                    })
+                },
+            }
+        ]);
+    };
+
     handleChange = (index) => {
         this.setState({ currentIndex: index })
     }
@@ -117,12 +152,24 @@ export default class ImageModal extends Component {
                                     </TouchableOpacity>
 
                                 ) : (
-                                        <TouchableOpacity
-                                            onPress={() => this.handleEdit()}
-                                            style={{ margin: 15 }}
+                                        <View style={{
+                                            flexDirection: "row",
+                                            justifyContent: "flex-end"
+                                        }}
                                         >
-                                            <Icon name="square-edit-outline" size={30} color="#fff" />
-                                        </TouchableOpacity>
+                                            <TouchableOpacity
+                                                onPress={() => this.handleEdit()}
+                                                style={{ margin: 15 }}
+                                            >
+                                                <Icon name="square-edit-outline" size={30} color="#fff" />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                onPress={() => this.handleDelete()}
+                                                style={{ margin: 15, marginLeft: 0 }}
+                                            >
+                                                <Icon name="delete" size={30} color="#fff" />
+                                            </TouchableOpacity>
+                                        </View>
                                     )
                                 }
                             </View>

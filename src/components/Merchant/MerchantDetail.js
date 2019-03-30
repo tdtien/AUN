@@ -139,14 +139,14 @@ class MerchantDetail extends Component {
 
 
     handleCheckBoxPressed = (item) => {
-        let tmp = this.state.selectedCheckList;
-        if (tmp.includes(item)) {
-            tmp.splice(tmp.indexOf(item), 1);
+        let temp = this.state.selectedCheckList;
+        if (temp.includes(item)) {
+            temp.splice(temp.indexOf(item), 1);
         } else {
-            tmp.push(item);
+            temp.push(item);
         }
         this.setState({
-            selectedCheckList: tmp
+            selectedCheckList: temp
         });
     }
 
