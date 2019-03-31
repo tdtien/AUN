@@ -20,7 +20,7 @@ import { merchantStyles } from "./MerchantStyle";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
 import { connect } from 'react-redux'
-import { folderToBase64 } from "../../commons/utilitiesFunction";
+import { folderToBase64, popWithUpdate } from "../../commons/utilitiesFunction";
 import Loader from '../Loader/Loader'
 import CameraButton from "./CameraButton";
 import {
@@ -267,7 +267,7 @@ class MerchantDetail extends Component {
                     style={{ backgroundColor: "#2196F3" }}
                     hasTabs
                 >
-                    <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
+                    <TouchableOpacity style={styles.headerButton} onPress={() => popWithUpdate()} >
                         <Icon name="arrow-left" size={30} color="#fff" />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>

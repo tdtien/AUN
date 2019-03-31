@@ -42,7 +42,6 @@ export async function folderToBase64(files) {
 export function deleteItem(mainPath) {
     return new Promise((resolve, reject) => {
         RNFS.unlink(mainPath).then((response) => {
-            console.log('Delete response: ' + response);
             resolve(response);
         }).catch((error) => {
             console.log('Delete error: ' + error);

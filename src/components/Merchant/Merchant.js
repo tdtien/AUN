@@ -35,6 +35,7 @@ export default class Merchant extends Component {
         };
     }
     componentDidMount() {
+        // console.log('componentDidMount');
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.makeRemoteRequest();
     }
@@ -44,6 +45,7 @@ export default class Merchant extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        // console.log('componentWillReceiveProps');
         this.makeRemoteRequest();
     }
 
@@ -101,10 +103,11 @@ export default class Merchant extends Component {
                                 const files = [];
                                 if (item.isDirectory()) {
                                     // console.log('Index: ' + index);
-                                    console.log('Folder name: ' + item.name);
-                                    folders.push(item);
+                                    // console.log('Folder name: ' + item.name);
+                                    folders.unshift(item);
                                 }
                             }
+                            // console.log('Folder length: ' +folders.length);
                             if (folders.length > 0) {
                                 this.setState({
                                     data: folders,
@@ -160,6 +163,7 @@ export default class Merchant extends Component {
                 data: temp,
                 isLoading: false
             })
+            // this.makeRemoteRequest();
         }).catch(error => {
             this.setState({
                 isLoading: false
