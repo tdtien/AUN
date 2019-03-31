@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Router, Stack, Scene, Drawer } from 'react-native-router-flux';
+import { Router, Stack, Scene, Drawer, Actions } from 'react-native-router-flux';
 import Login from './src/components/Login/Login';
 import Register from './src/components/Register/Register'
 import ImageModal from './src/components/ImageModal/ImageModal';
@@ -8,11 +8,36 @@ import MerchantDetail from './src/components/Merchant/MerchantDetail';
 import SideMenu from './src/components/SideMenu/SideMenu';
 import PDFViewer from './src/components/PDFViewer/PDFViewer';
 import { connect } from "react-redux";
+import { BackHandler } from "react-native";
+import { ToastAndroid } from "react-native";
 
 class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      
+    }
+  }
+
   render() {
+    var backLoginScene = false;
     return (
-      <Router>
+      <Router
+        backAndroidHandler={() => {
+          if (Actions.currentScene == "login" || Actions.currentScene == "_merchant") {
+            if (backLoginScene == false) {
+              ToastAndroid.show("Click back again to exit.", ToastAndroid.SHORT);
+              backLoginScene = !backLoginScene;
+              return true;
+            } else {
+              backLoginScene = false;
+              BackHandler.exitApp();
+            }
+            return false;
+          }
+        }}
+      >
         <Stack key="root" hideNavBar>
           <Scene
             key="login"
