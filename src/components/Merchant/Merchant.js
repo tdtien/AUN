@@ -100,6 +100,8 @@ export default class Merchant extends Component {
                                 const item = result[index];
                                 const files = [];
                                 if (item.isDirectory()) {
+                                    // console.log('Index: ' + index);
+                                    console.log('Folder name: ' + item.name);
                                     folders.push(item);
                                 }
                             }
@@ -214,9 +216,6 @@ export default class Merchant extends Component {
                 <CameraButton
                     folderPath={null}
                 />
-                {
-                    <Loader loading={this.state.isLoading} />
-                }
             </View>
         );
     }

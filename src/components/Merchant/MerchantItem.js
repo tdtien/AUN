@@ -29,14 +29,21 @@ export default class MerchantItem extends Component {
     }
 
     componentDidMount() {
-        this.makeRemoteRequest();
+        this.makeRemoteRequest(this.props);
     }
 
-    makeRemoteRequest = () => {
-        let path = this.props.item.path;
+    componentWillReceiveProps(nextProps) {
+        this.makeRemoteRequest(nextProps);
+    }
+
+    makeRemoteRequest = (props) => {
+        let path = props.item.path;
         RNFS.readDir(path)
             .then((result) => {
                 if (result != undefined && result.length > 0) {
+                    this.setState({
+                        count: 0,
+                    })
                     for (index in result) {
                         const item = result[index];
                         if (item.isFile()) {
@@ -93,7 +100,6 @@ export default class MerchantItem extends Component {
             ]
         }
         return (
-
             <Swipeout {...swipeSetting}>
                 <TouchableHighlight onPress={() => this.handleClickItem(`file://${this.props.item.path}`)}>
                     <View style={styles.container}>
