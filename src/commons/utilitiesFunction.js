@@ -57,5 +57,5 @@ export function popWithUpdate() {
 
 export function popToMerchantWithUpdate() {
     setTimeout(() => { Actions.refresh({ refresh: true }) }, 500);
-    Actions.merchant();
+    Actions.popTo('_merchant');
 }
