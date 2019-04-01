@@ -80,7 +80,7 @@ export default class ImageModal extends Component {
     }
 
     handleDelete = () => {
-        Alert.alert('Delete image', 'Are you sure you want to delete this picture?', [
+        Alert.alert('Delete image', 'Are you sure you want to delete this image?', [
             {
                 text: 'Cancel',
                 style: "cancel",

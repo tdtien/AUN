@@ -50,6 +50,21 @@ export function deleteItem(mainPath) {
     })
 }
 
+export async function deleteMultipleItems(files) {
+    for (let item of files) {
+        console.log('item path: ' + item.path);
+        await deleteItem(`file://${item.path}`)
+            .then(result => {
+                // console.log('Delete file successfully');
+            })
+            .catch(error => {
+                // console.log('Delete file fail');
+                return false;
+            })
+    }
+    return true;
+}
+
 export function popWithUpdate() {
     setTimeout(() => { Actions.refresh({ refresh: true }) }, 500);
     Actions.pop();

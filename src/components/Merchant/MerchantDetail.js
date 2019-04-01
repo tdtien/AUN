@@ -13,6 +13,7 @@ import {
     Button,
     Title,
     Right,
+    Footer
 } from "native-base";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Actions } from "react-native-router-flux";
@@ -20,7 +21,7 @@ import { merchantStyles } from "./MerchantStyle";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
 import { connect } from 'react-redux'
-import { folderToBase64, popWithUpdate } from "../../commons/utilitiesFunction";
+import { folderToBase64, popWithUpdate, deleteItem, deleteMultipleItems, popToMerchantWithUpdate } from "../../commons/utilitiesFunction";
 import Loader from '../Loader/Loader'
 import CameraButton from "./CameraButton";
 import {
@@ -248,6 +249,46 @@ class MerchantDetail extends Component {
             })
     }
 
+    handleDeleteMultipleImages = () => {
+        Alert.alert('Delete images', 'Are you sure you want to delete these images?', [
+            {
+                text: 'Cancel',
+                style: "cancel",
+                onPress: () => null,
+            },
+            {
+                text: 'OK',
+                onPress: () => {
+                    this.setState({
+                        isLoading: true
+                    })
+                    let deletedItems = this.state.selectedCheckList;
+                    deleteMultipleItems(deletedItems)
+                        .then(result => {
+                            if (this.state.data.length === deletedItems.length) {
+                                console.log('Folder empty');
+                                deleteItem(this.props.folderPath).then(result => {
+                                    console.log('Delete original folder success');
+                                    popToMerchantWithUpdate();
+                                })
+                            } else {
+                                this.setState({
+                                    isLoading: false,
+                                    isCheckBoxVisible: false
+                                });
+                                this.makeRemoteRequest()
+                            }
+                        }).catch(error => {
+                            this.setState({
+                                isLoading: false,
+                            });
+                            Alert.alert('Error', error.message);
+                        })
+                },
+            }
+        ]);
+    }
+
     render() {
         let checkboxTitle = (!this.state.isCheckBoxVisible) ? 'Select' : 'Deselect'
         let exportButton = (this.state.isCheckBoxVisible && (this.state.selectedCheckList.length === 0)) ?
@@ -259,6 +300,31 @@ class MerchantDetail extends Component {
                 <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
                     <Icon name="export" size={30} color="#fff" />
                 </TouchableOpacity>
+            )
+        let footer = (this.state.isCheckBoxVisible) ?
+            (
+                <Footer
+                    style={{ backgroundColor: "#2196F3" }}
+                >
+                    <Right>
+                        {
+                            (this.state.selectedCheckList.length === 0) ?
+                                (
+                                    <TouchableOpacity disabled={true} style={styles.footerButton} onPress={() => this.handleDeleteMultipleImages()} >
+                                        <Icon name="delete" size={30} color="#B0C4DE" />
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity style={styles.footerButton} onPress={() => this.handleDeleteMultipleImages()} >
+                                        <Icon name="delete" size={30} color="#fff" />
+                                    </TouchableOpacity>
+                                )
+                        }
+                    </Right>
+                </Footer >
+            ) : (
+                <CameraButton
+                    folderPath={this.props.folderPath}
+                />
             )
         return (
             <View style={{ borderTopWidth: 0, borderBottomWidth: 0, flex: 1, backgroundColor: '#F7F5F5' }}>
@@ -301,9 +367,9 @@ class MerchantDetail extends Component {
                     refreshing={this.state.refreshing}
                     numColumns={columns}
                 />
-                <CameraButton
-                    folderPath={this.props.folderPath}
-                />
+                {
+                    footer
+                }
                 {
                     <Loader loading={this.state.isLoading} />
                 }
@@ -332,6 +398,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 5,
         paddingRight: 0
+    },
+    footerButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingLeft: 10,
+        paddingRight: 10
     },
     popupItem: {
         flex: 1,
