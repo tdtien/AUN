@@ -3,7 +3,8 @@ import {
     StyleSheet,
     View,
     Modal,
-    ActivityIndicator
+    ActivityIndicator,
+    StatusBar
 } from 'react-native';
 
 const Loader = props => {
@@ -18,6 +19,7 @@ const Loader = props => {
             animationType={'none'}
             visible={loading}
             onRequestClose={() => { console.log('close modal') }}>
+            <StatusBar backgroundColor="#00000040" barStyle="dark-content" />
             <View style={styles.modalBackground}>
                 <View style={styles.activityIndicatorWrapper}>
                     <ActivityIndicator
