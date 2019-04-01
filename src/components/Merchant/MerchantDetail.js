@@ -21,7 +21,7 @@ import { merchantStyles } from "./MerchantStyle";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
 import { connect } from 'react-redux'
-import { folderToBase64, popWithUpdate, deleteItem, deleteMultipleItems, popToMerchantWithUpdate } from "../../commons/utilitiesFunction";
+import { folderToBase64, popWithUpdate, deleteItem, deleteMultipleItems, popToMerchantWithUpdate, popToMerchanDetailtWithUpdate } from "../../commons/utilitiesFunction";
 import Loader from '../Loader/Loader'
 import CameraButton from "./CameraButton";
 import {
@@ -48,6 +48,7 @@ class MerchantDetail extends Component {
             byteArray: {},
             isCheckBoxVisible: false,
             selectedCheckList: [],
+            isSelectAll: false
         }
     }
 
@@ -142,6 +143,51 @@ class MerchantDetail extends Component {
         })
     }
 
+    handleDeleteMultipleImages = () => {
+        Alert.alert('Delete images', 'Are you sure you want to delete these images?', [
+            {
+                text: 'Cancel',
+                style: "cancel",
+                onPress: () => null,
+            },
+            {
+                text: 'OK',
+                onPress: () => {
+                    this.setState({
+                        isLoading: true
+                    })
+                    let deletedItems = this.state.selectedCheckList;
+                    deleteMultipleItems(deletedItems)
+                        .then(result => {
+                            if (this.state.data.length === deletedItems.length) {
+                                console.log('Folder empty');
+                                deleteItem(this.props.folderPath).then(result => {
+                                    console.log('Delete original folder success');
+                                    popToMerchantWithUpdate();
+                                })
+                            } else {
+                                this.setState({
+                                    isLoading: false,
+                                    isCheckBoxVisible: false
+                                });
+                                this.makeRemoteRequest()
+                            }
+                        }).catch(error => {
+                            this.setState({
+                                isLoading: false,
+                            });
+                            Alert.alert('Error', error.message);
+                        })
+                },
+            }
+        ]);
+    }
+
+    handleDeselectCheckbox = () => {
+        this.setState({
+            isCheckBoxVisible: false
+        })
+    }
 
     handleCheckBoxPressed = (item) => {
         let temp = this.state.selectedCheckList;
@@ -150,9 +196,38 @@ class MerchantDetail extends Component {
         } else {
             temp.push(item);
         }
-        this.setState({
-            selectedCheckList: temp
-        });
+        if (temp.length === this.state.data.length) {
+            this.setState({
+                selectedCheckList: temp,
+                isSelectAll: true
+            });
+        } else {
+            this.setState({
+                selectedCheckList: temp,
+                isSelectAll: false
+            });
+        }
+
+    }
+
+    handleCheckAllCheckbox = () => {
+        if (!this.state.isSelectAll) {
+            let temp = [];
+            for (let item of this.state.data) {
+                console.log('item: ' + item);
+                temp.push(item);
+            }
+            console.log('temp: ' + temp);
+            this.setState({
+                selectedCheckList: temp,
+                isSelectAll: true
+            })
+        } else {
+            this.setState({
+                selectedCheckList: [],
+                isSelectAll: false
+            })
+        }
     }
 
     renderItem({ item }) {
@@ -249,58 +324,57 @@ class MerchantDetail extends Component {
             })
     }
 
-    handleDeleteMultipleImages = () => {
-        Alert.alert('Delete images', 'Are you sure you want to delete these images?', [
-            {
-                text: 'Cancel',
-                style: "cancel",
-                onPress: () => null,
-            },
-            {
-                text: 'OK',
-                onPress: () => {
-                    this.setState({
-                        isLoading: true
-                    })
-                    let deletedItems = this.state.selectedCheckList;
-                    deleteMultipleItems(deletedItems)
-                        .then(result => {
-                            if (this.state.data.length === deletedItems.length) {
-                                console.log('Folder empty');
-                                deleteItem(this.props.folderPath).then(result => {
-                                    console.log('Delete original folder success');
-                                    popToMerchantWithUpdate();
-                                })
-                            } else {
-                                this.setState({
-                                    isLoading: false,
-                                    isCheckBoxVisible: false
-                                });
-                                this.makeRemoteRequest()
-                            }
-                        }).catch(error => {
-                            this.setState({
-                                isLoading: false,
-                            });
-                            Alert.alert('Error', error.message);
-                        })
-                },
-            }
-        ]);
-    }
-
     render() {
-        let checkboxTitle = (!this.state.isCheckBoxVisible) ? 'Select' : 'Deselect'
-        let exportButton = (this.state.isCheckBoxVisible && (this.state.selectedCheckList.length === 0)) ?
-            (
-                <TouchableOpacity disabled={true} style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
-                    <Icon name="export" size={30} color="#B0C4DE" />
+        let selectImageTitle = (!this.state.isSelectAll) ? 'Select All' : 'Deselect All'
+        let header = (!this.state.isCheckBoxVisible) ? (
+            <Header
+                androidStatusBarColor="#2196F3"
+                style={{ backgroundColor: "#2196F3" }}
+                hasTabs
+            >
+                <TouchableOpacity style={styles.headerButton} onPress={() => popWithUpdate()} >
+                    <Icon name="arrow-left" size={30} color="#fff" />
                 </TouchableOpacity>
-            ) : (
+                <Body style={{ flex: 1 }}>
+                    <Title style={{ alignSelf: "center" }}>{this.props.folderName}</Title>
+                </Body>
                 <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
                     <Icon name="export" size={30} color="#fff" />
                 </TouchableOpacity>
+                <View style={styles.headerLastButton}>
+                    <Menu>
+                        <MenuTrigger>
+                            <Icon name="dots-vertical" size={30} color="#fff" />
+                        </MenuTrigger>
+                        <MenuOptions>
+                            <MenuOption onSelect={() => this.handleSelectMultipleImages()}>
+                                <View style={styles.popupItem}>
+                                    <Icon name="checkbox-marked" size={30} color="#2F4F4F" />
+                                    <Text style={styles.popupItemText}>Select</Text>
+                                </View>
+                            </MenuOption>
+                        </MenuOptions>
+                    </Menu>
+                </View>
+            </Header>
+        ) : (
+                <Header
+                    androidStatusBarColor="#2196F3"
+                    style={{ backgroundColor: "#2196F3" }}
+                    hasTabs
+                >
+                    <TouchableOpacity style={styles.headerButton} onPress={() => this.handleDeselectCheckbox()} >
+                        <Icon name="arrow-left" size={30} color="#fff" />
+                    </TouchableOpacity>
+                    <Body style={{ flex: 1 }}>
+                        <Title style={{ alignSelf: "center" }}>{`${this.state.selectedCheckList.length} selected`}</Title>
+                    </Body>
+                    <TouchableOpacity style={styles.headerButton} onPress={() => this.handleCheckAllCheckbox()} >
+                        <Text style={{ fontSize: 20, color: '#fff' }}>{selectImageTitle}</Text>
+                    </TouchableOpacity>
+                </Header>
             )
+
         let footer = (this.state.isCheckBoxVisible) ?
             (
                 <Footer
@@ -310,13 +384,23 @@ class MerchantDetail extends Component {
                         {
                             (this.state.selectedCheckList.length === 0) ?
                                 (
-                                    <TouchableOpacity disabled={true} style={styles.footerButton} onPress={() => this.handleDeleteMultipleImages()} >
-                                        <Icon name="delete" size={30} color="#B0C4DE" />
-                                    </TouchableOpacity>
+                                    <View style={styles.footerButton}>
+                                        <TouchableOpacity disabled={true} style={{ marginLeft: 20 }} onPress={() => null} >
+                                            <Icon name="export" size={30} color="#B0C4DE" />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity disabled={true} style={{ marginLeft: 20 }} onPress={() => null} >
+                                            <Icon name="delete" size={30} color="#B0C4DE" />
+                                        </TouchableOpacity>
+                                    </View>
                                 ) : (
-                                    <TouchableOpacity style={styles.footerButton} onPress={() => this.handleDeleteMultipleImages()} >
-                                        <Icon name="delete" size={30} color="#fff" />
-                                    </TouchableOpacity>
+                                    <View style={styles.footerButton}>
+                                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => this.handleExport2Pdf()} >
+                                            <Icon name="export" size={30} color="#fff" />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => this.handleDeleteMultipleImages()} >
+                                            <Icon name="delete" size={30} color="#fff" />
+                                        </TouchableOpacity>
+                                    </View>
                                 )
                         }
                     </Right>
@@ -328,36 +412,9 @@ class MerchantDetail extends Component {
             )
         return (
             <View style={{ borderTopWidth: 0, borderBottomWidth: 0, flex: 1, backgroundColor: '#F7F5F5' }}>
-                <Header
-                    androidStatusBarColor="#2196F3"
-                    style={{ backgroundColor: "#2196F3" }}
-                    hasTabs
-                >
-                    <TouchableOpacity style={styles.headerButton} onPress={() => popWithUpdate()} >
-                        <Icon name="arrow-left" size={30} color="#fff" />
-                    </TouchableOpacity>
-                    <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center" }}>{this.props.folderName}</Title>
-                    </Body>
-                    {
-                        exportButton
-                    }
-                    <View style={styles.headerLastButton}>
-                        <Menu>
-                            <MenuTrigger>
-                                <Icon name="dots-vertical" size={30} color="#fff" />
-                            </MenuTrigger>
-                            <MenuOptions>
-                                <MenuOption onSelect={() => this.handleSelectMultipleImages()}>
-                                    <View style={styles.popupItem}>
-                                        <Icon name="checkbox-marked" size={30} color="#2F4F4F" />
-                                        <Text style={styles.popupItemText}>{checkboxTitle}</Text>
-                                    </View>
-                                </MenuOption>
-                            </MenuOptions>
-                        </Menu>
-                    </View>
-                </Header>
+                {
+                    header
+                }
                 <FlatList
                     extraData={this.state}
                     data={this.state.data}
@@ -400,10 +457,12 @@ const styles = StyleSheet.create({
         paddingRight: 0
     },
     footerButton: {
+        flex: 1,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingLeft: 10,
-        paddingRight: 10
+        marginLeft: 20,
+        marginRight: 20
     },
     popupItem: {
         flex: 1,
