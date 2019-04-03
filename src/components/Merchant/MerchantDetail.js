@@ -3,8 +3,11 @@ import {
     View,
     FlatList,
     StyleSheet,
-    ActivityIndicator,
-    Alert, Dimensions, ScrollView, TouchableOpacity, Text, Image
+    TouchableOpacity,
+    Alert,
+    Dimensions,
+    Text,
+    Image
 } from "react-native";
 import {
     Header,
@@ -13,11 +16,12 @@ import {
     Button,
     Title,
     Right,
-    Footer
+    Footer,
+    Container,
+    Content
 } from "native-base";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Actions } from "react-native-router-flux";
-import { merchantStyles } from "./MerchantStyle";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
 import { connect } from 'react-redux'
@@ -32,6 +36,7 @@ import {
     MenuTrigger
 } from 'react-native-popup-menu';
 import { CheckBox } from 'react-native-elements'
+import { FlatGrid } from "react-native-super-grid";
 
 const screenWidth = Dimensions.get('window').width;
 const columns = 2;
@@ -231,31 +236,24 @@ class MerchantDetail extends Component {
     }
 
     renderItem({ item }) {
-        let detailImageItem = (this.state.isCheckBoxVisible) ? (
-            <TouchableOpacity style={styles.imageItem} onPress={() => this.handleCheckBoxPressed(item)}>
+        let checked = this.state.selectedCheckList.includes(item);
+        return (this.state.isCheckBoxVisible) ? (
+            <TouchableOpacity activeOpacity={0.8} style={styles.imageItem} onPress={() => this.handleCheckBoxPressed(item)}>
                 <Image style={{ width: imageWidth, height: imageWidth * 1.4 }} source={{ isStatic: true, uri: `file://${item.path}` }} />
                 <CheckBox
                     center
                     containerStyle={styles.checkbox}
-                    checked={this.state.selectedCheckList.includes(item) ? true : false}
+                    checked={checked}
                     onPress={() => this.handleCheckBoxPressed(item)}
                     size={checkboxSize}
                     checkedColor={'white'}
                 />
             </TouchableOpacity>
         ) : (
-                <TouchableOpacity style={styles.imageItem} onPress={() => this.handleImageModal(item)}>
+                <TouchableOpacity activeOpacity={0.8} style={styles.imageItem} onPress={() => this.handleImageModal(item)}>
                     <Image style={{ width: imageWidth, height: imageWidth * 1.4 }} source={{ isStatic: true, uri: `file://${item.path}` }} />
                 </TouchableOpacity>
             )
-        return (
-            <View>
-                {
-                    detailImageItem
-                }
-            </View>
-
-        );
     }
 
     handleExport2Pdf = () => {
@@ -374,7 +372,6 @@ class MerchantDetail extends Component {
                     </TouchableOpacity>
                 </Header>
             )
-
         let footer = (this.state.isCheckBoxVisible) ?
             (
                 <Footer
@@ -404,18 +401,16 @@ class MerchantDetail extends Component {
                                 )
                         }
                     </Right>
-                </Footer >
+                </Footer>
             ) : (
                 <CameraButton
                     folderPath={this.props.folderPath}
                 />
             )
         return (
-            <View style={{ borderTopWidth: 0, borderBottomWidth: 0, flex: 1, backgroundColor: '#F7F5F5' }}>
-                {
-                    header
-                }
-                <FlatList
+            <Container>
+                {header}
+                {/* <FlatList
                     extraData={this.state}
                     data={this.state.data}
                     keyExtractor={(item, index) => index.toString()}
@@ -423,14 +418,20 @@ class MerchantDetail extends Component {
                     onRefresh={this.handleRefresh}
                     refreshing={this.state.refreshing}
                     numColumns={columns}
-                />
-                {
-                    footer
-                }
-                {
-                    <Loader loading={this.state.isLoading} />
-                }
-            </View>
+                /> */}
+                <Content>
+                    <FlatGrid
+                        style={{ marginTop: 10, flex: 1 }}
+                        itemDimension={imageWidth}
+                        items={this.state.data}
+                        renderItem={this.renderItem.bind(this)}
+                        onRefresh={this.handleRefresh}
+                        refreshing={this.state.refreshing}
+                    />
+                </Content>
+                {footer}
+                <Loader loading={this.state.isLoading} />
+            </Container>
         );
     }
 }
@@ -484,8 +485,12 @@ const styles = StyleSheet.create({
     imageItem: {
         flex: 1,
         flexDirection: 'row',
-        position: 'relative',
-        backgroundColor: "#F7F5F5",
-        margin: 10,
+        position: 'relative'
     },
+    imageSelected: {
+        padding: 10
+    },
+    imageUnselected: {
+        padding: 0
+    }
 });
