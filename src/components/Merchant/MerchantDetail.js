@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import {
     View,
-    FlatList,
+    Image,
     StyleSheet,
     TouchableOpacity,
     Alert,
     Dimensions,
     Text,
-    Image
+    ImageBackground
 } from "react-native";
 import {
     Header,
@@ -25,7 +25,7 @@ import { Actions } from "react-native-router-flux";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
 import { connect } from 'react-redux'
-import { folderToBase64, popWithUpdate, deleteItem, deleteMultipleItems, popToMerchantWithUpdate, popToMerchanDetailtWithUpdate } from "../../commons/utilitiesFunction";
+import { folderToBase64, popWithUpdate, deleteItem, deleteMultipleItems, popToSceneWithUpdate } from "../../commons/utilitiesFunction";
 import Loader from '../Loader/Loader'
 import CameraButton from "./CameraButton";
 import {
@@ -42,7 +42,6 @@ const screenWidth = Dimensions.get('window').width;
 const columns = 2;
 const imageMargin = 10;
 const imageWidth = (screenWidth - imageMargin * 4) / columns;
-const checkboxSize = imageWidth / 6;
 class MerchantDetail extends Component {
     constructor(props) {
         super(props);
@@ -130,7 +129,7 @@ class MerchantDetail extends Component {
         folderToBase64(this.state.data).then(response => {
             var dataProps = [];
             for (var i = 0; i < this.state.data.length; i++) {
-                let image = { url: `file://${this.state.data[i].path}`, base64: response[i] };
+                let image = { url: `file://${this.state.data[i].path}?${new Date()}`, base64: response[i] };
                 dataProps.push(image);
             }
             console.log(dataProps);
@@ -168,7 +167,7 @@ class MerchantDetail extends Component {
                                 console.log('Folder empty');
                                 deleteItem(this.props.folderPath).then(result => {
                                     console.log('Delete original folder success');
-                                    popToMerchantWithUpdate();
+                                    popToSceneWithUpdate('_merchant');
                                 })
                             } else {
                                 this.setState({
@@ -235,23 +234,24 @@ class MerchantDetail extends Component {
         }
     }
 
-    renderItem({ item }) {
+    renderItem({ item, index }) {
         let checked = this.state.selectedCheckList.includes(item);
         return (this.state.isCheckBoxVisible) ? (
-            <TouchableOpacity activeOpacity={0.8} style={styles.imageItem} onPress={() => this.handleCheckBoxPressed(item)}>
-                <Image style={{ width: imageWidth, height: imageWidth * 1.4 }} source={{ isStatic: true, uri: `file://${item.path}` }} />
-                <CheckBox
-                    center
-                    containerStyle={styles.checkbox}
-                    checked={checked}
-                    onPress={() => this.handleCheckBoxPressed(item)}
-                    size={checkboxSize}
-                    checkedColor={'white'}
-                />
+            <TouchableOpacity activeOpacity={0.8} onPress={() => this.handleCheckBoxPressed(item)}>
+                <ImageBackground style={{ width: imageWidth, height: imageWidth * 1.4 }} source={{ isStatic: true, uri: `file://${item.path}` }}>
+                    <CheckBox   
+                        containerStyle={{ margin: 0, padding: 0, marginTop: 6 }}
+                        checked={checked}
+                        onPress={() => this.handleCheckBoxPressed(item)}
+                        checkedColor={'white'}
+                    />
+                </ImageBackground>
             </TouchableOpacity>
         ) : (
-                <TouchableOpacity activeOpacity={0.8} style={styles.imageItem} onPress={() => this.handleImageModal(item)}>
-                    <Image style={{ width: imageWidth, height: imageWidth * 1.4 }} source={{ isStatic: true, uri: `file://${item.path}` }} />
+                <TouchableOpacity activeOpacity={0.8} onPress={() => this.handleImageModal(item)} onLongPress={() => this.handleSelectMultipleImages()}>
+                    <ImageBackground style={{ width: imageWidth, height: imageWidth * 1.4, flex: 1, justifyContent: "flex-end" }} source={{ isStatic: true, uri: `file://${item.path}?${new Date()}` }}>
+                        <Text style={{ color: 'white', backgroundColor: 'rgba(204, 204, 204, 0.5)', padding: 5 }}>{index + 1}</Text>
+                    </ImageBackground>
                 </TouchableOpacity>
             )
     }
@@ -326,8 +326,8 @@ class MerchantDetail extends Component {
         let selectImageTitle = (!this.state.isSelectAll) ? 'Select All' : 'Deselect All'
         let header = (!this.state.isCheckBoxVisible) ? (
             <Header
-                androidStatusBarColor="#2196F3"
-                style={{ backgroundColor: "#2196F3" }}
+                androidStatusBarColor={AppCommon.colors}
+                style={{ backgroundColor: AppCommon.colors }}
                 hasTabs
             >
                 <TouchableOpacity style={styles.headerButton} onPress={() => popWithUpdate()} >
@@ -357,8 +357,8 @@ class MerchantDetail extends Component {
             </Header>
         ) : (
                 <Header
-                    androidStatusBarColor="#2196F3"
-                    style={{ backgroundColor: "#2196F3" }}
+                    androidStatusBarColor={AppCommon.colors}
+                    style={{ backgroundColor: AppCommon.colors }}
                     hasTabs
                 >
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleDeselectCheckbox()} >
@@ -375,7 +375,7 @@ class MerchantDetail extends Component {
         let footer = (this.state.isCheckBoxVisible) ?
             (
                 <Footer
-                    style={{ backgroundColor: "#2196F3" }}
+                    style={{ backgroundColor: AppCommon.colors }}
                 >
                     <Right>
                         {
@@ -423,6 +423,7 @@ class MerchantDetail extends Component {
                     <FlatGrid
                         style={{ marginTop: 10, flex: 1 }}
                         itemDimension={imageWidth}
+                        fixed
                         items={this.state.data}
                         renderItem={this.renderItem.bind(this)}
                         onRefresh={this.handleRefresh}
@@ -476,21 +477,5 @@ const styles = StyleSheet.create({
         paddingLeft: 25,
         fontSize: 17,
         color: '#2F4F4F'
-    },
-    checkbox: {
-        position: 'absolute',
-        right: -10,
-        top: -5
-    },
-    imageItem: {
-        flex: 1,
-        flexDirection: 'row',
-        position: 'relative'
-    },
-    imageSelected: {
-        padding: 10
-    },
-    imageUnselected: {
-        padding: 0
     }
 });

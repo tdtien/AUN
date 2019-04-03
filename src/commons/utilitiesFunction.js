@@ -70,7 +70,7 @@ export function popWithUpdate() {
     Actions.pop();
 }
 
-export function popToMerchantWithUpdate() {
+export function popToSceneWithUpdate(key) {
     setTimeout(() => { Actions.refresh({ refresh: true }) }, 500);
-    Actions.popTo('_merchant');
+    Actions.popTo(key);
 }

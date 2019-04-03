@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { Modal, ActivityIndicator, View, TouchableOpacity, Alert, StatusBar } from "react-native";
+import { Modal, ActivityIndicator, View, TouchableOpacity, Alert, StatusBar, Text } from "react-native";
 import ImageViewer from "react-native-image-zoom-viewer";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import RNFS from "react-native-fs";
 import { AppCommon } from "../../commons/commons";
-import { popWithUpdate, deleteItem, popToMerchantWithUpdate } from "../../commons/utilitiesFunction";
+import { popWithUpdate, deleteItem, popToSceneWithUpdate } from "../../commons/utilitiesFunction";
 import Loader from "../Loader/Loader";
 import ImagePicker from 'react-native-image-crop-picker';
 import { Actions } from "react-native-router-flux";
@@ -17,7 +17,6 @@ export default class ImageModal extends Component {
             isLoading: false,
             currentIndex: this.props.index,
             images: this.props.images,
-            reload: false,
         }
     }
 
@@ -66,14 +65,16 @@ export default class ImageModal extends Component {
             includeBase64: true
         }).then(image => {
             let that = this;
-            RNFS.writeFile(that.state.images[that.state.currentIndex].url, image.data, "base64")
-                .then(function (response) {
-                    that.setState({ isLoading: false, reload: true });
-                }).catch(function (error) {
+            var url = that.state.images[that.state.currentIndex].url;
+            let path = url.substring(0, url.indexOf('?'));
+            RNFS.writeFile(path, image.data, "base64")
+                .then(response => {
+                    popToSceneWithUpdate('merchantDetail');
+                }).catch(error => {
                     console.log(error);
                     that.setState({ isLoading: false });
                 })
-        }).catch(function (error) {
+        }).catch(error => {
             this.setState({ isLoading: false });
             console.log(error);
         })
@@ -103,7 +104,7 @@ export default class ImageModal extends Component {
                             console.log('Folder empty');
                             deleteItem(this.props.folderPath).then(result => {
                                 console.log('Delete original folder success');
-                                popToMerchantWithUpdate();
+                                popToSceneWithUpdate('_merchant');
                             })
                         } else {
                             this.setState({
@@ -128,67 +129,80 @@ export default class ImageModal extends Component {
         this.setState({ currentIndex: index })
     }
 
+    renderFooter() {
+        return (
+            <View style={{ height: 100, backgroundColor: 'red' }}>
+                <Text style={{ fontSize: 16, color: 'white', textAlign: 'center' }}>Footer</Text>
+            </View>
+        )
+    }
+
+    renderHeader() {
+        return (
+            <View style={{
+                flexDirection: "row",
+                justifyContent: "space-between"
+            }}
+            >
+                <TouchableOpacity
+                    onPress={() => Actions.pop()}
+                    style={{ margin: 15 }}
+                >
+                    <Icon name="arrow-left" size={30} color="#fff" />
+                </TouchableOpacity>
+                {this.props.mode === "save" ? (
+                    <TouchableOpacity
+                        onPress={() => this.handleSave()}
+                        style={{ margin: 15 }}
+                    >
+                        <Icon name="content-save" size={30} color="#fff" />
+                    </TouchableOpacity>
+
+                ) : (
+                        <View style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-end"
+                        }}
+                        >
+                            <TouchableOpacity
+                                onPress={() => this.handleEdit()}
+                                style={{ margin: 15 }}
+                            >
+                                <Icon name="crop-rotate" size={30} color="#fff" />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => this.handleDelete()}
+                                style={{ margin: 15, marginLeft: 0 }}
+                            >
+                                <Icon name="delete" size={30} color="#fff" />
+                            </TouchableOpacity>
+                        </View>
+                    )
+                }
+            </View>
+        )
+    }
+
     render() {
         return (
-            <View>
+            <Modal visible={this.state.visible} transparent>
                 <StatusBar backgroundColor="black" />
-                <Modal visible={this.state.visible}>
-                    <ImageViewer
-                        enableSwipeDown
-                        imageUrls={this.state.images}
-                        loadingRender={() => (
-                            <ActivityIndicator color="#424242" animating />
-                        )}
-                        index={this.state.currentIndex}
-                        onChange={this.handleChange}
-                        renderHeader={() => (
-                            <View style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between"
-                            }}
-                            >
-                                <TouchableOpacity
-                                    onPress={() => popWithUpdate()}
-                                    style={{ margin: 15 }}
-                                >
-                                    <Icon name="arrow-left" size={30} color="#fff" />
-                                </TouchableOpacity>
-                                {this.props.mode === "save" ? (
-                                    <TouchableOpacity
-                                        onPress={() => this.handleSave()}
-                                        style={{ margin: 15 }}
-                                    >
-                                        <Icon name="content-save" size={30} color="#fff" />
-                                    </TouchableOpacity>
-
-                                ) : (
-                                        <View style={{
-                                            flexDirection: "row",
-                                            justifyContent: "flex-end"
-                                        }}
-                                        >
-                                            <TouchableOpacity
-                                                onPress={() => this.handleEdit()}
-                                                style={{ margin: 15 }}
-                                            >
-                                                <Icon name="square-edit-outline" size={30} color="#fff" />
-                                            </TouchableOpacity>
-                                            <TouchableOpacity
-                                                onPress={() => this.handleDelete()}
-                                                style={{ margin: 15, marginLeft: 0 }}
-                                            >
-                                                <Icon name="delete" size={30} color="#fff" />
-                                            </TouchableOpacity>
-                                        </View>
-                                    )
-                                }
-                            </View>
-                        )}
-                        onSwipeDown={() => popWithUpdate()}
-                    />
-                </Modal>
+                <ImageViewer
+                    enableSwipeDown
+                    enablePreload
+                    imageUrls={this.state.images}
+                    loadingRender={() => (
+                        <ActivityIndicator color="#424242" animating />
+                    )}
+                    index={this.state.currentIndex}
+                    onSwipeDown={() => Actions.pop()}
+                    onChange={this.handleChange}
+                    footerContainerStyle={{ width: '100%' }}
+                    renderHeader={this.renderHeader.bind(this)}
+                // renderFooter={this.renderFooter.bind(this)}
+                />
                 <Loader loading={this.state.isLoading} />
-            </View>
+            </Modal>
         );
     }
 }
