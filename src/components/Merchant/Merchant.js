@@ -31,7 +31,8 @@ export default class Merchant extends Component {
             refreshing: false,
             isEnd: false,
             searchText: "",
-            isSearching: false
+            isSearching: false,
+            version: 0
         };
     }
     componentDidMount() {
@@ -45,7 +46,7 @@ export default class Merchant extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        // console.log('componentWillReceiveProps');
+        this.setState({ version: nextProps.version })
         this.makeRemoteRequest();
     }
 
@@ -147,8 +148,11 @@ export default class Merchant extends Component {
 
     renderItem({ item }) {
         return (
-            <MerchantItem item={item} action={this.handleDeleteItem}>
-            </MerchantItem>
+            <MerchantItem
+                item={item}
+                action={this.handleDeleteItem}
+                version={this.state.version}
+            />
         );
     }
 

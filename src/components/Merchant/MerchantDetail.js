@@ -42,6 +42,7 @@ const screenWidth = Dimensions.get('window').width;
 const columns = 2;
 const imageMargin = 10;
 const imageWidth = (screenWidth - imageMargin * 4) / columns;
+const imageHeight = imageWidth * 1.4;
 class MerchantDetail extends Component {
     constructor(props) {
         super(props);
@@ -52,7 +53,8 @@ class MerchantDetail extends Component {
             byteArray: {},
             isCheckBoxVisible: false,
             selectedCheckList: [],
-            isSelectAll: false
+            isSelectAll: false,
+            version: 0
         }
     }
 
@@ -65,6 +67,7 @@ class MerchantDetail extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        this.setState({ version: nextProps.version })
         this.makeRemoteRequest();
     }
 
@@ -238,9 +241,12 @@ class MerchantDetail extends Component {
         let checked = this.state.selectedCheckList.includes(item);
         return (this.state.isCheckBoxVisible) ? (
             <TouchableOpacity activeOpacity={0.8} onPress={() => this.handleCheckBoxPressed(item)}>
-                <ImageBackground style={{ width: imageWidth, height: imageWidth * 1.4 }} source={{ isStatic: true, uri: `file://${item.path}` }}>
-                    <CheckBox   
-                        containerStyle={{ margin: 0, padding: 0, marginTop: 6 }}
+                <ImageBackground
+                    style={{ width: imageWidth, height: imageHeight }}
+                    source={{ width: imageWidth, height: imageHeight, uri: `file://${item.path}?ver=${this.state.version}`, cache: "reload" }}
+                >
+                    <CheckBox
+                        containerStyle={{ margin: 0, padding: 0, marginTop: 10 }}
                         checked={checked}
                         onPress={() => this.handleCheckBoxPressed(item)}
                         checkedColor={'white'}
@@ -249,7 +255,10 @@ class MerchantDetail extends Component {
             </TouchableOpacity>
         ) : (
                 <TouchableOpacity activeOpacity={0.8} onPress={() => this.handleImageModal(item)} onLongPress={() => this.handleSelectMultipleImages()}>
-                    <ImageBackground style={{ width: imageWidth, height: imageWidth * 1.4, flex: 1, justifyContent: "flex-end" }} source={{ isStatic: true, uri: `file://${item.path}?${new Date()}` }}>
+                    <ImageBackground
+                        style={{ width: imageWidth, height: imageHeight, flex: 1, justifyContent: "flex-end" }}
+                        source={{ width: imageWidth, height: imageHeight, uri: `file://${item.path}?ver=${this.state.version}`, cache: "reload" }}
+                    >
                         <Text style={{ color: 'white', backgroundColor: 'rgba(204, 204, 204, 0.5)', padding: 5 }}>{index + 1}</Text>
                     </ImageBackground>
                 </TouchableOpacity>

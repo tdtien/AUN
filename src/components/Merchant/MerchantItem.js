@@ -9,7 +9,6 @@ import {
     Image
 } from "react-native";
 import { Actions } from "react-native-router-flux";
-import Icon from 'react-native-vector-icons/FontAwesome'
 import RNFS from 'react-native-fs'
 import moment from 'moment'
 import Swipeout from 'react-native-swipeout'
@@ -33,6 +32,7 @@ export default class MerchantItem extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
         this.makeRemoteRequest(nextProps);
     }
 
@@ -90,7 +90,7 @@ export default class MerchantItem extends Component {
                                 },
                                 {
                                     text: 'OK',
-                                    onPress: () => {this.props.action(this.props.item)},
+                                    onPress: () => { this.props.action(this.props.item) },
                                 }
                             ]
                         )
@@ -103,7 +103,10 @@ export default class MerchantItem extends Component {
             <Swipeout {...swipeSetting}>
                 <TouchableHighlight onPress={() => this.handleClickItem(`file://${this.props.item.path}`)}>
                     <View style={styles.container}>
-                        <Image style={styles.image} source={{ isStatic: true, uri: `file://${this.state.previewImagePath}` }} />
+                        <Image
+                            style={styles.image}
+                            source={{ width: 140, height: 100, uri: `file://${this.state.previewImagePath}?ver=${this.props.version}`, cache: 'reload' }}
+                        />
                         <View style={styles.information}>
                             <Text style={styles.title}>{this.props.item.name}</Text>
                             <View style={styles.subTitle}>
@@ -165,6 +168,6 @@ const styles = StyleSheet.create({
     badgeText: {
         paddingLeft: 5,
         paddingRight: 5,
-        fontSize: 12
+        fontSize: 10
     }
 });

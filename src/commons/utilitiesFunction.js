@@ -66,11 +66,11 @@ export async function deleteMultipleItems(files) {
 }
 
 export function popWithUpdate() {
-    setTimeout(() => { Actions.refresh({ refresh: true }) }, 500);
+    setTimeout(() => { Actions.refresh({ refresh: true, version: Math.random() }) }, 500);
     Actions.pop();
 }
 
 export function popToSceneWithUpdate(key) {
-    setTimeout(() => { Actions.refresh({ refresh: true }) }, 500);
+    setTimeout(() => { Actions.refresh({ refresh: true, version: Math.random() }) }, 500);
     Actions.popTo(key);
 }
