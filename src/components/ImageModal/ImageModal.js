@@ -93,7 +93,9 @@ export default class ImageModal extends Component {
                     this.setState({
                         isLoading: true,
                     })
-                    let path = this.state.images[this.state.currentIndex].url;
+                    var url=this.state.images[this.state.currentIndex].url;
+                    let path = url.substring(0, url.indexOf('?'));
+                    // let path = this.state.images[this.state.currentIndex].url;
                     console.log('Current path: ' + path);
                     deleteItem(path).then(result => {
                         console.log('Delete Success');
