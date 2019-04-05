@@ -109,9 +109,13 @@ export default class ImageModal extends Component {
                                 popToSceneWithUpdate('_merchant');
                             })
                         } else {
+                            let index = 0;
+                            if (this.state.currentIndex !== 0) {
+                                index = this.state.currentIndex - 1;
+                            }
                             this.setState({
                                 images: temp,
-                                currentIndex: 0,
+                                currentIndex: index,
                                 isLoading: false
                             });
                         }
@@ -147,7 +151,7 @@ export default class ImageModal extends Component {
             }}
             >
                 <TouchableOpacity
-                    onPress={() => Actions.pop()}
+                    onPress={() => popWithUpdate()}
                     style={{ margin: 15 }}
                 >
                     <Icon name="arrow-left" size={30} color="#fff" />
@@ -197,7 +201,7 @@ export default class ImageModal extends Component {
                         <ActivityIndicator color="#424242" animating />
                     )}
                     index={this.state.currentIndex}
-                    onSwipeDown={() => Actions.pop()}
+                    onSwipeDown={() => popWithUpdate()}
                     onChange={this.handleChange}
                     footerContainerStyle={{ width: '100%' }}
                     renderHeader={this.renderHeader.bind(this)}

@@ -1,16 +1,27 @@
 import React, { Component } from "react";
 import {
     View,
-    FlatList,
     StyleSheet,
     ActivityIndicator,
     Alert,
     ScrollView,
     TouchableOpacity,
     Text,
-    BackHandler
+    BackHandler,
+    RefreshControl,
+    ListView
 } from "react-native";
-import { Item, Icon as IconNB, Input, Header } from "native-base";
+import {
+    Item,
+    Icon as IconNB,
+    Input,
+    Container,
+    Header,
+    Content,
+    List,
+    Button,
+    ListItem
+} from "native-base";
 import Icon from 'react-native-vector-icons/FontAwesome'
 import MerchantItem from "./MerchantItem";
 import { Actions } from "react-native-router-flux";
@@ -146,34 +157,51 @@ export default class Merchant extends Component {
 
     };
 
-    renderItem({ item }) {
-        return (
-            <MerchantItem
-                item={item}
-                action={this.handleDeleteItem}
-                version={this.state.version}
-            />
-        );
-    }
+    // renderItem({ item }) {
+    //     return (
+    //         <MerchantItem
+    //             item={item}
+    //             action={this.handleDeleteItem}
+    //             version={this.state.version}
+    //         />
+    //     );
+    // }
 
-    handleDeleteItem = (item) => {
-        this.setState({
-            isLoading: true
-        })
-        deleteItem(`file://${item.path}`).then(result => {
-            let temp = this.state.data;
-            temp.splice(temp.indexOf(item), 1);
-            this.setState({
-                data: temp,
-                isLoading: false
-            })
-            // this.makeRemoteRequest();
-        }).catch(error => {
-            this.setState({
-                isLoading: false
-            })
-            Alert.alert('Error', error.message);
-        })
+    handleDeleteItem = (item, secId, rowId, rowMap) => {
+        Alert.alert(
+            'Delete folder',
+            'Are you sure you want to delete this folder',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                    onPress: () => null,
+                },
+                {
+                    text: 'OK',
+                    onPress: () => {
+                        this.setState({
+                            isLoading: true
+                        })
+                        rowMap[`${secId}${rowId}`].props.closeRow();
+                        deleteItem(`file://${item.path}`).then(result => {
+                            let temp = this.state.data;
+                            temp.splice(temp.indexOf(item), 1);
+                            this.setState({
+                                data: temp,
+                                isLoading: false
+                            })
+                            // this.makeRemoteRequest();
+                        }).catch(error => {
+                            this.setState({
+                                isLoading: false
+                            })
+                            Alert.alert('Error', error.message);
+                        })
+                    },
+                }
+            ]
+        )
     }
 
     handleSearch = () => {
@@ -185,8 +213,11 @@ export default class Merchant extends Component {
     };
 
     render() {
+        const ds = new ListView.DataSource({
+            rowHasChanged: (r1, r2) => r1 !== r2
+        });
         return (
-            <View style={{ borderTopWidth: 0, borderBottomWidth: 0, flex: 1, backgroundColor: '#F7F5F5' }}>
+            <Container style={{ backgroundColor: '#F7F5F5' }}>
                 <Header
                     androidStatusBarColor="#2196F3"
                     style={{ backgroundColor: "#2196F3" }}
@@ -211,20 +242,44 @@ export default class Merchant extends Component {
                         />
                     </Item>
                 </Header>
-                <FlatList
-                    data={this.state.data}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={this.renderItem.bind(this)}
-                    ListFooterComponent={this.renderFooter}
-                    onRefresh={this.handleRefresh}
-                    refreshing={this.state.refreshing}
-                    onEndReached={this.handleLoadMore}
-                    onEndReachedThreshold={50}
-                />
+                <Content
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.handleRefresh}
+                        />
+                    }
+                >
+                    <List
+                        rightOpenValue={-75}
+                        dataSource={ds.cloneWithRows(this.state.data)}
+                        renderRow={item => (
+                            <MerchantItem
+                                item={item}
+                                version={this.state.version}
+                            />
+                        )}
+                        renderRightHiddenRow={(item, secId, rowId, rowMap) => (
+                            <Button full danger onPress={() => this.handleDeleteItem(item, secId, rowId, rowMap)}>
+                                <Icon active name="trash" />
+                            </Button>
+                        )}
+                    />
+                    {/* <FlatList
+                        data={this.state.data}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={this.renderItem.bind(this)}
+                        ListFooterComponent={this.renderFooter}
+                        onRefresh={this.handleRefresh}
+                        refreshing={this.state.refreshing}
+                        onEndReached={this.handleLoadMore}
+                        onEndReachedThreshold={50}
+                    /> */}
+                </Content>
                 <CameraButton
                     folderPath={null}
                 />
-            </View>
+            </Container>
         );
     }
 }

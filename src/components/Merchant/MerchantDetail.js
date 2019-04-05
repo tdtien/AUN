@@ -7,7 +7,7 @@ import {
     Alert,
     Dimensions,
     Text,
-    ImageBackground
+    ImageBackground,
 } from "react-native";
 import {
     Header,
@@ -54,7 +54,8 @@ class MerchantDetail extends Component {
             isCheckBoxVisible: false,
             selectedCheckList: [],
             isSelectAll: false,
-            version: 0
+            version: 0,
+            isFolderEdited: false,
         }
     }
 
@@ -67,6 +68,7 @@ class MerchantDetail extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        // Alert.alert('OK', 'OK');
         this.setState({ version: nextProps.version })
         this.makeRemoteRequest();
     }
@@ -298,7 +300,6 @@ class MerchantDetail extends Component {
                                     RNFS.writeFile(filePath, this.state.byteArray, "base64")
                                         .then(function (response) {
                                             console.log('Pdf is saved');
-                                            // Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, token: this.props.token });
                                             Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName });
                                         }).catch(function (error) {
                                             console.log(error);
@@ -308,7 +309,6 @@ class MerchantDetail extends Component {
                                 RNFS.writeFile(filePath, this.state.byteArray, "base64")
                                     .then(function (response) {
                                         console.log('Pdf is saved');
-                                        // Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, token: this.props.token  });
                                         Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName });
                                     }).catch(function (error) {
                                         console.log(error);
@@ -339,11 +339,11 @@ class MerchantDetail extends Component {
                 style={{ backgroundColor: AppCommon.colors }}
                 hasTabs
             >
-                <TouchableOpacity style={styles.headerButton} onPress={() => popWithUpdate()} >
+                <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
                     <Icon name="arrow-left" size={30} color="#fff" />
                 </TouchableOpacity>
                 <Body style={{ flex: 1 }}>
-                    <Title style={{ alignSelf: "center" }}>{this.props.folderName}</Title>
+                    <Title style={{ alignSelf: "center", marginRight: 15 }}>{this.props.folderName}</Title>
                 </Body>
                 <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
                     <Icon name="export" size={30} color="#fff" />
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
     headerButton: {
         alignItems: 'center',
         justifyContent: 'center',
-        paddingLeft: 5,
+        paddingLeft: 0,
         paddingRight: 5
     },
     headerLastButton: {
