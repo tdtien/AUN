@@ -261,7 +261,7 @@ export default class Merchant extends Component {
                         )}
                         renderRightHiddenRow={(item, secId, rowId, rowMap) => (
                             <Button full danger onPress={() => this.handleDeleteItem(item, secId, rowId, rowMap)}>
-                                <Icon active name="trash" />
+                                <Icon active name="trash" size = {25}/>
                             </Button>
                         )}
                     />
