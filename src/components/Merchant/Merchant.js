@@ -43,7 +43,7 @@ export default class Merchant extends Component {
             isEnd: false,
             searchText: "",
             isSearching: false,
-            version: 0
+            version: Math.random()
         };
     }
     componentDidMount() {
@@ -57,7 +57,9 @@ export default class Merchant extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({ version: nextProps.version })
+        if (nextProps.hasOwnProperty('version')) {
+            this.setState({ version: nextProps.version })
+        }
         this.makeRemoteRequest();
     }
 
@@ -261,7 +263,7 @@ export default class Merchant extends Component {
                         )}
                         renderRightHiddenRow={(item, secId, rowId, rowMap) => (
                             <Button full danger onPress={() => this.handleDeleteItem(item, secId, rowId, rowMap)}>
-                                <Icon active name="trash" size = {25}/>
+                                <Icon active name="trash" size={25} />
                             </Button>
                         )}
                     />

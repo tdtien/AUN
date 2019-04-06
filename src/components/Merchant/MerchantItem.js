@@ -31,7 +31,6 @@ export default class MerchantItem extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps);
         this.makeRemoteRequest(nextProps);
     }
 

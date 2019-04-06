@@ -54,22 +54,20 @@ class MerchantDetail extends Component {
             isCheckBoxVisible: false,
             selectedCheckList: [],
             isSelectAll: false,
-            version: 0,
-            isFolderEdited: false,
+            version: Math.random(),
+            initVersion: 0
         }
     }
 
     componentDidMount() {
         this.makeRemoteRequest();
-    }
-
-    componentWillUnmount() {
-        this._isMounted = false;
+        this.setState({ initVersion: this.state.version })
     }
 
     componentWillReceiveProps(nextProps) {
-        // Alert.alert('OK', 'OK');
-        this.setState({ version: nextProps.version })
+        if (nextProps.hasOwnProperty('version')) {
+            this.setState({ version: nextProps.version })
+        }
         this.makeRemoteRequest();
     }
 
@@ -129,6 +127,14 @@ class MerchantDetail extends Component {
             }
         );
     };
+
+    handlePop = () => {
+        if (this.state.initVersion !== this.state.version) {
+            popWithUpdate({ version: this.state.version })
+        } else {
+            popWithUpdate();
+        }
+    }
 
     handleImageModal = (item) => {
         folderToBase64(this.state.data).then(response => {

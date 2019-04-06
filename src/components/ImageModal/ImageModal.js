@@ -69,7 +69,7 @@ export default class ImageModal extends Component {
             let path = url.substring(0, url.indexOf('?'));
             RNFS.writeFile(path, image.data, "base64")
                 .then(response => {
-                    popToSceneWithUpdate('merchantDetail');
+                    popToSceneWithUpdate('merchantDetail', { version: Math.random() });
                 }).catch(error => {
                     console.log(error);
                     that.setState({ isLoading: false });
@@ -93,7 +93,7 @@ export default class ImageModal extends Component {
                     this.setState({
                         isLoading: true,
                     })
-                    var url=this.state.images[this.state.currentIndex].url;
+                    var url = this.state.images[this.state.currentIndex].url;
                     let path = url.substring(0, url.indexOf('?'));
                     // let path = this.state.images[this.state.currentIndex].url;
                     console.log('Current path: ' + path);
@@ -106,7 +106,7 @@ export default class ImageModal extends Component {
                             console.log('Folder empty');
                             deleteItem(this.props.folderPath).then(result => {
                                 console.log('Delete original folder success');
-                                popToSceneWithUpdate('_merchant');
+                                popToSceneWithUpdate('_merchant', { version: Math.random() });
                             })
                         } else {
                             let index = 0;
