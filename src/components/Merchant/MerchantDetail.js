@@ -339,7 +339,7 @@ class MerchantDetail extends Component {
                 style={{ backgroundColor: AppCommon.colors }}
                 hasTabs
             >
-                <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
+                <TouchableOpacity style={styles.headerButton} onPress={() => popWithUpdate()} >
                     <Icon name="arrow-left" size={30} color="#fff" />
                 </TouchableOpacity>
                 <Body style={{ flex: 1 }}>
