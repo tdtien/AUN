@@ -224,14 +224,13 @@ export default class Merchant extends Component {
             <Header
                 androidStatusBarColor="#2196F3"
                 style={{ backgroundColor: "#2196F3" }}
-                // searchBar
                 rounded
             >
-                <TouchableOpacity style={styles.menuButton} onPress={() => this.drawerOpen()} >
+                <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()} >
                     <IconNB name='menu' style={{ color: 'white' }} />
                 </TouchableOpacity>
                 <Body style={{ flex: 1 }}>
-                    <Title style={{ alignSelf: "center", marginRight: 15 }}>All Docs</Title>
+                    <Title style={{ alignSelf: "center"}}>All Docs</Title>
                 </Body>
                 <TouchableOpacity style={styles.menuButton} onPress={() => this.handleSearchPressed()} >
                     <IconNB name="ios-search" style={{ color: 'white' }} />
@@ -316,7 +315,7 @@ const styles = StyleSheet.create({
     menuButton: {
         alignItems: 'center',
         justifyContent: 'center',
-        paddingLeft: 5,
-        paddingRight: 15
+        paddingLeft: 10,
+        paddingRight: 10
     },
 });
