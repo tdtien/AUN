@@ -40,10 +40,11 @@ export default class Merchant extends Component {
             data: [],
             error: null,
             refreshing: false,
-            isEnd: false,
             searchText: "",
+            isEnd: false,
             isSearching: false,
-            version: Math.random()
+            version: Math.random(),
+            dataFilter: []
         };
     }
     componentDidMount() {
@@ -206,8 +207,17 @@ export default class Merchant extends Component {
         )
     }
 
-    handleSearch = () => {
-        //
+    handleSearch = (searchText) => {
+        console.log(searchText);
+        temp = [];
+        if (searchText) {
+            this.state.data.forEach(function (element) {
+                if (element.name.includes(searchText)) {
+                    temp.push(element);
+                }
+            });
+            this.setState({ dataFilter: temp });
+        }
     };
 
     handleCancelSearch = () => {
@@ -218,6 +228,7 @@ export default class Merchant extends Component {
         const ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1 !== r2
         });
+        let dataRender = this.state.searchText ? this.state.dataFilter : this.state.data;
         return (
             <Container style={{ backgroundColor: '#F7F5F5' }}>
                 <Header
@@ -232,15 +243,16 @@ export default class Merchant extends Component {
                     <Item>
                         {this.state.isSearching ? <IconNB name="ios-arrow-back" onPress={() => this.handleCancelSearch()} /> : <IconNB name="ios-search" />}
                         <Input
-                            placeholder="Search"
-                            onChangeText={searchText =>
-                                this.setState({ searchText: searchText })
+                            placeholder="Search..."
+                            onChangeText={searchText => {
+                                this.setState({ searchText: searchText }),
+                                    this.handleSearch(searchText);
                             }
-                            onSubmitEditing={this.handleSearch}
+                            }
+                            // onSubmitEditing={this.handleSearch}
                             returnKeyType="search"
                             clearButtonMode="unless-editing"
                             clearTextOnFocus
-                            ref="searchInput"
                         />
                     </Item>
                 </Header>
@@ -254,7 +266,7 @@ export default class Merchant extends Component {
                 >
                     <List
                         rightOpenValue={-75}
-                        dataSource={ds.cloneWithRows(this.state.data)}
+                        dataSource={ds.cloneWithRows(dataRender)}
                         renderRow={item => (
                             <MerchantItem
                                 item={item}
