@@ -29,27 +29,32 @@ class PDFViewer extends React.Component {
         this.setState({
             isLoading: true
         })
-        var data = new FormData();
-        data.append('file', {
-            uri: this.props.filePath,
-            name: this.props.fileName,
-            type: 'multipart/form-data'
-        });
+        var data = {
+            file: this.props.base64,
+            sarId: 1,
+            criterionId: 1,
+            subCriterionId: 1,
+            suggestionId: 1,
+            name: this.props.fileName
+        }
         updatePdf(this.props.token, data)
             .then((responseJson) => {
                 this.setState({
                     isLoading: false
                 })
-                console.log(responseJson);
+                console.log('responseJson: ' + responseJson.msg);
                 if (responseJson.msg === 'Upload file successful')
                     Alert.alert('Success', responseJson.msg);
                 else {
-                    Alert.alert('Error', responseJson.msg);
+                    Alert.alert('Error1', responseJson.msg);
                 }
             })
             .catch((error) => {
-                console.error(error);
-                Alert.alert('Error', error);
+                this.setState({
+                    isLoading: false
+                })
+                console.error('Error: ' + error);
+                Alert.alert('Error2', error);
             });
     }
 

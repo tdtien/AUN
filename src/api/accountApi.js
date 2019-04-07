@@ -38,14 +38,14 @@ export async function requestLogin(email, password) {
 
 export async function updatePdf(token, data) {
     return new Promise((resolve, reject) => {
-        fetch(`${userAPI}/uploadfile`, {
+        fetch(`${userAPI}/evidences`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'multipart/form-data',
+                'Content-Type': 'application/json',
                 'authorization': token
             },
-            body: data
+            body: JSON.stringify(data)
         }).then(response => response.json())
             .then(responseJson => resolve(responseJson))
             .catch(error => reject(error));

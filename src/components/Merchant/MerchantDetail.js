@@ -297,7 +297,7 @@ class MerchantDetail extends Component {
                                     RNFS.writeFile(filePath, this.state.byteArray, "base64")
                                         .then(function (response) {
                                             console.log('Pdf is saved');
-                                            Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName });
+                                            Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64 });
                                         }).catch(function (error) {
                                             console.log(error);
                                         })
@@ -306,7 +306,7 @@ class MerchantDetail extends Component {
                                 RNFS.writeFile(filePath, this.state.byteArray, "base64")
                                     .then(function (response) {
                                         console.log('Pdf is saved');
-                                        Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName });
+                                        Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64 });
                                     }).catch(function (error) {
                                         console.log(error);
                                     })
