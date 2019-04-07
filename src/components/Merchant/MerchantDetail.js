@@ -287,8 +287,8 @@ class MerchantDetail extends Component {
                             byteArray: responseJson.dataBase64,
                             isLoading: false
                         })
-                        let folderPath = RNFS.ExternalDirectoryPath + AppCommon.pdf_dir;
-                        // let filePath = folderPath + "/" + this.props.folderName + ".pdf";
+                        let folderPath = AppCommon.directoryPath + AppCommon.pdf_dir;
+                        
                         let fileName = this.props.folderName + ".pdf";
                         let filePath = folderPath + "/" + fileName;
                         RNFS.exists(folderPath).then((response) => {

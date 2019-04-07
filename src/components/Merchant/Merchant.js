@@ -75,8 +75,7 @@ export default class Merchant extends Component {
     };
 
     makeRemoteRequest = () => {
-        let mainPath = RNFS.ExternalDirectoryPath + AppCommon.root_dir;
-
+        let mainPath = AppCommon.directoryPath + AppCommon.root_dir;
         RNFS.exists(mainPath).then((response) => {
             if (!response) {
                 RNFS.mkdir(mainPath).then((response) => {

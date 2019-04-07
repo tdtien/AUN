@@ -23,7 +23,7 @@ export default class ImageModal extends Component {
     handleSave = () => {
         this.setState({ isLoading: true });
         //Save to folder
-        let mainPath = RNFS.ExternalDirectoryPath + AppCommon.root_dir;
+        let mainPath = AppCommon.directoryPath + AppCommon.root_dir;
         var milliseconds = (new Date).getTime();
         let data = this.props.images[this.props.index].base64
         let directory = this.props.directory;
