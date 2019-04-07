@@ -9,10 +9,11 @@ import {
     Right,
 } from "native-base";
 import Pdf from 'react-native-pdf';
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
+import { updatePdf } from '../../api/accountApi';
 
 class PDFViewer extends React.Component {
     constructor(props) {
@@ -34,16 +35,7 @@ class PDFViewer extends React.Component {
             name: this.props.fileName,
             type: 'multipart/form-data'
         });
-        fetch('https://aun-api.herokuapp.com/user/uploadfile', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'multipart/form-data',
-                'authorization': this.props.token
-            },
-            body: data
-        })
-            .then((response) => response.json())
+        updatePdf(this.props.token, data)
             .then((responseJson) => {
                 this.setState({
                     isLoading: false
@@ -62,9 +54,6 @@ class PDFViewer extends React.Component {
     }
 
     render() {
-        const source = { uri: this.props.filePath };
-        // const source = {uri: 'http://www.e-ptit.edu.vn/hoctap/hoclieu/PLDC.pdf'};
-
         return (
             <View style={styles.container}>
                 <Header
@@ -73,11 +62,7 @@ class PDFViewer extends React.Component {
                     hasTabs
                 >
                     <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
-                        <Icon
-                            name='chevron-left'
-                            size={25}
-                            color='white'
-                        />
+                        <Icon name="arrow-left" size={30} color="#fff" />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center" }}>{this.props.fileName}</Title>
@@ -91,7 +76,7 @@ class PDFViewer extends React.Component {
                     </TouchableOpacity>
                 </Header>
                 <Pdf
-                    source={source}
+                    source={{ uri: this.props.filePath }}
                     onLoadComplete={(numberOfPages, filePath) => {
                         console.log(`number of pages: ${numberOfPages}`);
                     }}

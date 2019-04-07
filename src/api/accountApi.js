@@ -1,20 +1,17 @@
 const userAPI = 'https://aun-api.herokuapp.com/user';
-const loginURL = `${userAPI}/login`;
-const registerURL = `${userAPI}/register`;
 
 export async function requestLogin(email, password) {
     var info = {
         email: email,
         passWord: password
     }
-    var infoJSON = JSON.stringify(info);
     return new Promise((resolve, reject) => {
-        fetch('https://aun-api.herokuapp.com/user/login', {
+        fetch(`${userAPI}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: infoJSON
+            body: JSON.stringify(info)
         })
             .then(response => response.json())
             .then((responseJson) => {
@@ -26,15 +23,46 @@ export async function requestLogin(email, password) {
     })
 }
 
-export function requestRegister(email, password) {
+// export function requestRegister(email, password) {
+//     return new Promise((resolve, reject) => {
+//         axios.post(registerURL, {
+//             email: email,
+//             password: password
+//         }).then(response => {
+//             resolve(response.data);
+//         }).catch(error => {
+//             reject(error);
+//         });
+//     })
+// }
+
+export async function updatePdf(token, data) {
     return new Promise((resolve, reject) => {
-        axios.post(registerURL, {
-            email: email,
-            password: password
-        }).then(response => {
-            resolve(response.data);
-        }).catch(error => {
-            reject(error);
-        });
-    })
+        fetch(`${userAPI}/uploadfile`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'multipart/form-data',
+                'authorization': token
+            },
+            body: data
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}
+
+export async function convert2Pdf(token, data) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/convert2Pdf3`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
 }

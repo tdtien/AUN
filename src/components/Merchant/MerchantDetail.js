@@ -37,6 +37,7 @@ import {
 } from 'react-native-popup-menu';
 import { CheckBox } from 'react-native-elements'
 import { FlatGrid } from "react-native-super-grid";
+import { convert2Pdf } from "../../api/accountApi";
 
 const screenWidth = Dimensions.get('window').width;
 const columns = 2;
@@ -140,10 +141,9 @@ class MerchantDetail extends Component {
         folderToBase64(this.state.data).then(response => {
             var dataProps = [];
             for (var i = 0; i < this.state.data.length; i++) {
-                let image = { url: `file://${this.state.data[i].path}?${new Date()}`, base64: response[i] };
+                let image = { url: `file://${this.state.data[i].path}?ver=${this.state.version}`, base64: response[i] };
                 dataProps.push(image);
             }
-            console.log(dataProps);
             var props = { images: dataProps, index: this.state.data.indexOf(item), mode: "edit", folderPath: this.props.folderPath };
             Actions.imageModal(props);
         }).catch(error => {
@@ -280,18 +280,9 @@ class MerchantDetail extends Component {
         let exportData = (this.state.isCheckBoxVisible) ? this.state.selectedCheckList : this.state.data;
         folderToBase64(exportData)
             .then(result => {
-                console.log('Array: ' + result);
-                fetch('https://aun-api.herokuapp.com/user/convert2Pdf3', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'authorization': this.props.token
-                    },
-                    body: JSON.stringify(result)
-                })
-                    .then((response) => response.json())
+                convert2Pdf(this.props.token, result)
                     .then((responseJson) => {
-                        console.log('Export to pdf');
+                        console.log(responseJson);
                         this.setState({
                             byteArray: responseJson.dataBase64,
                             isLoading: false
@@ -345,7 +336,7 @@ class MerchantDetail extends Component {
                 style={{ backgroundColor: AppCommon.colors }}
                 hasTabs
             >
-                <TouchableOpacity style={styles.headerButton} onPress={() => popWithUpdate()} >
+                <TouchableOpacity style={styles.headerButton} onPress={() => this.handlePop()} >
                     <Icon name="arrow-left" size={30} color="#fff" />
                 </TouchableOpacity>
                 <Body style={{ flex: 1 }}>
