@@ -1,37 +1,15 @@
+import { Button, Container, Content, Header, Icon as IconNB, Input, Item, List, Body, Title } from "native-base";
 import React, { Component } from "react";
-import {
-    View,
-    StyleSheet,
-    ActivityIndicator,
-    Alert,
-    ScrollView,
-    TouchableOpacity,
-    Text,
-    BackHandler,
-    RefreshControl,
-    ListView
-} from "react-native";
-import {
-    Item,
-    Icon as IconNB,
-    Input,
-    Container,
-    Header,
-    Content,
-    List,
-    Button,
-    ListItem
-} from "native-base";
-import Icon from 'react-native-vector-icons/FontAwesome'
-import MerchantItem from "./MerchantItem";
-import { Actions } from "react-native-router-flux";
-import { merchantStyles } from "./MerchantStyle";
+import { ActivityIndicator, Alert, Text, BackHandler, ListView, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
 import RNFS from "react-native-fs";
+import { Actions } from "react-native-router-flux";
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { AppCommon } from "../../commons/commons";
+import { deleteItem } from '../../commons/utilitiesFunction';
 import CameraButton from "./CameraButton";
-import { deleteItem } from '../../commons/utilitiesFunction'
-import Loader from '../Loader/Loader';
+import MerchantItem from "./MerchantItem";
 
+const searchHeight = 40;
 export default class Merchant extends Component {
     constructor(props) {
         super(props);
@@ -224,24 +202,53 @@ export default class Merchant extends Component {
         this.setState({ isSearching: false, data: [] }, () => this.handleRefresh());
     };
 
+    handleSearchPressed = () => {
+        this.setState({
+            isSearching: true
+        })
+    }
+
+    handleSearchBack = () => {
+        this.setState({
+            isSearching: false,
+            searchText: ""
+        })
+    }
+
     render() {
         const ds = new ListView.DataSource({
             rowHasChanged: (r1, r2) => r1 !== r2
         });
         let dataRender = this.state.searchText ? this.state.dataFilter : this.state.data;
-        return (
-            <Container style={{ backgroundColor: '#F7F5F5' }}>
+        let header = (!this.state.isSearching) ? (
+            <Header
+                androidStatusBarColor="#2196F3"
+                style={{ backgroundColor: "#2196F3" }}
+                // searchBar
+                rounded
+            >
+                <TouchableOpacity style={styles.menuButton} onPress={() => this.drawerOpen()} >
+                    <IconNB name='menu' style={{ color: 'white' }} />
+                </TouchableOpacity>
+                <Body style={{ flex: 1 }}>
+                    <Title style={{ alignSelf: "center", marginRight: 15 }}>All Docs</Title>
+                </Body>
+                <TouchableOpacity style={styles.menuButton} onPress={() => this.handleSearchPressed()} >
+                    <IconNB name="ios-search" style={{ color: 'white' }} />
+                </TouchableOpacity>
+            </Header>
+        ) : (
                 <Header
                     androidStatusBarColor="#2196F3"
                     style={{ backgroundColor: "#2196F3" }}
                     searchBar
                     rounded
                 >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()} >
-                        <IconNB name='menu' style={{ color: 'white' }} />
+                    <TouchableOpacity style={styles.menuButton} onPress={() => this.handleSearchBack()} >
+                        <IconNB name='ios-arrow-back' style={{ color: 'white' }} />
                     </TouchableOpacity>
-                    <Item>
-                        {this.state.isSearching ? <IconNB name="ios-arrow-back" onPress={() => this.handleCancelSearch()} /> : <IconNB name="ios-search" />}
+                    <Item >
+                        <IconNB name="ios-search" />
                         <Input
                             placeholder="Search..."
                             onChangeText={searchText => {
@@ -249,13 +256,20 @@ export default class Merchant extends Component {
                                     this.handleSearch(searchText);
                             }
                             }
-                            // onSubmitEditing={this.handleSearch}
+                            onSubmitEditing={this.handleSearch}
                             returnKeyType="search"
                             clearButtonMode="unless-editing"
                             clearTextOnFocus
                         />
                     </Item>
+
                 </Header>
+            )
+        return (
+            <Container style={{ backgroundColor: '#F7F5F5' }}>
+                {
+                    header
+                }
                 <Content
                     refreshControl={
                         <RefreshControl
