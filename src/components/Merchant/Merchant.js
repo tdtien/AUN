@@ -1,15 +1,13 @@
-import { Button, Container, Content, Header, Icon as IconNB, Input, Item, List, Body, Title } from "native-base";
+import { Button, Container, Content, Header, Icon, Input, Item, List, Body, Title } from "native-base";
 import React, { Component } from "react";
-import { ActivityIndicator, Alert, Text, BackHandler, ListView, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, BackHandler, ListView, RefreshControl, StyleSheet, TouchableOpacity, View, Platform } from "react-native";
 import RNFS from "react-native-fs";
 import { Actions } from "react-native-router-flux";
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { AppCommon } from "../../commons/commons";
 import { deleteItem } from '../../commons/utilitiesFunction';
 import CameraButton from "./CameraButton";
 import MerchantItem from "./MerchantItem";
 
-const searchHeight = 40;
 export default class Merchant extends Component {
     constructor(props) {
         super(props);
@@ -26,7 +24,6 @@ export default class Merchant extends Component {
         };
     }
     componentDidMount() {
-        // console.log('componentDidMount');
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.makeRemoteRequest();
     }
@@ -221,32 +218,32 @@ export default class Merchant extends Component {
         let dataRender = this.state.searchText ? this.state.dataFilter : this.state.data;
         let header = (!this.state.isSearching) ? (
             <Header
-                androidStatusBarColor="#2196F3"
-                style={{ backgroundColor: "#2196F3" }}
+                androidStatusBarColor={AppCommon.colors}
+                style={{ backgroundColor: AppCommon.colors }}
                 rounded
             >
                 <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()} >
-                    <IconNB name='menu' style={{ color: 'white' }} />
+                    <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
                 <Body style={{ flex: 1 }}>
-                    <Title style={{ alignSelf: "center"}}>All Docs</Title>
+                    <Title style={{ alignSelf: "center", color: 'white' }}>All Docs</Title>
                 </Body>
                 <TouchableOpacity style={styles.menuButton} onPress={() => this.handleSearchPressed()} >
-                    <IconNB name="ios-search" style={{ color: 'white' }} />
+                    <Icon name={AppCommon.icon("search")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
             </Header>
         ) : (
                 <Header
-                    androidStatusBarColor="#2196F3"
-                    style={{ backgroundColor: "#2196F3" }}
+                    androidStatusBarColor={AppCommon.colors}
+                    style={{ backgroundColor: AppCommon.colors }}
                     searchBar
                     rounded
                 >
                     <TouchableOpacity style={styles.menuButton} onPress={() => this.handleSearchBack()} >
-                        <IconNB name='ios-arrow-back' style={{ color: 'white' }} />
+                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Item >
-                        <IconNB name="ios-search" />
+                        <Icon name={AppCommon.icon("search")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                         <Input
                             placeholder="Search..."
                             onChangeText={searchText => {
@@ -254,17 +251,16 @@ export default class Merchant extends Component {
                                     this.handleSearch(searchText);
                             }
                             }
-                            onSubmitEditing={this.handleSearch}
+                            onSubmitEditing={() => this.handleSearch(this.state.searchText)}
                             returnKeyType="search"
                             clearButtonMode="unless-editing"
                             clearTextOnFocus
                         />
                     </Item>
-
                 </Header>
             )
         return (
-            <Container style={{ backgroundColor: '#F7F5F5' }}>
+            <Container>
                 {
                     header
                 }
@@ -287,7 +283,7 @@ export default class Merchant extends Component {
                         )}
                         renderRightHiddenRow={(item, secId, rowId, rowMap) => (
                             <Button full danger onPress={() => this.handleDeleteItem(item, secId, rowId, rowMap)}>
-                                <Icon active name="trash" size={25} />
+                                <Icon active name={AppCommon.icon("trash")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                             </Button>
                         )}
                     />

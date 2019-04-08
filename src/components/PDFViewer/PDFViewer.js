@@ -1,19 +1,19 @@
 import React from 'react';
-import { StyleSheet, Dimensions, View, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Dimensions, ActivityIndicator, TouchableOpacity, Alert, View } from 'react-native';
 import {
     Header,
-    Left,
     Body,
-    Button,
     Title,
-    Right,
+    Container,
+    Icon,
+    Content
 } from "native-base";
 import Pdf from 'react-native-pdf';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
 import { updatePdf } from '../../api/accountApi';
+import { AppCommon } from '../../commons/commons';
 
 class PDFViewer extends React.Component {
     constructor(props) {
@@ -60,27 +60,29 @@ class PDFViewer extends React.Component {
 
     render() {
         return (
-            <View style={styles.container}>
+            <Container>
                 <Header
-                    androidStatusBarColor="#2196F3"
-                    style={{ backgroundColor: "#2196F3" }}
+                    androidStatusBarColor={AppCommon.colors}
+                    style={{ backgroundColor: AppCommon.colors }}
                     hasTabs
                 >
                     <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
-                        <Icon name="arrow-left" size={30} color="#fff" />
+                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center" }}>{this.props.fileName}</Title>
                     </Body>
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleUploadPdf()} >
-                        <Icon
-                            name='upload'
-                            size={30}
-                            color='white'
-                        />
+                        <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                 </Header>
                 <Pdf
+                    onLoadProgress={() => {
+                        <ActivityIndicator
+                            animating
+                            color={AppCommon.colors}
+                        />
+                    }}
                     source={{ uri: this.props.filePath }}
                     onLoadComplete={(numberOfPages, filePath) => {
                         console.log(`number of pages: ${numberOfPages}`);
@@ -93,10 +95,8 @@ class PDFViewer extends React.Component {
                     }}
                     style={styles.pdf}
                 />
-                {
-                    <Loader loading={this.state.isLoading} />
-                }
-            </View>
+                <Loader loading={this.state.isLoading} />
+            </Container>
         )
     }
 }

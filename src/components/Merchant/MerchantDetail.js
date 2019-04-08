@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {
     View,
-    Image,
     StyleSheet,
     TouchableOpacity,
     Alert,
@@ -11,16 +10,15 @@ import {
 } from "react-native";
 import {
     Header,
-    Left,
+    Icon,
     Body,
-    Button,
     Title,
     Right,
     Footer,
     Container,
-    Content
+    Content,
+    Button
 } from "native-base";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Actions } from "react-native-router-flux";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
@@ -288,7 +286,7 @@ class MerchantDetail extends Component {
                             isLoading: false
                         })
                         let folderPath = AppCommon.directoryPath + AppCommon.pdf_dir;
-                        
+
                         let fileName = this.props.folderName + ".pdf";
                         let filePath = folderPath + "/" + fileName;
                         RNFS.exists(folderPath).then((response) => {
@@ -334,27 +332,32 @@ class MerchantDetail extends Component {
             <Header
                 androidStatusBarColor={AppCommon.colors}
                 style={{ backgroundColor: AppCommon.colors }}
-                hasTabs
             >
                 <TouchableOpacity style={styles.headerButton} onPress={() => this.handlePop()} >
-                    <Icon name="arrow-left" size={30} color="#fff" />
+                    <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
                 <Body style={{ flex: 1 }}>
                     <Title style={{ alignSelf: "center", marginRight: 15 }}>{this.props.folderName}</Title>
                 </Body>
                 <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
-                    <Icon name="export" size={30} color="#fff" />
+                    <Icon name="pdffile1" type="AntDesign" style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
-                <View style={styles.headerLastButton}>
+                <View style={styles.headerButton}>
                     <Menu>
                         <MenuTrigger>
-                            <Icon name="dots-vertical" size={30} color="#fff" />
+                            <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                         </MenuTrigger>
                         <MenuOptions>
                             <MenuOption onSelect={() => this.handleSelectMultipleImages()}>
                                 <View style={styles.popupItem}>
-                                    <Icon name="checkbox-marked" size={30} color="#2F4F4F" />
+                                    <Icon name={AppCommon.icon("checkbox")} style={{ color: 'green', fontSize: AppCommon.icon_size }} />
                                     <Text style={styles.popupItemText}>Select</Text>
+                                </View>
+                            </MenuOption>
+                            <MenuOption onSelect={() => this.handleExport2Pdf()}>
+                                <View style={styles.popupItem}>
+                                    <Icon name="pdffile1" type="AntDesign" style={{ color: 'red', fontSize: AppCommon.icon_size }} />
+                                    <Text style={styles.popupItemText}>Export to PDF</Text>
                                 </View>
                             </MenuOption>
                         </MenuOptions>
@@ -365,10 +368,9 @@ class MerchantDetail extends Component {
                 <Header
                     androidStatusBarColor={AppCommon.colors}
                     style={{ backgroundColor: AppCommon.colors }}
-                    hasTabs
                 >
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleDeselectCheckbox()} >
-                        <Icon name="arrow-left" size={30} color="#fff" />
+                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center" }}>{`${this.state.selectedCheckList.length} selected`}</Title>
@@ -384,28 +386,14 @@ class MerchantDetail extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                 >
                     <Right>
-                        {
-                            (this.state.selectedCheckList.length === 0) ?
-                                (
-                                    <View style={styles.footerButton}>
-                                        <TouchableOpacity disabled={true} style={{ marginLeft: 20 }} onPress={() => null} >
-                                            <Icon name="export" size={30} color="#B0C4DE" />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity disabled={true} style={{ marginLeft: 20 }} onPress={() => null} >
-                                            <Icon name="delete" size={30} color="#B0C4DE" />
-                                        </TouchableOpacity>
-                                    </View>
-                                ) : (
-                                    <View style={styles.footerButton}>
-                                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => this.handleExport2Pdf()} >
-                                            <Icon name="export" size={30} color="#fff" />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => this.handleDeleteMultipleImages()} >
-                                            <Icon name="delete" size={30} color="#fff" />
-                                        </TouchableOpacity>
-                                    </View>
-                                )
-                        }
+                        <View style={styles.footerButton}>
+                            <TouchableOpacity disabled={this.state.selectedCheckList.length === 0} style={{ marginLeft: 20 }} onPress={() => this.state.selectedCheckList.length === 0 ? null : this.handleExport2Pdf()} >
+                                <Icon name={AppCommon.icon("share")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            </TouchableOpacity>
+                            <TouchableOpacity disabled={this.state.selectedCheckList.length === 0} style={{ marginLeft: 20 }} onPress={() => this.state.selectedCheckList.length === 0 ? null : this.handleDeleteMultipleImages()} >
+                                <Icon name={AppCommon.icon("trash")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            </TouchableOpacity>
+                        </View>
                     </Right>
                 </Footer>
             ) : (
@@ -455,14 +443,8 @@ const styles = StyleSheet.create({
     headerButton: {
         alignItems: 'center',
         justifyContent: 'center',
-        paddingLeft: 0,
-        paddingRight: 5
-    },
-    headerLastButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingLeft: 5,
-        paddingRight: 0
+        paddingLeft: 10,
+        paddingRight: 10
     },
     footerButton: {
         flex: 1,

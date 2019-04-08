@@ -154,16 +154,15 @@ export default class ImageModal extends Component {
                     onPress={() => popWithUpdate()}
                     style={{ margin: 15 }}
                 >
-                    <Icon name="arrow-left" size={30} color="#fff" />
+                    <Icon name="arrow-left" size={AppCommon.icon_size} color="#fff" />
                 </TouchableOpacity>
                 {this.props.mode === "save" ? (
                     <TouchableOpacity
                         onPress={() => this.handleSave()}
                         style={{ margin: 15 }}
                     >
-                        <Icon name="content-save" size={30} color="#fff" />
+                        <Icon name="content-save" size={AppCommon.icon_size} color="#fff" />
                     </TouchableOpacity>
-
                 ) : (
                         <View style={{
                             flexDirection: "row",
@@ -174,13 +173,13 @@ export default class ImageModal extends Component {
                                 onPress={() => this.handleEdit()}
                                 style={{ margin: 15 }}
                             >
-                                <Icon name="crop-rotate" size={30} color="#fff" />
+                                <Icon name="crop-rotate" size={AppCommon.icon_size} color="#fff" />
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => this.handleDelete()}
                                 style={{ margin: 15, marginLeft: 0 }}
                             >
-                                <Icon name="delete" size={30} color="#fff" />
+                                <Icon name="delete" size={AppCommon.icon_size} color="#fff" />
                             </TouchableOpacity>
                         </View>
                     )

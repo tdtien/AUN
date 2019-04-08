@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { TouchableOpacity } from "react-native";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { merchantStyles } from "./MerchantStyle";
 import { Actions } from "react-native-router-flux";
 import { showImagePicker } from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
+import { AppCommon } from "../../commons/commons";
+import { Icon } from "native-base";
 
 export default class CameraButton extends Component {
 
@@ -45,9 +46,7 @@ export default class CameraButton extends Component {
     render() {
         return (
             <TouchableOpacity style={merchantStyles.cameraButton} onPress={() => this.handlePickImage()}>
-                <Icon name={"camera"}
-                    size={30}
-                    color="white" />
+                <Icon name={AppCommon.icon("camera")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
             </TouchableOpacity>
         );
     }

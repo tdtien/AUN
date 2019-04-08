@@ -6,6 +6,7 @@ import {
     ActivityIndicator,
     StatusBar
 } from 'react-native';
+import { AppCommon } from '../../commons/commons';
 
 const Loader = props => {
     const {
@@ -19,12 +20,14 @@ const Loader = props => {
             animationType={'none'}
             visible={loading}
             onRequestClose={() => { console.log('close modal') }}>
-            <StatusBar backgroundColor="#00000040" barStyle="dark-content" />
+            <StatusBar backgroundColor={AppCommon.colors} barStyle="dark-content" />
             <View style={styles.modalBackground}>
                 <View style={styles.activityIndicatorWrapper}>
                     <ActivityIndicator
                         size="large"
-                        animating={loading} />
+                        animating={loading}
+                        color={AppCommon.colors}
+                    />
                 </View>
             </View>
         </Modal>
