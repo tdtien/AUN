@@ -42,7 +42,7 @@ export default class CameraButton extends Component {
                     images.forEach(image => {
                         imageModelProp.push({ url: image.path, base64: image.data });
                     });
-                    Actions.imageModal({ images: imageModelProp, index: 0, directory: this.props.folderPath, mode: "save", multiple: true });
+                    Actions.imageModal({ images: imageModelProp, index: 0, directory: this.props.folderPath, mode: "save"});
                 }).catch(error => {
                     console.log(error);
                 })

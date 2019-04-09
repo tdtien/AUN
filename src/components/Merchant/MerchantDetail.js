@@ -272,59 +272,16 @@ class MerchantDetail extends Component {
             )
     }
 
-    handleExport2Pdf = () => {
-        this.setState({
-            isLoading: true
-        })
+    processData = () => {
+        var dataProp = {};
         let exportData = (this.state.isCheckBoxVisible) ? this.state.selectedCheckList : this.state.data;
-        folderToBase64(exportData)
-            .then(result => {
-                convert2Pdf(this.props.token, result)
-                    .then((responseJson) => {
-                        console.log(responseJson);
-                        this.setState({
-                            byteArray: responseJson.dataBase64,
-                            isLoading: false
-                        })
-                        let folderPath = AppCommon.directoryPath + AppCommon.pdf_dir;
-
-                        let fileName = this.props.folderName + ".pdf";
-                        let filePath = folderPath + "/" + fileName;
-                        RNFS.exists(folderPath).then((response) => {
-                            if (!response) {
-                                RNFS.mkdir(folderPath).then((response) => {
-                                    RNFS.writeFile(filePath, this.state.byteArray, "base64")
-                                        .then(function (response) {
-                                            console.log('Pdf is saved');
-                                            Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64 });
-                                        }).catch(function (error) {
-                                            console.log(error);
-                                        })
-                                })
-                            } else {
-                                RNFS.writeFile(filePath, this.state.byteArray, "base64")
-                                    .then(function (response) {
-                                        console.log('Pdf is saved');
-                                        Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64 });
-                                    }).catch(function (error) {
-                                        console.log(error);
-                                    })
-                            }
-                        })
-                    })
-                    .catch((error) => {
-                        this.setState({
-                            isLoading: false
-                        })
-                        console.error(error);
-                    });
-            }).catch(error => {
-                this.setState({
-                    isLoading: false
-                })
-                console.log('Error when convert to pdf: ' + error);
-                Alert.alert('Error', 'Error when convert to pdf');
-            })
+        for (var i = 0; i < exportData.length; i++) {
+            dataProp[i] = {
+                image: `file://${this.state.data[i].path}?ver=${this.state.version}`,
+                item: this.state.data[i]
+            }
+        }
+        return dataProp;
     }
 
     render() {
@@ -340,7 +297,7 @@ class MerchantDetail extends Component {
                 <Body style={{ flex: 1 }}>
                     <Title style={{ alignSelf: "center", marginRight: 15 }}>{this.props.folderName}</Title>
                 </Body>
-                <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
+                <TouchableOpacity style={styles.headerButton} onPress={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName })} >
                     <Icon name="pdffile1" type="AntDesign" style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
                 <View style={styles.headerMoreButton}>
@@ -355,7 +312,7 @@ class MerchantDetail extends Component {
                                     <Text style={styles.popupItemText}>Select</Text>
                                 </View>
                             </MenuOption>
-                            <MenuOption onSelect={() => this.handleExport2Pdf()}>
+                            <MenuOption onSelect={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName })}>
                                 <View style={styles.popupItem}>
                                     <Icon name="pdffile1" type="AntDesign" style={{ color: 'red', fontSize: AppCommon.icon_size }} />
                                     <Text style={styles.popupItemText}>Export to PDF</Text>
@@ -406,15 +363,6 @@ class MerchantDetail extends Component {
         return (
             <Container>
                 {header}
-                {/* <FlatList
-                    extraData={this.state}
-                    data={this.state.data}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={this.renderItem.bind(this)}
-                    onRefresh={this.handleRefresh}
-                    refreshing={this.state.refreshing}
-                    numColumns={columns}
-                /> */}
                 <Content>
                     <FlatGrid
                         style={{ marginTop: 10, flex: 1 }}

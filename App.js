@@ -10,13 +10,14 @@ import PDFViewer from './src/components/PDFViewer/PDFViewer';
 import { connect } from "react-redux";
 import { BackHandler } from "react-native";
 import { ToastAndroid } from "react-native";
+import SortList from './src/components/Merchant/SortList';
 
 class App extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      
+
     }
   }
 
@@ -52,6 +53,10 @@ class App extends Component {
           <Scene
             key="imageModal"
             component={ImageModal}
+          />
+          <Scene
+            key="sortList"
+            component={SortList}
           />
           <Drawer
             hideNavBar
