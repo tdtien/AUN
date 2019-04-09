@@ -1,12 +1,13 @@
-import { Button, Container, Content, Header, Icon, Input, Item, List, Body, Title } from "native-base";
+import { Button, Container, Content, Header, Icon, Input, Item, Body, Title } from "native-base";
 import React, { Component } from "react";
-import { ActivityIndicator, Alert, BackHandler, ListView, RefreshControl, StyleSheet, TouchableOpacity, View, Platform } from "react-native";
+import { ActivityIndicator, Alert, BackHandler, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View, Platform } from "react-native";
 import RNFS from "react-native-fs";
 import { Actions } from "react-native-router-flux";
 import { AppCommon } from "../../commons/commons";
 import { deleteItem } from '../../commons/utilitiesFunction';
 import CameraButton from "./CameraButton";
 import MerchantItem from "./MerchantItem";
+import moment from 'moment'
 
 export default class Merchant extends Component {
     constructor(props) {
@@ -134,15 +135,15 @@ export default class Merchant extends Component {
 
     };
 
-    // renderItem({ item }) {
-    //     return (
-    //         <MerchantItem
-    //             item={item}
-    //             action={this.handleDeleteItem}
-    //             version={this.state.version}
-    //         />
-    //     );
-    // }
+    renderItem({ item }) {
+        return (
+            <MerchantItem
+                item={item}
+                action={this.handleDeleteItem}
+                version={this.state.version}
+            />
+        );
+    }
 
     handleDeleteItem = (item, secId, rowId, rowMap) => {
         Alert.alert(
@@ -182,8 +183,7 @@ export default class Merchant extends Component {
     }
 
     handleSearch = (searchText) => {
-        console.log(searchText);
-        temp = [];
+        var temp = [];
         if (searchText) {
             this.state.data.forEach(function (element) {
                 if (element.name.includes(searchText)) {
@@ -192,10 +192,6 @@ export default class Merchant extends Component {
             });
             this.setState({ dataFilter: temp });
         }
-    };
-
-    handleCancelSearch = () => {
-        this.setState({ isSearching: false, data: [] }, () => this.handleRefresh());
     };
 
     handleSearchPressed = () => {
@@ -212,9 +208,17 @@ export default class Merchant extends Component {
     }
 
     render() {
-        const ds = new ListView.DataSource({
-            rowHasChanged: (r1, r2) => r1 !== r2
-        });
+        // const ds = new ListView.DataSource({
+        //     rowHasChanged: (r1, r2) => r1 !== r2
+        // });
+        if (this.state.isLoading) {
+            return (
+                <ActivityIndicator
+                    animating
+                    color={AppCommon.colors}
+                />
+            )
+        }
         let dataRender = this.state.searchText ? this.state.dataFilter : this.state.data;
         let header = (!this.state.isSearching) ? (
             <Header
@@ -247,10 +251,9 @@ export default class Merchant extends Component {
                         <Input
                             placeholder="Search..."
                             onChangeText={searchText => {
-                                this.setState({ searchText: searchText }),
-                                    this.handleSearch(searchText);
-                            }
-                            }
+                                this.setState({ searchText: searchText });
+                                this.handleSearch(searchText);
+                            }}
                             onSubmitEditing={() => this.handleSearch(this.state.searchText)}
                             returnKeyType="search"
                             clearButtonMode="unless-editing"
@@ -265,14 +268,16 @@ export default class Merchant extends Component {
                     header
                 }
                 <Content
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={this.state.refreshing}
-                            onRefresh={this.handleRefresh}
-                        />
-                    }
+                    // refreshControl={
+                    //     <RefreshControl
+                    //         refreshing={this.state.refreshing}
+                    //         onRefresh={this.handleRefresh}
+                    //     />
+                    // }
+                    style={{ flex: 1 }}
+                    contentContainerStyle={{ flex: 1 }}
                 >
-                    <List
+                    {/* <List
                         rightOpenValue={-75}
                         dataSource={ds.cloneWithRows(dataRender)}
                         renderRow={item => (
@@ -286,17 +291,18 @@ export default class Merchant extends Component {
                                 <Icon active name={AppCommon.icon("trash")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                             </Button>
                         )}
-                    />
-                    {/* <FlatList
-                        data={this.state.data}
-                        keyExtractor={(item, index) => index.toString()}
+                    /> */}
+                    <FlatList
+                        data={dataRender}
+                        extraData={dataRender}
+                        keyExtractor={(item, index) => moment(item.mtime).valueOf().toString()}
                         renderItem={this.renderItem.bind(this)}
                         ListFooterComponent={this.renderFooter}
                         onRefresh={this.handleRefresh}
                         refreshing={this.state.refreshing}
                         onEndReached={this.handleLoadMore}
                         onEndReachedThreshold={50}
-                    /> */}
+                    />
                 </Content>
                 <CameraButton
                     folderPath={null}

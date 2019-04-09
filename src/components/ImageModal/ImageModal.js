@@ -8,6 +8,8 @@ import { popWithUpdate, deleteItem, popToSceneWithUpdate } from "../../commons/u
 import Loader from "../Loader/Loader";
 import ImagePicker from 'react-native-image-crop-picker';
 import { Actions } from "react-native-router-flux";
+import DialogInput from "react-native-dialog-input";
+import moment from "moment";
 
 export default class ImageModal extends Component {
     constructor(props) {
@@ -17,41 +19,42 @@ export default class ImageModal extends Component {
             isLoading: false,
             currentIndex: this.props.index,
             images: this.props.images,
+            folderName: '',
+            isDialogVisible: false,
         }
     }
 
-    handleSave = () => {
+    handleSave = (name, index) => {
         this.setState({ isLoading: true });
-        //Save to folder
         let mainPath = AppCommon.directoryPath + AppCommon.root_dir;
-        var milliseconds = (new Date).getTime();
-        let data = this.props.images[this.props.index].base64
-        let directory = this.props.directory;
+        let currentMilis = moment().valueOf();
+        let data = this.state.images[index].base64;
         let that = this;
-        let imageName = milliseconds + ".jpg";
-        if (directory === (undefined || null)) {
-            let folderName = `New_Doc_${milliseconds}`;
-            let folderPath = mainPath + "/" + folderName;
-            RNFS.mkdir(folderPath).then(function (response) {
+        let imageName = currentMilis + ".jpg";
+        if (name === '') {
+            name = 'New_Doc_' + currentMilis;
+        }
+        let folderPath = mainPath + "/" + name;
+        RNFS.mkdir(folderPath)
+            .then((response) => {
                 RNFS.writeFile(folderPath + "/" + imageName, data, "base64")
                     .then(function (response) {
+                        if (++index < that.state.images.length) {
+                            that.handleSave(name, index);
+                        } else {
+                            that.setState({ isLoading: false });
+                            popWithUpdate();
+                        }
+                    }).catch(error => {
+                        console.log(error);
                         that.setState({ isLoading: false });
                         popWithUpdate();
-                    }).catch(function (error) {
-                        that.setState({ isLoading: false });
-                        console.log(error);
                     })
+            }).catch(error => {
+                console.log(error);
+                that.setState({ isLoading: false });
+                popWithUpdate();
             })
-        } else {
-            RNFS.writeFile(directory + "/" + imageName, data, "base64")
-                .then(function (response) {
-                    that.setState({ isLoading: false });
-                    popWithUpdate();
-                }).catch(function (error) {
-                    that.setState({ isLoading: false });
-                    console.log(error);
-                })
-        }
     }
 
     handleEdit = () => {
@@ -158,7 +161,14 @@ export default class ImageModal extends Component {
                 </TouchableOpacity>
                 {this.props.mode === "save" ? (
                     <TouchableOpacity
-                        onPress={() => this.handleSave()}
+                        onPress={() => {
+                            if (this.props.directory === (undefined || null)) {
+                                this.setState({ isDialogVisible: true });
+                            } else {
+                                let name = this.props.directory.substring(this.props.directory.lastIndexOf('/'), this.props.directory.length);
+                                this.handleSave(name, 0);
+                            }
+                        }}
                         style={{ margin: 15 }}
                     >
                         <Icon name="content-save" size={AppCommon.icon_size} color="#fff" />
@@ -207,6 +217,13 @@ export default class ImageModal extends Component {
                 // renderFooter={this.renderFooter.bind(this)}
                 />
                 <Loader loading={this.state.isLoading} />
+                <DialogInput isDialogVisible={this.state.isDialogVisible}
+                    title={"Set name for doc"}
+                    hintInput={"New_Doc_<milisecond>"}
+                    submitText={"Set"}
+                    submitInput={(inputText) => { this.handleSave(inputText, 0) }}
+                    closeDialog={() => { this.showDialog(false) }}>
+                </DialogInput>
             </Modal>
         );
     }

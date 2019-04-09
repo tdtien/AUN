@@ -7,6 +7,7 @@ import {
     Dimensions,
     Text,
     ImageBackground,
+    ActivityIndicator
 } from "react-native";
 import {
     Header,
@@ -31,7 +32,7 @@ import {
     Menu,
     MenuOptions,
     MenuOption,
-    MenuTrigger
+    MenuTrigger,
 } from 'react-native-popup-menu';
 import { CheckBox } from 'react-native-elements'
 import { FlatGrid } from "react-native-super-grid";
@@ -327,6 +328,14 @@ class MerchantDetail extends Component {
     }
 
     render() {
+        if (this.state.isLoading) {
+            return (
+                <ActivityIndicator
+                    animating
+                    color={AppCommon.colors}
+                />
+            )
+        }
         let selectImageTitle = (!this.state.isSelectAll) ? 'Select All' : 'Deselect All'
         let header = (!this.state.isCheckBoxVisible) ? (
             <Header
@@ -342,12 +351,12 @@ class MerchantDetail extends Component {
                 <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
                     <Icon name="pdffile1" type="AntDesign" style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
-                <View style={styles.headerButton}>
+                <View style={styles.headerMoreButton}>
                     <Menu>
-                        <MenuTrigger>
+                        <MenuTrigger customStyles={triggerStyles}>
                             <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                         </MenuTrigger>
-                        <MenuOptions>
+                        <MenuOptions optionsContainerStyle={{ marginTop: 50 }}>
                             <MenuOption onSelect={() => this.handleSelectMultipleImages()}>
                                 <View style={styles.popupItem}>
                                     <Icon name={AppCommon.icon("checkbox")} style={{ color: 'green', fontSize: AppCommon.icon_size }} />
@@ -380,6 +389,7 @@ class MerchantDetail extends Component {
                     </TouchableOpacity>
                 </Header>
             )
+        let isDisable = this.state.selectedCheckList.length === 0;
         let footer = (this.state.isCheckBoxVisible) ?
             (
                 <Footer
@@ -387,11 +397,11 @@ class MerchantDetail extends Component {
                 >
                     <Right>
                         <View style={styles.footerButton}>
-                            <TouchableOpacity disabled={this.state.selectedCheckList.length === 0} style={{ marginLeft: 20 }} onPress={() => this.state.selectedCheckList.length === 0 ? null : this.handleExport2Pdf()} >
-                                <Icon name={AppCommon.icon("share")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : this.handleExport2Pdf()} >
+                                <Icon name="pdffile1" type="AntDesign" style={{ color: isDisable ? 'gray' : 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
-                            <TouchableOpacity disabled={this.state.selectedCheckList.length === 0} style={{ marginLeft: 20 }} onPress={() => this.state.selectedCheckList.length === 0 ? null : this.handleDeleteMultipleImages()} >
-                                <Icon name={AppCommon.icon("trash")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : this.handleDeleteMultipleImages()} >
+                                <Icon name={AppCommon.icon("trash")} style={{ color: isDisable ? 'gray' : 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                         </View>
                     </Right>
@@ -439,7 +449,18 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps)(MerchantDetail);
 
+const triggerStyles = {
+    triggerWrapper: {
+        padding: 10,
+    },
+    TriggerTouchableComponent: TouchableOpacity,
+};
+
 const styles = StyleSheet.create({
+    headerMoreButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     headerButton: {
         alignItems: 'center',
         justifyContent: 'center',
