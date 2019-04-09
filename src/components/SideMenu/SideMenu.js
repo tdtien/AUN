@@ -45,7 +45,7 @@ export default class SideMenu extends Component {
                     <FooterTab>
                         <Button
                             full
-                            style={{ backgroundColor: "#2196F3" }}
+                            style={{ backgroundColor: AppCommon.colors }}
                             onPress={() => this.handleLogout()}
                         >
                             <Icon name={AppCommon.icon("log-out")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />

@@ -328,14 +328,6 @@ class MerchantDetail extends Component {
     }
 
     render() {
-        if (this.state.isLoading) {
-            return (
-                <ActivityIndicator
-                    animating
-                    color={AppCommon.colors}
-                />
-            )
-        }
         let selectImageTitle = (!this.state.isSelectAll) ? 'Select All' : 'Deselect All'
         let header = (!this.state.isCheckBoxVisible) ? (
             <Header

@@ -211,14 +211,6 @@ export default class Merchant extends Component {
         // const ds = new ListView.DataSource({
         //     rowHasChanged: (r1, r2) => r1 !== r2
         // });
-        if (this.state.isLoading) {
-            return (
-                <ActivityIndicator
-                    animating
-                    color={AppCommon.colors}
-                />
-            )
-        }
         let dataRender = this.state.searchText ? this.state.dataFilter : this.state.data;
         let header = (!this.state.isSearching) ? (
             <Header
@@ -277,32 +269,24 @@ export default class Merchant extends Component {
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
                 >
-                    {/* <List
-                        rightOpenValue={-75}
-                        dataSource={ds.cloneWithRows(dataRender)}
-                        renderRow={item => (
-                            <MerchantItem
-                                item={item}
-                                version={this.state.version}
+                    {this.state.isLoading ? (
+                        <ActivityIndicator
+                            animating
+                            color={AppCommon.colors}
+                        />
+                    ) : (
+                            <FlatList
+                                data={dataRender}
+                                extraData={dataRender}
+                                keyExtractor={(item, index) => moment(item.mtime).valueOf().toString()}
+                                renderItem={this.renderItem.bind(this)}
+                                ListFooterComponent={this.renderFooter}
+                                onRefresh={this.handleRefresh}
+                                refreshing={this.state.refreshing}
+                                onEndReached={this.handleLoadMore}
+                                onEndReachedThreshold={50}
                             />
                         )}
-                        renderRightHiddenRow={(item, secId, rowId, rowMap) => (
-                            <Button full danger onPress={() => this.handleDeleteItem(item, secId, rowId, rowMap)}>
-                                <Icon active name={AppCommon.icon("trash")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                            </Button>
-                        )}
-                    /> */}
-                    <FlatList
-                        data={dataRender}
-                        extraData={dataRender}
-                        keyExtractor={(item, index) => moment(item.mtime).valueOf().toString()}
-                        renderItem={this.renderItem.bind(this)}
-                        ListFooterComponent={this.renderFooter}
-                        onRefresh={this.handleRefresh}
-                        refreshing={this.state.refreshing}
-                        onEndReached={this.handleLoadMore}
-                        onEndReachedThreshold={50}
-                    />
                 </Content>
                 <CameraButton
                     folderPath={null}
