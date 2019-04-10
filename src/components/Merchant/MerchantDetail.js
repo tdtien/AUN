@@ -346,7 +346,7 @@ class MerchantDetail extends Component {
                 >
                     <Right>
                         <View style={styles.footerButton}>
-                            <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : this.handleExport2Pdf()} >
+                            <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : Actions.sortList({ data: this.processData(), folderName: this.props.folderName })} >
                                 <Icon name="pdffile1" type="AntDesign" style={{ color: isDisable ? 'gray' : 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                             <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : this.handleDeleteMultipleImages()} >

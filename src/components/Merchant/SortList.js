@@ -10,7 +10,7 @@ import {
     Platform,
 } from 'react-native';
 import SortableList from 'react-native-sortable-list';
-import { Container, Title, Body, Icon, Header } from "native-base";
+import { Container, Title, Body, Icon, Header, Content } from "native-base";
 import { AppCommon } from "../../commons/commons";
 import { Actions } from "react-native-router-flux";
 import Loader from "../Loader/Loader";
@@ -29,7 +29,8 @@ class SortList extends Component {
         this.state = {
             isLoading: false,
             byteArray: {},
-            data: this.props.data
+            data: this.props.data,
+            orderKey: []
         }
     }
 
@@ -55,6 +56,7 @@ class SortList extends Component {
                     contentContainerStyle={styles.contentContainer}
                     data={this.state.data}
                     renderRow={this._renderRow.bind(this)}
+                    onChangeOrder={(nextOrder) => { this.setState({ orderKey: nextOrder }) }}
                 />
                 <Loader loading={this.state.isLoading} />
             </Container>
@@ -66,21 +68,23 @@ class SortList extends Component {
             isLoading: true
         })
         var exportData = [];
-        var i = 0;
-        for (i in this.state.data) {
-            if (this.state.data.hasOwnProperty(i)) {
-                const element = this.state.data[i];
+        if (this.state.orderKey.length == 0) {
+            for (key in this.state.data) {
+                if (this.state.data.hasOwnProperty(key)) {
+                    const element = this.state.data[key];
+                    exportData.push(element.item);
+                }
+            }
+        } else {
+            for (var i = 0; i < this.state.orderKey.length; i++) {
+                const element = this.state.data[parseInt(this.state.orderKey[i])];
                 exportData.push(element.item);
-                i++;
-            } else {
-                break;
             }
         }
         folderToBase64(exportData)
             .then(result => {
                 convert2Pdf(this.props.token, result)
                     .then((responseJson) => {
-                        console.log(responseJson);
                         this.setState({
                             byteArray: responseJson.dataBase64,
                             isLoading: false
