@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     Dimensions,
     Platform,
+    Alert
 } from 'react-native';
 import SortableList from 'react-native-sortable-list';
 import { Container, Title, Body, Icon, Header, Content } from "native-base";
@@ -64,9 +65,7 @@ class SortList extends Component {
     }
 
     handleExport2Pdf = () => {
-        this.setState({
-            isLoading: true
-        })
+        this.setState({ isLoading: true })
         var exportData = [];
         if (this.state.orderKey.length == 0) {
             for (key in this.state.data) {
@@ -85,18 +84,25 @@ class SortList extends Component {
             .then(result => {
                 convert2Pdf(this.props.token, result)
                     .then((responseJson) => {
-                        this.setState({
-                            byteArray: responseJson.dataBase64,
-                            isLoading: false
-                        })
-                        let folderPath = AppCommon.directoryPath + AppCommon.pdf_dir;
-
-                        let fileName = this.props.folderName + ".pdf";
-                        let filePath = folderPath + "/" + fileName;
-                        let that = this;
-                        RNFS.exists(folderPath).then((response) => {
-                            if (!response) {
-                                RNFS.mkdir(folderPath).then((response) => {
+                        this.setState({ isLoading: false })
+                        if (responseJson.hasOwnProperty('dataBase64')) {
+                            this.setState({ byteArray: responseJson.dataBase64 })
+                            let folderPath = AppCommon.directoryPath + AppCommon.pdf_dir;
+                            let fileName = this.props.folderName + ".pdf";
+                            let filePath = folderPath + "/" + fileName;
+                            let that = this;
+                            RNFS.exists(folderPath).then((response) => {
+                                if (!response) {
+                                    RNFS.mkdir(folderPath).then((response) => {
+                                        RNFS.writeFile(filePath, that.state.byteArray, "base64")
+                                            .then(function (response) {
+                                                console.log('Pdf is saved');
+                                                Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64 });
+                                            }).catch(function (error) {
+                                                console.log(error);
+                                            })
+                                    })
+                                } else {
                                     RNFS.writeFile(filePath, that.state.byteArray, "base64")
                                         .then(function (response) {
                                             console.log('Pdf is saved');
@@ -104,28 +110,18 @@ class SortList extends Component {
                                         }).catch(function (error) {
                                             console.log(error);
                                         })
-                                })
-                            } else {
-                                RNFS.writeFile(filePath, that.state.byteArray, "base64")
-                                    .then(function (response) {
-                                        console.log('Pdf is saved');
-                                        Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64 });
-                                    }).catch(function (error) {
-                                        console.log(error);
-                                    })
-                            }
-                        })
+                                }
+                            })
+                        } else {
+                            Alert.alert('Error', 'Cannot conver to pdf. Please contact developer to fix this issue');
+                        }
                     })
                     .catch((error) => {
-                        this.setState({
-                            isLoading: false
-                        })
+                        this.setState({ isLoading: false })
                         console.error(error);
                     });
             }).catch(error => {
-                this.setState({
-                    isLoading: false
-                })
+                this.setState({ isLoading: false })
                 console.log('Error when convert to pdf: ' + error);
                 Alert.alert('Error', 'Error when convert to pdf');
             })

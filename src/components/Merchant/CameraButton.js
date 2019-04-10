@@ -13,10 +13,8 @@ const options = {
     customButtons: [
         { name: 'chooseMultipleImage', title: 'Choose multiple images from Library...' }
     ],
+    noData: true,
     quality: 1,
-    storageOptions: {
-        skipBackup: true,
-    },
 }
 export default class CameraButton extends Component {
 
@@ -44,9 +42,6 @@ export default class CameraButton extends Component {
                     console.log(error);
                 })
             } else {
-                // const source = { uri: response.uri };
-                // You can also display the image using data:
-                // const source = { uri: 'data:image/jpeg;base64,' + response.data };
                 ImagePicker.openCropper({
                     cropping: true,
                     path: response.uri,

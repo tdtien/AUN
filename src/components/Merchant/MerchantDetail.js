@@ -137,17 +137,14 @@ class MerchantDetail extends Component {
     }
 
     handleImageModal = (item) => {
-        folderToBase64(this.state.data).then(response => {
-            var dataProps = [];
-            for (var i = 0; i < this.state.data.length; i++) {
-                let image = { url: `file://${this.state.data[i].path}?ver=${this.state.version}`, base64: response[i] };
-                dataProps.push(image);
-            }
-            var props = { images: dataProps, index: this.state.data.indexOf(item), mode: "edit", folderPath: this.props.folderPath };
-            Actions.imageModal(props);
-        }).catch(error => {
-            console.log(error);
-        })
+        this.setState({ isLoading: true })
+        var dataProps = [];
+        for (var i = 0; i < this.state.data.length; i++) {
+            dataProps.push({ url: `file://${this.state.data[i].path}?ver=${this.state.version}` });
+        }
+        var props = { images: dataProps, index: this.state.data.indexOf(item), mode: "edit", folderPath: this.props.folderPath };
+        this.setState({ isLoading: false })
+        Actions.imageModal(props);
     }
 
     handleSelectMultipleImages = () => {
