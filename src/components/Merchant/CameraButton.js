@@ -26,8 +26,6 @@ export default class CameraButton extends Component {
 
     handlePickImage = () => {
         showImagePicker(options, (response) => {
-            console.log('Response = ', response);
-
             if (response.didCancel) {
                 console.log('User cancelled image picker');
             } else if (response.error) {
@@ -36,11 +34,10 @@ export default class CameraButton extends Component {
                 ImagePicker.openPicker({
                     multiple: true,
                     mediaType: 'photo',
-                    includeBase64: true
                 }).then(images => {
                     var imageModelProp = [];
                     images.forEach(image => {
-                        imageModelProp.push({ url: image.path, base64: image.data });
+                        imageModelProp.push({ url: image.path });
                     });
                     Actions.imageModal({ images: imageModelProp, index: 0, directory: this.props.folderPath, mode: "save"});
                 }).catch(error => {
@@ -56,9 +53,8 @@ export default class CameraButton extends Component {
                     freeStyleCropEnabled: true,
                     width: 1440,
                     height: 2560,
-                    includeBase64: true
                 }).then(image => {
-                    Actions.imageModal({ images: [{ url: image.path, base64: image.data }], index: 0, directory: this.props.folderPath, mode: "save" });
+                    Actions.imageModal({ images: [{ url: image.path }], index: 0, directory: this.props.folderPath, mode: "save" });
                 }).catch(error => {
                     console.log(error);
                 })

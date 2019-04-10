@@ -4,7 +4,7 @@ import ImageViewer from "react-native-image-zoom-viewer";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import RNFS from "react-native-fs";
 import { AppCommon } from "../../commons/commons";
-import { popWithUpdate, deleteItem, popToSceneWithUpdate } from "../../commons/utilitiesFunction";
+import { popWithUpdate, deleteItem, popToSceneWithUpdate, fileToBase64 } from "../../commons/utilitiesFunction";
 import Loader from "../Loader/Loader";
 import ImagePicker from 'react-native-image-crop-picker';
 import { Actions } from "react-native-router-flux";
@@ -28,33 +28,34 @@ export default class ImageModal extends Component {
         this.setState({ isLoading: true });
         let mainPath = AppCommon.directoryPath + AppCommon.root_dir;
         let currentMilis = moment().valueOf();
-        let data = this.state.images[index].base64;
-        let that = this;
-        let imageName = currentMilis + ".jpg";
-        if (name === '') {
-            name = 'New_Doc_' + currentMilis;
-        }
-        let folderPath = mainPath + "/" + name;
-        RNFS.mkdir(folderPath)
-            .then((response) => {
-                RNFS.writeFile(folderPath + "/" + imageName, data, "base64")
-                    .then(function (response) {
-                        if (++index < that.state.images.length) {
-                            that.handleSave(name, index);
-                        } else {
+        fileToBase64(this.state.images[index].url).then(data => {
+            let that = this;
+            let imageName = currentMilis + ".jpg";
+            if (name === '') {
+                name = 'New_Doc_' + currentMilis;
+            }
+            let folderPath = mainPath + "/" + name;
+            RNFS.mkdir(folderPath)
+                .then((response) => {
+                    RNFS.writeFile(folderPath + "/" + imageName, data, "base64")
+                        .then(function (response) {
+                            if (++index < that.state.images.length) {
+                                that.handleSave(name, index);
+                            } else {
+                                that.setState({ isLoading: false });
+                                popWithUpdate();
+                            }
+                        }).catch(error => {
+                            console.log(error);
                             that.setState({ isLoading: false });
                             popWithUpdate();
-                        }
-                    }).catch(error => {
-                        console.log(error);
-                        that.setState({ isLoading: false });
-                        popWithUpdate();
-                    })
-            }).catch(error => {
-                console.log(error);
-                that.setState({ isLoading: false });
-                popWithUpdate();
-            })
+                        })
+                }).catch(error => {
+                    console.log(error);
+                    that.setState({ isLoading: false });
+                    popWithUpdate();
+                })
+        }).catch(error => console.log(error));
     }
 
     handleEdit = () => {
@@ -202,18 +203,67 @@ export default class ImageModal extends Component {
         return (
             <Modal visible={this.state.visible} transparent>
                 <StatusBar backgroundColor="black" />
+                <View style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    backgroundColor: 'black'
+                }}
+                >
+                    <TouchableOpacity
+                        onPress={() => popWithUpdate()}
+                        style={{ margin: 15 }}
+                    >
+                        <Icon name="arrow-left" size={AppCommon.icon_size} color="#fff" />
+                    </TouchableOpacity>
+                    {this.props.mode === "save" ? (
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (this.props.directory === (undefined || null)) {
+                                    this.setState({ isDialogVisible: true });
+                                } else {
+                                    let name = this.props.directory.substring(this.props.directory.lastIndexOf('/'), this.props.directory.length);
+                                    this.handleSave(name, 0);
+                                }
+                            }}
+                            style={{ margin: 15 }}
+                        >
+                            <Icon name="content-save" size={AppCommon.icon_size} color="#fff" />
+                        </TouchableOpacity>
+                    ) : (
+                            <View style={{
+                                flexDirection: "row",
+                                justifyContent: "flex-end"
+                            }}
+                            >
+                                <TouchableOpacity
+                                    onPress={() => this.handleEdit()}
+                                    style={{ margin: 15 }}
+                                >
+                                    <Icon name="crop-rotate" size={AppCommon.icon_size} color="#fff" />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => this.handleDelete()}
+                                    style={{ margin: 15, marginLeft: 0 }}
+                                >
+                                    <Icon name="delete" size={AppCommon.icon_size} color="#fff" />
+                                </TouchableOpacity>
+                            </View>
+                        )
+                    }
+                </View>
                 <ImageViewer
                     enableSwipeDown
                     enablePreload
                     imageUrls={this.state.images}
                     loadingRender={() => (
-                        <ActivityIndicator color="#424242" animating />
+                        <ActivityIndicator color={AppCommon.colors} animating />
                     )}
+                    style={{ flex: 1 }}
                     index={this.state.currentIndex}
-                    onSwipeDown={() => popWithUpdate()}
+                    onSwipeDown={() => Actions.pop()}
                     onChange={this.handleChange}
                     footerContainerStyle={{ width: '100%' }}
-                    renderHeader={this.renderHeader.bind(this)}
+                // renderHeader={this.renderHeader.bind(this)}
                 // renderFooter={this.renderFooter.bind(this)}
                 />
                 <Loader loading={this.state.isLoading} />
