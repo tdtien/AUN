@@ -85,16 +85,11 @@ class PDFViewer extends React.Component {
                         />
                     }}
                     source={{ uri: this.props.filePath }}
-                    onLoadComplete={(numberOfPages, filePath) => {
-                        console.log(`number of pages: ${numberOfPages}`);
-                    }}
-                    onPageChanged={(page, numberOfPages) => {
-                        console.log(`current page: ${page}`);
-                    }}
                     onError={(error) => {
                         console.log(error);
                     }}
                     style={styles.pdf}
+                    enablePaging
                 />
                 <Loader loading={this.state.isLoading} />
             </Container>
