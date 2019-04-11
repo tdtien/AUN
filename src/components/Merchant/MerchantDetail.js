@@ -292,7 +292,7 @@ class MerchantDetail extends Component {
                     <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
                 <Body style={{ flex: 1 }}>
-                    <Title style={{ alignSelf: "center", marginRight: 15 }}>{this.props.folderName}</Title>
+                    <Title style={{ alignSelf: "center", marginRight: 15, color: 'white' }}>{this.props.folderName}</Title>
                 </Body>
                 <TouchableOpacity style={styles.headerButton} onPress={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName })} >
                     <Icon name="pdffile1" type="AntDesign" style={{ color: 'white', fontSize: AppCommon.icon_size }} />
@@ -328,7 +328,7 @@ class MerchantDetail extends Component {
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center" }}>{`${this.state.selectedCheckList.length} selected`}</Title>
+                        <Title style={{ alignSelf: "center", color: 'white' }}>{`${this.state.selectedCheckList.length} selected`}</Title>
                     </Body>
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleCheckAllCheckbox()} >
                         <Text style={{ fontSize: 20, color: '#fff' }}>{selectImageTitle}</Text>
