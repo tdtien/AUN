@@ -11,6 +11,6 @@ export class AppCommon {
         if (name == 'camera' && Platform.OS == 'android') {
             return name;
         }
-        return Platform.OS === 'ios' ? 'ios-' : 'md-' + name;
+        return Platform.OS === 'ios' ? ('ios-' + name ): ('md-' + name);
     }
 }
