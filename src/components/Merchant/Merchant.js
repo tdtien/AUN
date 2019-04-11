@@ -215,6 +215,7 @@ export default class Merchant extends Component {
         let header = (!this.state.isSearching) ? (
             <Header
                 androidStatusBarColor={AppCommon.colors}
+                iosBarStyle="light-content"
                 style={{ backgroundColor: AppCommon.colors }}
                 rounded
             >
@@ -231,6 +232,7 @@ export default class Merchant extends Component {
         ) : (
                 <Header
                     androidStatusBarColor={AppCommon.colors}
+                    iosBarStyle="light-content"
                     style={{ backgroundColor: AppCommon.colors }}
                     searchBar
                     rounded

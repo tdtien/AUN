@@ -63,6 +63,7 @@ class PDFViewer extends React.Component {
             <Container>
                 <Header
                     androidStatusBarColor={AppCommon.colors}
+                    iosBarStyle="light-content"
                     style={{ backgroundColor: AppCommon.colors }}
                     hasTabs
                 >
@@ -70,7 +71,7 @@ class PDFViewer extends React.Component {
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center" }}>{this.props.fileName}</Title>
+                        <Title style={{ alignSelf: "center", color: "white" }}>{this.props.fileName}</Title>
                     </Body>
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleUploadPdf()} >
                         <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />

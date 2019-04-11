@@ -286,6 +286,7 @@ class MerchantDetail extends Component {
         let header = (!this.state.isCheckBoxVisible) ? (
             <Header
                 androidStatusBarColor={AppCommon.colors}
+                iosBarStyle="light-content"
                 style={{ backgroundColor: AppCommon.colors }}
             >
                 <TouchableOpacity style={styles.headerButton} onPress={() => this.handlePop()} >
@@ -322,6 +323,7 @@ class MerchantDetail extends Component {
         ) : (
                 <Header
                     androidStatusBarColor={AppCommon.colors}
+                    iosBarStyle="light-content"
                     style={{ backgroundColor: AppCommon.colors }}
                 >
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleDeselectCheckbox()} >

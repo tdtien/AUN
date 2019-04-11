@@ -40,13 +40,14 @@ class SortList extends Component {
             <Container>
                 <Header
                     androidStatusBarColor={AppCommon.colors}
+                    iosBarStyle="light-content"
                     style={{ backgroundColor: AppCommon.colors }}
                 >
                     <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", marginRight: 15 }}>Sort image to export PDF</Title>
+                        <Title style={{ alignSelf: "center", marginRight: 15, color: 'white' }}>Sort image to export PDF</Title>
                     </Body>
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
                         <Icon name="pdffile1" type="AntDesign" style={{ color: 'white', fontSize: AppCommon.icon_size }} />
