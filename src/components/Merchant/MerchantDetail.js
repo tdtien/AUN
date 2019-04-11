@@ -263,7 +263,9 @@ class MerchantDetail extends Component {
                         style={{ width: imageWidth, height: imageHeight, flex: 1, justifyContent: "flex-end" }}
                         source={{ width: imageWidth, height: imageHeight, uri: `file://${item.path}?ver=${this.state.version}`, cache: "reload" }}
                     >
-                        <Text style={{ color: 'white', backgroundColor: 'rgba(204, 204, 204, 0.5)', padding: 5 }}>{index + 1}</Text>
+                        <View style={{ backgroundColor: 'rgba(204, 204, 204, 0.5)'}}>
+                            <Text style={{ color: 'white', padding: 5 }}>{index + 1}</Text>
+                        </View>
                     </ImageBackground>
                 </TouchableOpacity>
             )
