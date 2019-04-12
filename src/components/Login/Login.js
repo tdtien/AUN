@@ -110,7 +110,7 @@ class Login extends Component {
                   autoCapitalize="none"
                 />
               </Item>
-              <Item floatingLabel last>
+              <Item floatingLabel>
                 <Label>Password</Label>
                 <Input
                   autoCapitalize="none"

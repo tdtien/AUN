@@ -1,4 +1,4 @@
-import { LOGIN } from './types'
+import { LOGIN, LOGOUT } from './types'
 
 export const loginAccount = item => {
     return {
@@ -7,5 +7,11 @@ export const loginAccount = item => {
         token: item.token,
         email: item.email,
         role: item.role
+    }
+}
+
+export const logoutAccount = () => {
+    return {
+        type: LOGOUT
     }
 }

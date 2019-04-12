@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { StyleSheet, ImageBackground, Image } from "react-native";
-import { Container, Content, List, ListItem, Footer, FooterTab, Button, Icon, Text } from "native-base";
+import { Container, Content, List, ListItem, Footer, FooterTab, Button, Icon, Text, Left, Body, Right, Thumbnail } from "native-base";
 import Images from "../../assets/images";
 import { AppCommon } from "../../commons/commons";
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux'
+import { logoutAccount } from "../../actions/account";
 
 
 class SideMenu extends Component {
@@ -13,7 +14,8 @@ class SideMenu extends Component {
     };
 
     handleLogout = () => {
-        alert('This function is not supported yet');
+        // alert('This function is not supported yet');
+        this.props.logout();
     }
 
     render() {
@@ -29,16 +31,24 @@ class SideMenu extends Component {
                             alignItems: "center"
                         }}
                     >
-                        {/* <Image
-                            square
-                            style={{ height: 80, width: 70 }}
-                            source={Images.defaultUser}
-                        />
-                        <Text style={{ color: "gray" }}>Default User</Text> */}
                     </ImageBackground>
                     <List>
-                        <ListItem button onPress={() => Actions.drawerClose()}>
-                            <Text>Home</Text>
+                        <ListItem avatar>
+                            <Left>
+                                <Thumbnail source={Images.defaultUser} small/>
+                            </Left>
+                            <Body>
+                                <Text>{this.props.email}</Text>
+                                <Text note>{this.props.role}</Text>
+                            </Body>
+                        </ListItem>
+                        <ListItem button onPress={() => Actions.currentScene == '_merchant' ? Actions.drawerClose() : Actions.merchant()} icon noBorder >
+                            <Left>
+                                <Icon name={AppCommon.icon("document")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
+                            </Left>
+                            <Body>
+                                <Text>All Docs</Text>
+                            </Body>
                         </ListItem>
                     </List>
                 </Content>
@@ -59,10 +69,20 @@ class SideMenu extends Component {
     }
 }
 
+const mapDispatchToProps = dispatch => {
+    return {
+      logout: () => {
+        dispatch(logoutAccount());
+      }
+    };
+  };
+
 const mapStateToProps = state => {
     return {
-        token: state.account.token,
+        email: state.account.email,
+        role: state.account.role,
+        token: state.account.token
     };
 };
 
-export default connect(mapStateToProps)(SideMenu);
+export default connect(mapStateToProps, mapDispatchToProps)(SideMenu);
