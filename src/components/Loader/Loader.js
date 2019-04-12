@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
         borderRadius: 60,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-around'
+        justifyContent: 'center'
     }
 });
 
