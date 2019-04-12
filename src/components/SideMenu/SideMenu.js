@@ -4,9 +4,10 @@ import { Container, Content, List, ListItem, Footer, FooterTab, Button, Icon, Te
 import Images from "../../assets/images";
 import { AppCommon } from "../../commons/commons";
 import { Actions } from "react-native-router-flux";
+import { connect } from 'react-redux'
 
 
-export default class SideMenu extends Component {
+class SideMenu extends Component {
     constructor(props) {
         super(props);
     };
@@ -57,3 +58,11 @@ export default class SideMenu extends Component {
         );
     }
 }
+
+const mapStateToProps = state => {
+    return {
+        token: state.account.token,
+    };
+};
+
+export default connect(mapStateToProps)(SideMenu);

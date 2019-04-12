@@ -5,5 +5,7 @@ export const loginAccount = item => {
         type: LOGIN,
         id: item.id,
         token: item.token,
+        email: item.email,
+        role: item.role
     }
 }

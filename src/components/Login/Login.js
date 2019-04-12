@@ -55,7 +55,7 @@ class Login extends Component {
       requestLogin(this.state.email, this.state.password).then(res => {
         this.setState({ isLoading: false });
         if (res.hasOwnProperty('token')) {
-          this.props.login({ id: res.id, token: res.token });
+          this.props.login({ id: res.id, token: res.token, email: res.email, role: res.role });
           Actions.merchant();
         } else {
           Toast.show({
