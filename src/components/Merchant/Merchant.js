@@ -257,7 +257,7 @@ export default class Merchant extends Component {
                 </Header>
             )
         return (
-            <Container>
+            <Container style={{ backgroundColor: '#F7F5F5' }}>
                 {
                     header
                 }

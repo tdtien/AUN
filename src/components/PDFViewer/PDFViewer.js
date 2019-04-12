@@ -19,7 +19,6 @@ class PDFViewer extends React.Component {
     constructor(props) {
         super(props);
         console.log('File Path: ' + this.props.filePath);
-        // console.log('Token in pdf: ' + this.props.token);
         this.state = {
             isLoading: false
         }
@@ -77,20 +76,23 @@ class PDFViewer extends React.Component {
                         <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                 </Header>
-                <Pdf
-                    onLoadProgress={() => {
-                        <ActivityIndicator
-                            animating
-                            color={AppCommon.colors}
-                        />
-                    }}
-                    source={{ uri: this.props.filePath }}
-                    onError={(error) => {
-                        console.log(error);
-                    }}
-                    style={styles.pdf}
-                    enablePaging
-                />
+                <View style={styles.container}>
+                    <Pdf
+                        onLoadProgress={() => {
+                            <ActivityIndicator
+                                animating
+                                color={AppCommon.colors}
+                            />
+                        }}
+                        source={{ uri: this.props.filePath }}
+                        onError={(error) => {
+                            console.log(error);
+                        }}
+                        style={styles.pdf}
+                        fitPolicy={0}
+                        enablePaging
+                    />
+                </View>
                 <Loader loading={this.state.isLoading} />
             </Container>
         )
@@ -108,8 +110,9 @@ export default connect(mapStateToProps)(PDFViewer);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        borderTopWidth: 0,
-        borderBottomWidth: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
         backgroundColor: '#F7F5F5'
     },
     pdf: {
