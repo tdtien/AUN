@@ -11,12 +11,13 @@ import { connect } from "react-redux";
 import { BackHandler } from "react-native";
 import { ToastAndroid } from "react-native";
 import SortList from './src/components/Merchant/SortList';
-import Folder from './src/components/FolderExplorer/FolderComponent';
+import Folder from './src/components/FolderExplorer/FolderItem';
 import File from './src/components/FolderExplorer/File';
 import Evidences from './src/components/FolderExplorer/Evidences';
-import FolderComponent from './src/components/FolderExplorer/FolderComponent';
+import FolderComponent from './src/components/FolderExplorer/FolderItem';
 import SarViewer from './src/components/FolderExplorer/SarViewer';
 import CriterionViewer from './src/components/FolderExplorer/CriterionViewer';
+import Test from './src/components/FolderExplorer/Test';
 
 class App extends Component {
 
@@ -85,10 +86,10 @@ class App extends Component {
             key="pdfViewer"
             component={PDFViewer}
           />
-          <Scene
+          {/* <Scene
             key="folderComponent"
-            component={FolderComponent}
-          />
+            component={FolderItem}
+          /> */}
           <Scene
             key="file"
             component={File}
@@ -105,6 +106,10 @@ class App extends Component {
            <Scene
             key="criterionViewer"
             component={CriterionViewer}
+          />
+           <Scene
+            key="test"
+            component={Test}
           />
         </Stack>
       </Router>
