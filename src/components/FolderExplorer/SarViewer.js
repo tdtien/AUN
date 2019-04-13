@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getAllSars } from '../../api/accountApi';
+import { getAllSars } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
 import FolderComponent from './FolderComponent'
 import Loader from '../Loader/Loader'
