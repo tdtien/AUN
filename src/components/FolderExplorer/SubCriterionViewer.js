@@ -16,14 +16,14 @@ import {
     Body,
     Title,
 } from 'native-base';
-import { getAllCriterions } from '../../api/directoryTreeApi';
+import { getAllSubCriterions } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
 
-class CriterionViewer extends Component {
+class SubCriterionViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -36,12 +36,12 @@ class CriterionViewer extends Component {
         this._getAll();
     }
 
-    detail(criterionId) {
-        Actions.subCriterionViewer({criterionId: criterionId});
+    detail(sarId) {
+        Actions.test();
     }
 
     _getAll = () => {
-      getAllCriterions(this.props.token, this.props.sarId)
+        getAllSubCriterions(this.props.token, this.props.criterionId)
             .then((responseJson) => {
                 // console.log('responseJson: ' + responseJson.data[0].name);
                 this.setState({
@@ -60,17 +60,17 @@ class CriterionViewer extends Component {
     }
 
     handleRefresh = () => {
-      this.setState(
-          {
-              refreshing: true
-          },
-          () => {
-              this._getAll();
-          }
-      );
-  };
+        this.setState(
+            {
+                refreshing: true
+            },
+            () => {
+                this._getAll();
+            }
+        );
+    };
 
-    renderItem({item}) {
+    renderItem({ item }) {
         return (
             <FolderItem
                 item={item}
@@ -92,7 +92,7 @@ class CriterionViewer extends Component {
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: 'white' }}>All Criterions</Title>
+                        <Title style={{ alignSelf: "center", color: 'white' }}>All SubCriterions</Title>
                     </Body>
                     <TouchableOpacity style={styles.menuButton} onPress={() => null} >
                         <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
@@ -125,7 +125,7 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps)(CriterionViewer);
+export default connect(mapStateToProps)(SubCriterionViewer);
 
 const styles = StyleSheet.create({
     menuButton: {

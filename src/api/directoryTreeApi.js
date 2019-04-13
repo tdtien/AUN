@@ -22,7 +22,21 @@ export async function getAllCriterions(token, sarId) {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Charset': 'utf-8',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}
+
+export async function getAllSubCriterions(token, criterionId) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/criterions/${criterionId}/subcriterions`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
                 'authorization': token
             },
         }).then(response => response.json())

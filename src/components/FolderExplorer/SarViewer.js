@@ -18,7 +18,6 @@ import {
 } from 'native-base';
 import { getAllSars } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
-import FolderComponent from './FolderItem'
 import Loader from '../Loader/Loader'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
@@ -81,7 +80,6 @@ class SarViewer extends Component {
     }
 
     render() {
-        const key = 'sar';
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header

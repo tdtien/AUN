@@ -18,6 +18,7 @@ import FolderComponent from './src/components/FolderExplorer/FolderItem';
 import SarViewer from './src/components/FolderExplorer/SarViewer';
 import CriterionViewer from './src/components/FolderExplorer/CriterionViewer';
 import Test from './src/components/FolderExplorer/Test';
+import SubCriterionViewer from './src/components/FolderExplorer/SubCriterionViewer';
 
 class App extends Component {
 
@@ -103,11 +104,15 @@ class App extends Component {
             component={SarViewer}
             // initial
           />
-           <Scene
+          <Scene
             key="criterionViewer"
             component={CriterionViewer}
           />
-           <Scene
+          <Scene
+            key="subCriterionViewer"
+            component={SubCriterionViewer}
+          />
+          <Scene
             key="test"
             component={Test}
           />
