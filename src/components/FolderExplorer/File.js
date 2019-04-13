@@ -41,7 +41,7 @@ export default class File extends Component {
             isLoading: true,
             // data: [],
             // error: null,
-            refreshing: false,
+            // refreshing: false,
             // searchText: "",
             // isEnd: false,
             // isSearching: false,
@@ -56,7 +56,7 @@ export default class File extends Component {
             <TouchableOpacity activeOpacity={0.8} onPress={() => null}>
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
-                        <Icon name={iconName} type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
+                        <Icon name='folder1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
                         <Text style={{ color: 'black', paddingHorizontal: 20, fontSize: 20 }}>{item.name}</Text>
                     </View>
                     <Icon name='angle-right' type="FontAwesome5" style={{ color: 'gray', fontSize: AppCommon.icon_size }} />

@@ -16,12 +16,27 @@ import {
     Body,
     Title,
 } from 'native-base';
-import { getAllSubCriterions } from '../../api/directoryTreeApi';
+import { getAllSuggestions } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
+
+var data = [
+    {
+        "id": 1,
+        "name": "Nội hàm"
+    },
+    {
+        "id": 2,
+        "name": "Câu hỏi chẩn đoán"
+    },
+    {
+        "id": 3,
+        "name": "Nguồn minh chứng"
+    }
+]
 
 class SubCriterionViewer extends Component {
     constructor(props) {
@@ -36,14 +51,16 @@ class SubCriterionViewer extends Component {
         this._getAll();
     }
 
-    detail(subcriterionId) {
-        Actions.suggestionViewer({subcriterionId: subcriterionId});
+    detail(subCriterionId, index) {
+        console.log('subCriterionId:' + subCriterionId);
+        console.log('index:' + index);
+        Actions.test();
     }
 
     _getAll = () => {
-        getAllSubCriterions(this.props.token, this.props.criterionId)
+        getAllSuggestions(this.props.token, this.props.subCriterionId)
             .then((responseJson) => {
-                // console.log('responseJson: ' + responseJson.data[0].name);
+                console.log('responseJson: ' + responseJson.data);
                 this.setState({
                     isLoading: false,
                     refreshing: false,
@@ -70,12 +87,11 @@ class SubCriterionViewer extends Component {
         );
     };
 
-    renderItem(item, index) {
+    renderItem({ item }) {
         return (
             <FolderItem
                 item={item}
                 parentView={this}
-                index = {index}
             />
         )
     }
@@ -104,10 +120,9 @@ class SubCriterionViewer extends Component {
                     contentContainerStyle={{ flex: 1 }}
                 >
                     <FlatList
-                        data={this.state.data}
-                        extraData={this.state}
+                        data={data}
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={({item, index}) => this.renderItem(item, index)}
+                        renderItem={this.renderItem.bind(this)}
                         onRefresh={this.handleRefresh}
                         refreshing={this.state.refreshing}
                         onEndReached={this.handleLoadMore}

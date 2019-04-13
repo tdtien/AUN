@@ -44,3 +44,18 @@ export async function getAllSubCriterions(token, criterionId) {
             .catch(error => reject(error));
     });
 }
+
+export async function getAllSuggestions(token, subcriterionId) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/subcriterions/${subcriterionId}/suggestions2`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}
