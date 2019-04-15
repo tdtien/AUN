@@ -6,7 +6,8 @@ import {
     StyleSheet,
     ActivityIndicator,
     FlatList,
-    Alert
+    Alert,
+    ScrollView
 } from 'react-native';
 import {
     Content,
@@ -18,6 +19,8 @@ import {
 } from 'native-base';
 import { AppCommon } from '../../commons/commons';
 import { Actions } from 'react-native-router-flux';
+import moment from 'moment'
+import EvidenceItem from "./EvidenceItem";
 
 var data = [
     {
@@ -52,21 +55,9 @@ export default class Evidences extends Component {
 
     renderItem({ item }) {
         return (
-            <TouchableOpacity activeOpacity={0.8} onPress={() => null}>
-                <View style={styles.item}>
-                    <View style={styles.leftItem}>
-                        <Icon name='pdffile1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
-                        <View style={{ flex: 1, flexDirection: 'column' }}>
-                            <Text style={{ color: 'black', paddingHorizontal: 20, fontSize: 20 }}>{item.name}</Text>
-                            <View style = {{flex: 1, flexDirection: 'row'}}>
-                                <Text style={{ color: 'gray', paddingLeft: 20, fontSize: 15 }}>{item.capacity}</Text>
-                                <Text style={{ color: 'gray', paddingLeft: 20, fontSize: 15 }}>{item.dateCreated}</Text>
-                            </View>
-                        </View>
-                    </View>
-                    <Icon name={AppCommon.icon('more')} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
-                </View>
-            </TouchableOpacity>
+            <EvidenceItem
+                item={item}
+            />
         )
     }
 
@@ -79,14 +70,14 @@ export default class Evidences extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                     rounded
                 >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()} >
-                        <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
+                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: 'white' }}>All Docs</Title>
+                        <Title style={{ alignSelf: "center", color: 'white' }}>All Implications</Title>
                     </Body>
-                    <TouchableOpacity style={styles.menuButton} onPress={() => this.handleSearchPressed()} >
-                        <Icon name={AppCommon.icon("search")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                    <TouchableOpacity style={styles.menuButton} onPress={() => null} >
+                        <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                 </Header>
                 <Content
@@ -94,7 +85,7 @@ export default class Evidences extends Component {
                     contentContainerStyle={{ flex: 1 }}
                 >
                     <FlatList
-                        data={data}
+                        data={this.props.data}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={this.renderItem.bind(this)}
                         onRefresh={this.handleRefresh}
@@ -102,6 +93,7 @@ export default class Evidences extends Component {
                         onEndReached={this.handleLoadMore}
                         onEndReachedThreshold={50}
                     />
+
                 </Content>
             </Container>
         )

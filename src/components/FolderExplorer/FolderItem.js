@@ -4,22 +4,11 @@ import {
     View,
     TouchableOpacity,
     StyleSheet,
-    ActivityIndicator,
-    FlatList,
-    Alert
 } from 'react-native';
 import {
-    Content,
-    Container,
     Icon,
-    Header,
-    Body,
-    Title,
 } from 'native-base';
 import { AppCommon } from '../../commons/commons';
-import { Actions } from 'react-native-router-flux';
-import { getAllSars } from '../../api/accountApi';
-import Loader from '../Loader/Loader'
 
 export default class FolderItem extends Component {
     constructor(props) {
@@ -34,7 +23,7 @@ export default class FolderItem extends Component {
                         <Icon name='folder1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
                         <Text style={{ color: 'black', paddingHorizontal: 20, fontSize: 20 }}>{this.props.item.name}</Text>
                     </View>
-                    <Icon name='angle-right' type="FontAwesome5" style={{ color: 'gray', fontSize: AppCommon.icon_size, paddingLeft: 20}} />
+                    <Icon name='angle-right' type="FontAwesome5" style={{ color: 'gray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />
                 </View>
             </TouchableOpacity>
         )

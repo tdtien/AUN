@@ -43,7 +43,7 @@ class SarViewer extends Component {
     _getAll = () => {
         getAllSars(this.props.token)
             .then((responseJson) => {
-                // console.log('responseJson: ' + responseJson.data[0].name);
+                // console.log('responseJson sar: ' + responseJson.data[0].name);
                 this.setState({
                     isLoading: false,
                     refreshing: false,

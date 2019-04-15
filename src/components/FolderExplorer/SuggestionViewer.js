@@ -52,15 +52,20 @@ class SubCriterionViewer extends Component {
     }
 
     detail(subCriterionId, index) {
-        console.log('subCriterionId:' + subCriterionId);
-        console.log('index:' + index);
-        Actions.test();
+        if(index === 0) {
+            Actions.evidences({data: this.state.data.implications});
+        } else if (index === 1) {
+            Actions.evidences({data: this.state.data.questions});
+        } else {
+            Actions.evidences({data: this.state.data.evidences});
+        }
     }
 
     _getAll = () => {
-        getAllSuggestions(this.props.token, this.props.subCriterionId)
+        // this.props.subCriterionId
+        getAllSuggestions(this.props.token, 1)
             .then((responseJson) => {
-                console.log('responseJson: ' + responseJson.data);
+                console.log('responseJson: ' + responseJson.data.implications);
                 this.setState({
                     isLoading: false,
                     refreshing: false,
@@ -87,11 +92,12 @@ class SubCriterionViewer extends Component {
         );
     };
 
-    renderItem({ item }) {
+    renderItem(item, index) {
         return (
             <FolderItem
                 item={item}
                 parentView={this}
+                index = {index}
             />
         )
     }
@@ -122,7 +128,7 @@ class SubCriterionViewer extends Component {
                     <FlatList
                         data={data}
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={this.renderItem.bind(this)}
+                        renderItem={({item, index}) => this.renderItem(item, index)}
                         onRefresh={this.handleRefresh}
                         refreshing={this.state.refreshing}
                         onEndReached={this.handleLoadMore}
