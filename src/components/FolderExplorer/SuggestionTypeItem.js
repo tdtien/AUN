@@ -20,7 +20,7 @@ export default class SuggestionTypeItem extends Component {
     render() {
         let type = this.props.sType;
         let itemContent = this.props.item.content;
-        let iconName = (type !== 'evidences') ? "filetext1" : "pdffile1"
+        let iconName = (type !== 'evidences') ? "filetext1" : "folder1"
         var pressAction = function() {
             if (type !== 'evidences') {
                 // Actions.textFile({data: this.props.item.content});

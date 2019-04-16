@@ -16,34 +16,20 @@ import {
     Body,
     Title,
 } from 'native-base';
-import { getAllSuggestions } from '../../api/directoryTreeApi';
+import { getAllEvidences } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
-import FolderItem from './FolderItem'
+import EvidenceItem from './EvidenceItem'
 
-var data = [
-    {
-        "id": 1,
-        "name": "Implications"
-    },
-    {
-        "id": 2,
-        "name": "Questions"
-    },
-    {
-        "id": 3,
-        "name": "Evidences"
-    }
-]
-
-class SubCriterionViewer extends Component {
+class EvidenceViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isLoading: true,
             refreshing: false,
+            data: []
         };
     }
 
@@ -51,22 +37,11 @@ class SubCriterionViewer extends Component {
         this._getAll();
     }
 
-    detail(subCriterionId, index) {
-        if(index === 0) {
-            Actions.suggestionType({data: this.state.data.implications, sType: 'implications'});
-        } else if (index === 1) {
-            Actions.suggestionType({data: this.state.data.questions, sType: 'questions'});
-        } else {
-            Actions.suggestionType({data: this.state.data.evidences, sType: 'evidences'});
-        }
-    }
-
     _getAll = () => {
-        // this.props.subcriterionId
         // console.log('token: ' + this.props.token);
-        getAllSuggestions(this.props.token, this.props.subcriterionId)
+        getAllEvidences(this.props.token, 15)
             .then((responseJson) => {
-                // console.log('data: ' + responseJson);
+                console.log('data: ' + responseJson.data);
                 this.setState({
                     isLoading: false,
                     refreshing: false,
@@ -95,10 +70,9 @@ class SubCriterionViewer extends Component {
 
     renderItem(item, index) {
         return (
-            <FolderItem
+            <EvidenceItem 
                 item={item}
-                parentView={this}
-                index = {index}
+                token={this.props.token}
             />
         )
     }
@@ -116,7 +90,7 @@ class SubCriterionViewer extends Component {
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: 'white' }}>All Suggestions</Title>
+                        <Title style={{ alignSelf: "center", color: 'white' }}>All Evidences</Title>
                     </Body>
                     <TouchableOpacity style={styles.menuButton} onPress={() => null} >
                         <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
@@ -127,9 +101,9 @@ class SubCriterionViewer extends Component {
                     contentContainerStyle={{ flex: 1 }}
                 >
                     <FlatList
-                        data={data}
+                        data={this.state.data}
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={({item, index}) => this.renderItem(item, index)}
+                        renderItem={({ item, index }) => this.renderItem(item, index)}
                         onRefresh={this.handleRefresh}
                         refreshing={this.state.refreshing}
                         onEndReached={this.handleLoadMore}
@@ -148,7 +122,7 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps)(SubCriterionViewer);
+export default connect(mapStateToProps)(EvidenceViewer);
 
 const styles = StyleSheet.create({
     menuButton: {

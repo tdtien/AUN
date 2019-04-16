@@ -20,6 +20,7 @@ import Test from './src/components/FolderExplorer/Test';
 import SubCriterionViewer from './src/components/FolderExplorer/SubCriterionViewer';
 import SuggestionViewer from './src/components/FolderExplorer/SuggestionViewer';
 import TextViewer from './src/components/FolderExplorer/TextViewer';
+import EvidenceViewer from './src/components/FolderExplorer/EvidenceViewer';
 
 class App extends Component {
 
@@ -113,6 +114,11 @@ class App extends Component {
           <Scene
             key="textViewer"
             component={TextViewer}
+          />
+           <Scene
+            key="evidenceViewer"
+            component={EvidenceViewer}
+            // initial
           />
           <Scene
             key="test"

@@ -59,3 +59,18 @@ export async function getAllSuggestions(token, subcriterionId) {
             .catch(error => reject(error));
     });
 }
+
+export async function getAllEvidences(token, suggestionId) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/suggestions/${suggestionId}/evidences`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}
