@@ -12,19 +12,19 @@ import { AppCommon } from '../../commons/commons';
 import moment from "moment";
 import { Actions } from "react-native-router-flux";
 
-export default class EvidenceItem extends Component {
+export default class SuggestionTypeItem extends Component {
     constructor(props) {
         super(props);
     }
 
     render() {
-        let key = this.props.itemId;
+        let type = this.props.sType;
         let itemContent = this.props.item.content;
-        let iconName = (key !== 'evidences') ? "filetext1" : "pdffile1"
+        let iconName = (type !== 'evidences') ? "filetext1" : "pdffile1"
         var pressAction = function() {
-            if (key !== 'evidences') {
+            if (type !== 'evidences') {
                 // Actions.textFile({data: this.props.item.content});
-               Actions.textViewer({data: itemContent});
+               Actions.textViewer({data: itemContent, title: type});
             } else {
                 alert('OK');
             }

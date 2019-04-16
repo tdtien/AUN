@@ -19,8 +19,6 @@ import {
 } from 'native-base';
 import { AppCommon } from '../../commons/commons';
 import { Actions } from 'react-native-router-flux';
-import moment from 'moment'
-import EvidenceItem from "./EvidenceItem";
 
 export default class TextViewer extends Component {
     constructor(props) {
@@ -31,16 +29,9 @@ export default class TextViewer extends Component {
         };
     }
 
-    renderItem(item) {
-        return (
-            <EvidenceItem
-                item={item}
-                itemId={this.props.itemId}
-            />
-        )
-    }
-
     render() {
+        let type = this.props.title;
+        let title = type.charAt(0).toUpperCase() + type.slice(1, type.length -1);
         return (
             <Container style={{ backgroundColor: 'white' }}>
                 <Header
@@ -53,7 +44,7 @@ export default class TextViewer extends Component {
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: 'white' }}>Implication</Title>
+                        <Title style={{ alignSelf: "center", color: 'white' }}>{title}</Title>
                     </Body>
                     <TouchableOpacity style={styles.menuButton} onPress={() => null} >
                         <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />

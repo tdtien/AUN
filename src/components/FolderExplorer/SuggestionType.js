@@ -20,9 +20,9 @@ import {
 import { AppCommon } from '../../commons/commons';
 import { Actions } from 'react-native-router-flux';
 import moment from 'moment'
-import EvidenceItem from "./EvidenceItem";
+import SuggestionTypeItem from "./SuggestionTypeItem";
 
-export default class Evidences extends Component {
+export default class SuggestionType extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -33,16 +33,16 @@ export default class Evidences extends Component {
 
     renderItem(item) {
         return (
-            <EvidenceItem
+            <SuggestionTypeItem
                 item={item}
-                itemId={this.props.itemId}
+                sType={this.props.sType}
             />
         )
     }
 
     render() {
-        let key = this.props.itemId
-        let title = "All " + key.charAt(0).toUpperCase() + key.slice(1);
+        let type = this.props.sType
+        let title = "All " + type.charAt(0).toUpperCase() + type.slice(1);
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
