@@ -21,7 +21,7 @@ export default class FolderItem extends Component {
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
                         <Icon name='folder1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
-                        <Text style={{ color: 'black', paddingHorizontal: 20, fontSize: 20 }}>{this.props.item.name}</Text>
+                        <Text style={{ color: 'black', paddingHorizontal: 20, fontSize: 20 }} numberOfLines={3}>{this.props.item.name}</Text>
                     </View>
                     <Icon name='angle-right' type="FontAwesome5" style={{ color: 'gray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />
                 </View>

@@ -22,7 +22,7 @@ import { Actions } from 'react-native-router-flux';
 import moment from 'moment'
 import EvidenceItem from "./EvidenceItem";
 
-export default class Evidences extends Component {
+export default class TextViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -41,10 +41,8 @@ export default class Evidences extends Component {
     }
 
     render() {
-        let key = this.props.itemId
-        let title = "All " + key.charAt(0).toUpperCase() + key.slice(1);
         return (
-            <Container style={{ backgroundColor: AppCommon.background_color }}>
+            <Container style={{ backgroundColor: 'white' }}>
                 <Header
                     androidStatusBarColor={AppCommon.colors}
                     iosBarStyle="light-content"
@@ -55,7 +53,7 @@ export default class Evidences extends Component {
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: 'white' }}>{title}</Title>
+                        <Title style={{ alignSelf: "center", color: 'white' }}>Implication</Title>
                     </Body>
                     <TouchableOpacity style={styles.menuButton} onPress={() => null} >
                         <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
@@ -65,16 +63,7 @@ export default class Evidences extends Component {
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
                 >
-                    <FlatList
-                        data={this.props.data}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item, index }) => this.renderItem(item, index)}
-                        onRefresh={this.handleRefresh}
-                        refreshing={this.state.refreshing}
-                        onEndReached={this.handleLoadMore}
-                        onEndReachedThreshold={50}
-                    />
-
+                    <Text style={styles.text} >{this.props.data}</Text>
                 </Content>
             </Container>
         )
@@ -88,4 +77,13 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 10
     },
+    text: {
+        paddingHorizontal: 20,
+        paddingTop: 30,
+        fontSize: 21,
+        textAlign: 'justify',
+        color: '#404040'
+        // fontWeight: '100',
+        // letterSpacing: 20
+    }
 });

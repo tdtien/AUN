@@ -26,15 +26,15 @@ import FolderItem from './FolderItem'
 var data = [
     {
         "id": 1,
-        "name": "Nội hàm"
+        "name": "Implications"
     },
     {
         "id": 2,
-        "name": "Câu hỏi chẩn đoán"
+        "name": "Questions"
     },
     {
         "id": 3,
-        "name": "Nguồn minh chứng"
+        "name": "Evidences"
     }
 ]
 
@@ -53,19 +53,20 @@ class SubCriterionViewer extends Component {
 
     detail(subCriterionId, index) {
         if(index === 0) {
-            Actions.evidences({data: this.state.data.implications});
+            Actions.evidences({data: this.state.data.implications, itemId: 'implications'});
         } else if (index === 1) {
-            Actions.evidences({data: this.state.data.questions});
+            Actions.evidences({data: this.state.data.questions, itemId: 'questions'});
         } else {
-            Actions.evidences({data: this.state.data.evidences});
+            Actions.evidences({data: this.state.data.evidences, itemId: 'evidences'});
         }
     }
 
     _getAll = () => {
         // this.props.subCriterionId
+        // console.log('token: ' + this.props.token);
         getAllSuggestions(this.props.token, 1)
             .then((responseJson) => {
-                console.log('responseJson: ' + responseJson.data.implications);
+                // console.log('responseJson: ' + responseJson.data.implications);
                 this.setState({
                     isLoading: false,
                     refreshing: false,

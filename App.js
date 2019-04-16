@@ -12,7 +12,6 @@ import { BackHandler } from "react-native";
 import { ToastAndroid } from "react-native";
 import SortList from './src/components/Merchant/SortList';
 import Folder from './src/components/FolderExplorer/FolderItem';
-import File from './src/components/FolderExplorer/File';
 import Evidences from './src/components/FolderExplorer/Evidences';
 import FolderComponent from './src/components/FolderExplorer/FolderItem';
 import SarViewer from './src/components/FolderExplorer/SarViewer';
@@ -20,6 +19,7 @@ import CriterionViewer from './src/components/FolderExplorer/CriterionViewer';
 import Test from './src/components/FolderExplorer/Test';
 import SubCriterionViewer from './src/components/FolderExplorer/SubCriterionViewer';
 import SuggestionViewer from './src/components/FolderExplorer/SuggestionViewer';
+import TextViewer from './src/components/FolderExplorer/TextViewer';
 
 class App extends Component {
 
@@ -89,17 +89,13 @@ class App extends Component {
             component={PDFViewer}
           />
           <Scene
-            key="file"
-            component={File}
-          />
-          <Scene
             key="evidences"
             component={Evidences}
           />
           <Scene
             key="sarViewer"
             component={SarViewer}
-            // initial
+          // initial
           />
           <Scene
             key="criterionViewer"
@@ -109,9 +105,14 @@ class App extends Component {
             key="subCriterionViewer"
             component={SubCriterionViewer}
           />
-           <Scene
+          <Scene
             key="suggestionViewer"
             component={SuggestionViewer}
+            // initial
+          />
+          <Scene
+            key="textViewer"
+            component={TextViewer}
           />
           <Scene
             key="test"
