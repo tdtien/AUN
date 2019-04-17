@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {StyleSheet, Text, View, Alert} from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, Alert } from 'react-native';
 import {
     Container,
     Content,
@@ -13,9 +13,9 @@ import {
     Toast,
     Root
 } from 'native-base';
-import {Actions} from "react-native-router-flux";
-import {requestRegister} from '../../api/accountApi'
-import {validateEmail, validatePassword} from "../../commons/validation";
+import { Actions } from "react-native-router-flux";
+import { requestRegister } from '../../api/accountApi'
+import { validateEmail, validatePassword } from "../../commons/validation";
 
 export default class Register extends Component {
     constructor(props) {
@@ -60,66 +60,64 @@ export default class Register extends Component {
             } else {
                 requestRegister(this.state.email, this.state.password)
                     .then(result => {
-                        Alert.alert('Success','Register successful',
-                            [{text: 'OK', onPress: () => {Actions.pop()}}]);
+                        Alert.alert('Success', 'Register successful',
+                            [{ text: 'OK', onPress: () => { Actions.pop() } }]);
                     }).catch(error => {
-                    Toast.show({
-                        text: error.response.data.msg,
-                        type: 'danger',
-                        buttonText: 'Okay',
-                        duration: 3000
-                    });
-                })
+                        Toast.show({
+                            text: error.response.data.msg,
+                            type: 'danger',
+                            buttonText: 'Okay',
+                            duration: 3000
+                        });
+                    })
             }
         }
     };
 
     render() {
         return (
-            <Root>
-                <Container>
-                    <Button transparent onPress = {() => Actions.pop()}>
-                        <Icon name='ios-arrow-back' />
+            <Container>
+                <Button transparent onPress={() => Actions.pop()}>
+                    <Icon name='ios-arrow-back' />
+                </Button>
+                <Content style={styles.content}>
+                    <Form>
+                        <InputGroup style={styles.dataInput}>
+                            <Icon name='person' style={styles.icon} />
+                            <Input
+                                style={styles.textInput}
+                                placeholder="Email"
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                onChangeText={email => this.setState({ email: email })}
+                            />
+                        </InputGroup>
+                        <InputGroup style={styles.dataInput}>
+                            <Icon name='lock' style={styles.icon} />
+                            <Input
+                                style={styles.textInput}
+                                placeholder="Password"
+                                secureTextEntry
+                                autoCapitalize="none"
+                                onChangeText={password => this.setState({ password: password })}
+                            />
+                        </InputGroup>
+                        <InputGroup style={styles.dataInput}>
+                            <Icon name='lock' style={styles.icon} />
+                            <Input
+                                style={styles.textInput}
+                                placeholder="Confirm Password"
+                                secureTextEntry
+                                autoCapitalize="none"
+                                onChangeText={confirmedPassword => this.setState({ confirmedPassword: confirmedPassword })}
+                            />
+                        </InputGroup>
+                    </Form>
+                    <Button rounded block info style={styles.button} onPress={() => this.handleRegister()}>
+                        <Text style={styles.textButton}>SIGN UP</Text>
                     </Button>
-                    <Content style = {styles.content}>
-                        <Form>
-                            <InputGroup style={styles.dataInput}>
-                                <Icon name='person' style={styles.icon}/>
-                                <Input
-                                    style = {styles.textInput}
-                                    placeholder="Email"
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    onChangeText={email => this.setState({ email: email })}
-                                />
-                            </InputGroup>
-                            <InputGroup style={styles.dataInput}>
-                                <Icon name='lock' style={styles.icon}/>
-                                <Input
-                                    style = {styles.textInput}
-                                    placeholder="Password"
-                                    secureTextEntry
-                                    autoCapitalize="none"
-                                    onChangeText={password => this.setState({ password: password })}
-                                />
-                            </InputGroup>
-                            <InputGroup style={styles.dataInput}>
-                                <Icon name='lock' style={styles.icon}/>
-                                <Input
-                                    style = {styles.textInput}
-                                    placeholder="Confirm Password"
-                                    secureTextEntry
-                                    autoCapitalize="none"
-                                    onChangeText={confirmedPassword => this.setState({ confirmedPassword: confirmedPassword })}
-                                />
-                            </InputGroup>
-                        </Form>
-                        <Button rounded block info style = {styles.button} onPress = {() => this.handleRegister()}>
-                            <Text style={styles.textButton}>SIGN UP</Text>
-                        </Button>
-                    </Content>
-                </Container>
-            </Root>
+                </Content>
+            </Container>
         );
     }
 }
@@ -138,7 +136,7 @@ const styles = StyleSheet.create({
         margin: '5%',
     },
     icon: {
-        fontSize:25,
+        fontSize: 25,
         color: 'black'
     },
     dataInput: {

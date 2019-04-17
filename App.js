@@ -21,6 +21,7 @@ import SubCriterionViewer from './src/components/FolderExplorer/SubCriterionView
 import SuggestionViewer from './src/components/FolderExplorer/SuggestionViewer';
 import TextViewer from './src/components/FolderExplorer/TextViewer';
 import EvidenceViewer from './src/components/FolderExplorer/EvidenceViewer';
+import { Root } from 'native-base';
 
 class App extends Component {
 
@@ -35,101 +36,103 @@ class App extends Component {
     var backLoginScene = false;
     let exitScene = ["login", "_merchant", "_sarViewer"];
     return (
-      <Router
-        backAndroidHandler={() => {
-          if (exitScene.includes(Actions.currentScene)) {
-            if (backLoginScene == false) {
-              ToastAndroid.show("Click back again to exit.", ToastAndroid.SHORT);
-              backLoginScene = !backLoginScene;
-              setTimeout(function () {
+      <Root>
+        <Router
+          backAndroidHandler={() => {
+            if (exitScene.includes(Actions.currentScene)) {
+              if (backLoginScene == false) {
+                ToastAndroid.show("Click back again to exit.", ToastAndroid.SHORT);
                 backLoginScene = !backLoginScene;
-              }, 2000);
-              return true;
-            } else {
-              backLoginScene = false;
-              BackHandler.exitApp();
+                setTimeout(function () {
+                  backLoginScene = !backLoginScene;
+                }, 2000);
+                return true;
+              } else {
+                backLoginScene = false;
+                BackHandler.exitApp();
+              }
+              return false;
             }
-            return false;
-          }
-        }}
-      >
-        <Stack key="root" hideNavBar>
-          <Scene
-            key="login"
-            component={Login}
-            initial={!this.props.isLoggedIn}
-          />
-          <Scene
-            key="register"
-            component={Register}
-            title="Register"
-          />
-          <Scene
-            key="imageModal"
-            component={ImageModal}
-          />
-          <Scene
-            key="sortList"
-            component={SortList}
-          />
-          <Drawer
-            hideNavBar
-            key="drawerMenu"
-            contentComponent={SideMenu}
-            drawerWidth={300}
-            initial={this.props.isLoggedIn}
-          >
+          }}
+        >
+          <Stack key="root" hideNavBar>
             <Scene
-              hideNavBar
-              key="merchant"
-              component={Merchant}
+              key="login"
+              component={Login}
+              initial={!this.props.isLoggedIn}
             />
             <Scene
-              hideNavBar
-              key="sarViewer"
-              component={SarViewer}
+              key="register"
+              component={Register}
+              title="Register"
             />
-          </Drawer>
-          <Scene
-            key="merchantDetail"
-            component={MerchantDetail}
-          />
-          <Scene
-            key="pdfViewer"
-            component={PDFViewer}
-          />
-          <Scene
-            key="suggestionType"
-            component={SuggestionType}
-          />
-          <Scene
-            key="criterionViewer"
-            component={CriterionViewer}
-          />
-          <Scene
-            key="subCriterionViewer"
-            component={SubCriterionViewer}
-          />
-          <Scene
-            key="suggestionViewer"
-            component={SuggestionViewer}
+            <Scene
+              key="imageModal"
+              component={ImageModal}
+            />
+            <Scene
+              key="sortList"
+              component={SortList}
+            />
+            <Drawer
+              hideNavBar
+              key="drawerMenu"
+              contentComponent={SideMenu}
+              drawerWidth={300}
+              initial={this.props.isLoggedIn}
+            >
+              <Scene
+                hideNavBar
+                key="merchant"
+                component={Merchant}
+              />
+              <Scene
+                hideNavBar
+                key="sarViewer"
+                component={SarViewer}
+              />
+            </Drawer>
+            <Scene
+              key="merchantDetail"
+              component={MerchantDetail}
+            />
+            <Scene
+              key="pdfViewer"
+              component={PDFViewer}
+            />
+            <Scene
+              key="suggestionType"
+              component={SuggestionType}
+            />
+            <Scene
+              key="criterionViewer"
+              component={CriterionViewer}
+            />
+            <Scene
+              key="subCriterionViewer"
+              component={SubCriterionViewer}
+            />
+            <Scene
+              key="suggestionViewer"
+              component={SuggestionViewer}
             // initial
-          />
-          <Scene
-            key="textViewer"
-            component={TextViewer}
-          />
-          <Scene
-            key="evidenceViewer"
-            component={EvidenceViewer}
-          // initial
-          />
-          <Scene
-            key="test"
-            component={Test}
-          />
-        </Stack>
-      </Router>
+            />
+            <Scene
+              key="textViewer"
+              component={TextViewer}
+            />
+            <Scene
+              key="evidenceViewer"
+              component={EvidenceViewer}
+            // initial
+            />
+            <Scene
+              key="test"
+              component={Test}
+            />
+          </Stack>
+        </Router>
+      </Root>
     );
   }
 }

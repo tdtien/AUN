@@ -13,7 +13,8 @@ import {
   View,
   Toast,
   Root,
-  Spinner
+  Spinner,
+  Header
 } from "native-base";
 import { StyleSheet, Image, StatusBar } from "react-native";
 import { Actions } from "react-native-router-flux";
@@ -91,57 +92,55 @@ class Login extends Component {
       </View>
     )
     return (
-      <Root>
-        <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-        <Container>
-          <Content>
-            <View style={styles.logoContainer}>
-              <Image style={styles.logo} source={Images.logo} />
-              <Text style={styles.title}>AUN Inspection System</Text>
-            </View>
-            <Form>
-              <Item floatingLabel>
-                <Label>Email</Label>
-                <Input
-                  keyboardType="email-address"
-                  onChangeText={email => this.setState({ email: email })}
-                  onSubmitEditing={() => this.passwordInput._root.focus()}
-                  returnKeyType="next"
-                  autoCapitalize="none"
-                />
-              </Item>
-              <Item floatingLabel>
-                <Label>Password</Label>
-                <Input
-                  autoCapitalize="none"
-                  secureTextEntry
-                  onChangeText={password => this.setState({ password: password })}
-                  getRef={input => (this.passwordInput = input)}
-                  returnKeyType="go"
-                  onSubmitEditing={() => this.handleLogin()}
-                />
-              </Item>
-              <ListItem noBorder>
-                <Body>
-                  <Button info block onPress={() => this.handleLogin()}>
-                    <Text>Sign In</Text>
-                  </Button>
-                </Body>
-              </ListItem>
-            </Form>
-          </Content>
-          <View style={styles.registerContainer}>
-            <Text style={{ fontSize: 15 }}>Don't have account yet?</Text>
-            <Button transparent info onPress={() => Actions.register()}>
-              <Text style={{ fontSize: 13 }}>Register now!</Text>
-            </Button>
+      <Container>
+        <Header noShadow iosBarStyle="dark-content" style={{ backgroundColor: 'white', border: 0, borderBottomWidth: 0 }} />
+        <Content scrollEnabled={false}>
+          <View style={styles.logoContainer}>
+            <Image style={styles.logo} source={Images.logo} />
+            <Text style={styles.title}>AUN Inspection System</Text>
           </View>
-          {
-            (this.state.isSplashScreenVisible === true) ? splashScreen : null
-          }
-          <Loader loading={this.state.isLoading} />
-        </Container>
-      </Root>
+          <Form>
+            <Item floatingLabel style={styles.inputStyle}>
+              <Label>Email</Label>
+              <Input
+                keyboardType="email-address"
+                onChangeText={email => this.setState({ email: email })}
+                onSubmitEditing={() => this.passwordInput._root.focus()}
+                returnKeyType="next"
+                autoCapitalize="none"
+              />
+            </Item>
+            <Item floatingLabel style={styles.inputStyle}>
+              <Label>Password</Label>
+              <Input
+                autoCapitalize="none"
+                secureTextEntry
+                onChangeText={password => this.setState({ password: password })}
+                getRef={input => (this.passwordInput = input)}
+                returnKeyType="go"
+                onSubmitEditing={() => this.handleLogin()}
+              />
+            </Item>
+            <ListItem noBorder>
+              <Body>
+                <Button info block onPress={() => this.handleLogin()}>
+                  <Text>Sign In</Text>
+                </Button>
+              </Body>
+            </ListItem>
+          </Form>
+        </Content>
+        <View style={styles.registerContainer}>
+          <Text style={{ fontSize: 15 }}>Don't have account yet?</Text>
+          <Button transparent info onPress={() => Actions.register()}>
+            <Text style={{ fontSize: 13 }}>Register now!</Text>
+          </Button>
+        </View>
+        {
+          (this.state.isSplashScreenVisible === true) ? splashScreen : null
+        }
+        <Loader loading={this.state.isLoading} />
+      </Container>
     );
   }
 }
@@ -183,6 +182,9 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
+  inputStyle: {
+    width: '90%'
+  }
 });
 
 const mapDispatchToProps = dispatch => {
