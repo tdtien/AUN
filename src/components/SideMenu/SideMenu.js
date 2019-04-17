@@ -35,7 +35,7 @@ class SideMenu extends Component {
                     <List>
                         <ListItem avatar>
                             <Left>
-                                <Thumbnail source={Images.defaultUser} small/>
+                                <Thumbnail source={Images.defaultUser} small />
                             </Left>
                             <Body>
                                 <Text>{this.props.email}</Text>
@@ -48,6 +48,14 @@ class SideMenu extends Component {
                             </Left>
                             <Body>
                                 <Text>All Docs</Text>
+                            </Body>
+                        </ListItem>
+                        <ListItem button onPress={() => Actions.currentScene == '_sarViewer' ? Actions.drawerClose() : Actions.sarViewer()} icon noBorder >
+                            <Left>
+                                <Icon name={AppCommon.icon("tv")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
+                            </Left>
+                            <Body>
+                                <Text>SAR Viewer</Text>
                             </Body>
                         </ListItem>
                     </List>
@@ -71,11 +79,11 @@ class SideMenu extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-      logout: () => {
-        dispatch(logoutAccount());
-      }
+        logout: () => {
+            dispatch(logoutAccount());
+        }
     };
-  };
+};
 
 const mapStateToProps = state => {
     return {

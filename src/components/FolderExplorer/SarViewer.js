@@ -70,7 +70,7 @@ class SarViewer extends Component {
         );
     };
 
-    renderItem({item}) {
+    renderItem({ item }) {
         return (
             <FolderItem
                 item={item}
@@ -88,6 +88,9 @@ class SarViewer extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                     rounded
                 >
+                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()} >
+                        <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                    </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: 'white' }}>All Sars</Title>
                     </Body>

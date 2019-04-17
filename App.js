@@ -80,6 +80,11 @@ class App extends Component {
               key="merchant"
               component={Merchant}
             />
+            <Scene
+              hideNavBar
+              key="sarViewer"
+              component={SarViewer}
+            />
           </Drawer>
           <Scene
             key="merchantDetail"
@@ -94,11 +99,6 @@ class App extends Component {
             component={SuggestionType}
           />
           <Scene
-            key="sarViewer"
-            component={SarViewer}
-            // initial
-          />
-          <Scene
             key="criterionViewer"
             component={CriterionViewer}
           />
@@ -109,16 +109,16 @@ class App extends Component {
           <Scene
             key="suggestionViewer"
             component={SuggestionViewer}
-            // initial
+          // initial
           />
           <Scene
             key="textViewer"
             component={TextViewer}
           />
-           <Scene
+          <Scene
             key="evidenceViewer"
             component={EvidenceViewer}
-            // initial
+          // initial
           />
           <Scene
             key="test"
