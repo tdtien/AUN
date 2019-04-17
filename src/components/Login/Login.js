@@ -93,7 +93,7 @@ class Login extends Component {
     )
     return (
       <Container>
-        <Header noShadow iosBarStyle="dark-content" style={{ backgroundColor: 'white', border: 0, borderBottomWidth: 0 }} />
+        <Header noShadow iosBarStyle="dark-content" style={{ backgroundColor: 'white', border: 0, borderBottomWidth: 0 }} androidStatusBarColor="white"/>
         <Content scrollEnabled={false}>
           <View style={styles.logoContainer}>
             <Image style={styles.logo} source={Images.logo} />
