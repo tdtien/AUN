@@ -6,6 +6,7 @@ export class AppCommon {
     static background_color = "#F7F5F5"
     static icon_size = 27
     static icon_largeSize = 40
+    static font_size = 18
     static directoryPath = Platform.OS === 'android' ? RNFS.ExternalDirectoryPath : RNFS.LibraryDirectoryPath
     static root_dir = "/AUNMobile"
     static pdf_dir = "/PDFFolder"

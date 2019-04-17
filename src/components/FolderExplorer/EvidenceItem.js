@@ -61,9 +61,9 @@ export default class EvidenceItem extends Component {
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
                         <Icon name='pdffile1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
-                        <Text style={{ color: 'black', paddingHorizontal: 20, fontSize: 20 }} numberOfLines={3}>{this.props.item.name}</Text>
+                        <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={3}>{this.props.item.name}</Text>
                     </View>
-                    <Icon name={AppCommon.icon('more')} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
+                    {/* <Icon name={AppCommon.icon('more')} style={{ color: 'gray', fontSize: AppCommon.icon_size }} /> */}
                 </View>
             </TouchableOpacity>
         )

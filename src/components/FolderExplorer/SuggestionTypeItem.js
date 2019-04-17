@@ -20,14 +20,23 @@ export default class SuggestionTypeItem extends Component {
     render() {
         let type = this.props.sType;
         let item = this.props.item;
-        let itemContent = item.content;
-        let iconName = (type !== 'evidences') ? "filetext1" : "folder1"
-        var pressAction = function() {
+        let iconName;
+        let timeView;
+        let arrowView;
+        if (type !== 'evidences') {
+            iconName = "filetext1";
+            timeView = <Text style={{ color: 'gray', paddingLeft: 15, fontSize: 15 }}>{moment(this.props.item.createdAt).format('DD/MM/YYYY HH:mm')}</Text>;
+            arrowView = <Icon name='angle-right' type="FontAwesome5" style={{ color: 'gray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />;
+        } else {
+            iconName = "folder1";
+            timeView = null;
+            arrowView = null
+        }
+        let pressAction = function () {
             if (type !== 'evidences') {
-                // Actions.textFile({data: this.props.item.content});
-               Actions.textViewer({data: itemContent, title: type});
+                Actions.textViewer({ data: item.content, title: type });
             } else {
-               Actions.evidenceViewer({suggestionId: item.id});
+                Actions.evidenceViewer({ suggestionId: item.id });
             }
         }
         return (
@@ -36,13 +45,19 @@ export default class SuggestionTypeItem extends Component {
                     <View style={styles.leftItem}>
                         <Icon name={iconName} type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
                         <View style={{ flex: 1, flexDirection: 'column' }}>
-                            <Text style={{ color: 'black', paddingHorizontal: 20, fontSize: 20 }} numberOfLines={3}>{itemContent}</Text>
-                            <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{ color: 'gray', paddingLeft: 20, fontSize: 15 }}>{moment(this.props.item.createdAt).format('DD/MM/YYYY HH:mm')}</Text>
-                            </View>
+                            <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={3}>{item.content}</Text>
+                            {
+                                (type !== "evidences") ? (
+                                    <Text style={{ color: 'gray', paddingLeft: 15, fontSize: 15 }}>{moment(this.props.item.createdAt).format('DD/MM/YYYY HH:mm')}</Text>
+                                ) : null
+                            }
                         </View>
                     </View>
-                    <Icon name={AppCommon.icon('more')} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
+                    {
+                        (type === "evidences") ? (
+                            <Icon name='angle-right' type="FontAwesome5" style={{ color: 'gray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />
+                        ) : null
+                    }
                 </View>
             </TouchableOpacity>
         )

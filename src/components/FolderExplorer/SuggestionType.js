@@ -4,10 +4,7 @@ import {
     View,
     TouchableOpacity,
     StyleSheet,
-    ActivityIndicator,
     FlatList,
-    Alert,
-    ScrollView
 } from 'react-native';
 import {
     Content,
@@ -19,7 +16,6 @@ import {
 } from 'native-base';
 import { AppCommon } from '../../commons/commons';
 import { Actions } from 'react-native-router-flux';
-import moment from 'moment'
 import SuggestionTypeItem from "./SuggestionTypeItem";
 
 export default class SuggestionType extends Component {
@@ -65,15 +61,23 @@ export default class SuggestionType extends Component {
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
                 >
-                    <FlatList
-                        data={this.props.data}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item, index }) => this.renderItem(item, index)}
-                        onRefresh={this.handleRefresh}
-                        refreshing={this.state.refreshing}
-                        onEndReached={this.handleLoadMore}
-                        onEndReachedThreshold={50}
-                    />
+                    {
+                        (this.props.data.length === 0) ? (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                            </View>
+                        ) : (
+                                <FlatList
+                                    data={this.props.data}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item, index }) => this.renderItem(item, index)}
+                                    onRefresh={this.handleRefresh}
+                                    refreshing={this.state.refreshing}
+                                    onEndReached={this.handleLoadMore}
+                                    onEndReachedThreshold={50}
+                                />
+                            )
+                    }
 
                 </Content>
             </Container>
