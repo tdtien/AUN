@@ -33,13 +33,17 @@ class App extends Component {
 
   render() {
     var backLoginScene = false;
+    let exitScene = ["login", "_merchant", "_sarViewer"];
     return (
       <Router
         backAndroidHandler={() => {
-          if (Actions.currentScene == "login" || Actions.currentScene == "_merchant") {
+          if (exitScene.includes(Actions.currentScene)) {
             if (backLoginScene == false) {
               ToastAndroid.show("Click back again to exit.", ToastAndroid.SHORT);
               backLoginScene = !backLoginScene;
+              setTimeout(function () {
+                backLoginScene = !backLoginScene;
+              }, 2000);
               return true;
             } else {
               backLoginScene = false;
