@@ -219,7 +219,7 @@ export default class ImageModal extends Component {
                 // renderHeader={this.renderHeader.bind(this)}
                 // renderFooter={this.renderFooter.bind(this)}
                 />
-                <Loader loading={this.state.isLoading} />
+                {/* <Loader loading={this.state.isLoading} /> */}
                 <DialogInput isDialogVisible={this.state.isDialogVisible}
                     title={"Set name for doc"}
                     hintInput={"New_Doc_<milisecond>"}
