@@ -113,7 +113,7 @@ class App extends Component {
           <Scene
             key="suggestionViewer"
             component={SuggestionViewer}
-          // initial
+            // initial
           />
           <Scene
             key="textViewer"

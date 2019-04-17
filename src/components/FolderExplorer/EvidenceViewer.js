@@ -38,8 +38,9 @@ class EvidenceViewer extends Component {
     }
 
     _getAll = () => {
-        // console.log('token: ' + this.props.token);
-        getAllEvidences(this.props.token, 15)
+        console.log('abc');
+        console.log('suggestionId: ' + this.props.suggestionId);
+        getAllEvidences(this.props.token, this.props.suggestionId)
             .then((responseJson) => {
                 console.log('data: ' + responseJson.data);
                 this.setState({

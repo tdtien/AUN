@@ -19,14 +19,15 @@ export default class SuggestionTypeItem extends Component {
 
     render() {
         let type = this.props.sType;
-        let itemContent = this.props.item.content;
+        let item = this.props.item;
+        let itemContent = item.content;
         let iconName = (type !== 'evidences') ? "filetext1" : "folder1"
         var pressAction = function() {
             if (type !== 'evidences') {
                 // Actions.textFile({data: this.props.item.content});
                Actions.textViewer({data: itemContent, title: type});
             } else {
-                alert('OK');
+               Actions.evidenceViewer({suggestionId: item.id});
             }
         }
         return (
