@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Modal, ActivityIndicator, View, TouchableOpacity, Alert, StatusBar, Text } from "react-native";
+import { Modal, ActivityIndicator, View, TouchableOpacity, Alert, StatusBar, Text, Platform } from "react-native";
 import ImageViewer from "react-native-image-zoom-viewer";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Icon } from "native-base";
 import RNFS from "react-native-fs";
 import { AppCommon } from "../../commons/commons";
 import { popWithUpdate, deleteItem, popToSceneWithUpdate, fileToBase64 } from "../../commons/utilitiesFunction";
@@ -147,58 +147,6 @@ export default class ImageModal extends Component {
         )
     }
 
-    renderHeader() {
-        return (
-            <View style={{
-                flexDirection: "row",
-                justifyContent: "space-between"
-            }}
-            >
-                <TouchableOpacity
-                    onPress={() => popWithUpdate()}
-                    style={{ margin: 15 }}
-                >
-                    <Icon name="arrow-left" size={AppCommon.icon_size} color="#fff" />
-                </TouchableOpacity>
-                {this.props.mode === "save" ? (
-                    <TouchableOpacity
-                        onPress={() => {
-                            if (this.props.directory === (undefined || null)) {
-                                this.setState({ isDialogVisible: true });
-                            } else {
-                                let name = this.props.directory.substring(this.props.directory.lastIndexOf('/'), this.props.directory.length);
-                                this.handleSave(name, 0);
-                            }
-                        }}
-                        style={{ margin: 15 }}
-                    >
-                        <Icon name="content-save" size={AppCommon.icon_size} color="#fff" />
-                    </TouchableOpacity>
-                ) : (
-                        <View style={{
-                            flexDirection: "row",
-                            justifyContent: "flex-end"
-                        }}
-                        >
-                            <TouchableOpacity
-                                onPress={() => this.handleEdit()}
-                                style={{ margin: 15 }}
-                            >
-                                <Icon name="crop-rotate" size={AppCommon.icon_size} color="#fff" />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => this.handleDelete()}
-                                style={{ margin: 15, marginLeft: 0 }}
-                            >
-                                <Icon name="delete" size={AppCommon.icon_size} color="#fff" />
-                            </TouchableOpacity>
-                        </View>
-                    )
-                }
-            </View>
-        )
-    }
-
     render() {
         return (
             <Modal visible={this.state.visible} transparent>
@@ -206,14 +154,19 @@ export default class ImageModal extends Component {
                 <View style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    backgroundColor: 'black'
+                    backgroundColor: 'black',
+                    ...Platform.select({
+                        ios: {
+                            paddingTop: 20,
+                        },
+                    }),
                 }}
                 >
                     <TouchableOpacity
                         onPress={() => popWithUpdate()}
                         style={{ margin: 15 }}
                     >
-                        <Icon name="arrow-left" size={AppCommon.icon_size} color="#fff" />
+                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     {this.props.mode === "save" ? (
                         <TouchableOpacity
@@ -227,7 +180,7 @@ export default class ImageModal extends Component {
                             }}
                             style={{ margin: 15 }}
                         >
-                            <Icon name="content-save" size={AppCommon.icon_size} color="#fff" />
+                            <Icon name={AppCommon.icon("save")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                         </TouchableOpacity>
                     ) : (
                             <View style={{
@@ -239,13 +192,13 @@ export default class ImageModal extends Component {
                                     onPress={() => this.handleEdit()}
                                     style={{ margin: 15 }}
                                 >
-                                    <Icon name="crop-rotate" size={AppCommon.icon_size} color="#fff" />
+                                    <Icon name={AppCommon.icon("crop")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={() => this.handleDelete()}
                                     style={{ margin: 15, marginLeft: 0 }}
                                 >
-                                    <Icon name="delete" size={AppCommon.icon_size} color="#fff" />
+                                    <Icon name={AppCommon.icon("trash")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
                             </View>
                         )
