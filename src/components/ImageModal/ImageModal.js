@@ -149,7 +149,7 @@ export default class ImageModal extends Component {
 
     render() {
         return (
-            <Modal visible={this.state.visible} transparent>
+            <Modal visible={this.state.visible} transparent onRequestClose={() => Actions.pop()}>
                 <StatusBar backgroundColor="black" />
                 <View style={{
                     flexDirection: "row",
