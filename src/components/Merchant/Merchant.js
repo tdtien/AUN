@@ -25,12 +25,7 @@ export default class Merchant extends Component {
         };
     }
     componentDidMount() {
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.makeRemoteRequest();
-    }
-
-    componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -38,12 +33,6 @@ export default class Merchant extends Component {
             this.setState({ version: nextProps.version })
         }
         this.makeRemoteRequest();
-    }
-
-    handleBackButton() {
-        if (Actions.currentScene === '_merchant')
-            return true;
-        return false;
     }
 
     handleRefresh = () => {
