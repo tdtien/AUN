@@ -29,7 +29,7 @@ class EvidenceViewer extends Component {
         this.state = {
             isLoading: true,
             refreshing: false,
-            data: []
+            data: null
         };
     }
 
@@ -69,7 +69,7 @@ class EvidenceViewer extends Component {
 
     renderItem(item, index) {
         return (
-            <EvidenceItem 
+            <EvidenceItem
                 item={item}
                 token={this.props.token}
             />
@@ -99,15 +99,23 @@ class EvidenceViewer extends Component {
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
                 >
-                    <FlatList
-                        data={this.state.data}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item, index }) => this.renderItem(item, index)}
-                        onRefresh={this.handleRefresh}
-                        refreshing={this.state.refreshing}
-                        onEndReached={this.handleLoadMore}
-                        onEndReachedThreshold={50}
-                    />
+                    {
+                        (this.state.data !== null && this.state.data.length === 0) ? (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                            </View>
+                        ) : (
+                                <FlatList
+                                    data={this.state.data}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item, index }) => this.renderItem(item, index)}
+                                    onRefresh={this.handleRefresh}
+                                    refreshing={this.state.refreshing}
+                                    onEndReached={this.handleLoadMore}
+                                    onEndReachedThreshold={50}
+                                />
+                            )
+                    }
                 </Content>
                 <Loader loading={this.state.isLoading} />
             </Container>

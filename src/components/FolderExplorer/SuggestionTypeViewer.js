@@ -18,7 +18,7 @@ import { AppCommon } from '../../commons/commons';
 import { Actions } from 'react-native-router-flux';
 import SuggestionTypeItem from "./SuggestionTypeItem";
 
-export default class SuggestionType extends Component {
+export default class SuggestionTypeViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -78,7 +78,6 @@ export default class SuggestionType extends Component {
                                 />
                             )
                     }
-
                 </Content>
             </Container>
         )

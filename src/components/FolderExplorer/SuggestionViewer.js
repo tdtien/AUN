@@ -53,11 +53,11 @@ class SubCriterionViewer extends Component {
 
     detail(subCriterionId, index) {
         if(index === 0) {
-            Actions.suggestionType({data: this.state.data.implications, sType: 'implications'});
+            Actions.suggestionTypeViewer({data: this.state.data.implications, sType: 'implications'});
         } else if (index === 1) {
-            Actions.suggestionType({data: this.state.data.questions, sType: 'questions'});
+            Actions.suggestionTypeViewer({data: this.state.data.questions, sType: 'questions'});
         } else {
-            Actions.suggestionType({data: this.state.data.evidences, sType: 'evidences'});
+            Actions.suggestionTypeViewer({data: this.state.data.evidences, sType: 'evidences'});
         }
     }
 

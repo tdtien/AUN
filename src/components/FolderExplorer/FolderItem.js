@@ -23,7 +23,7 @@ export default class FolderItem extends Component {
                         <Icon name='folder1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
                         <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={3}>{this.props.item.name}</Text>
                     </View>
-                    <Icon name='angle-right' type="FontAwesome5" style={{ color: 'gray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />
+                    <Icon name='angle-right' type="FontAwesome5" style={{ color: 'darkgray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />
                 </View>
             </TouchableOpacity>
         )

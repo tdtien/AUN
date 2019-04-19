@@ -29,6 +29,7 @@ class CriterionViewer extends Component {
         this.state = {
             isLoading: true,
             refreshing: false,
+            data: null
         };
     }
 
@@ -37,11 +38,11 @@ class CriterionViewer extends Component {
     }
 
     detail(criterionId) {
-        Actions.subCriterionViewer({criterionId: criterionId});
+        Actions.subCriterionViewer({ criterionId: criterionId });
     }
 
     _getAll = () => {
-      getAllCriterions(this.props.token, this.props.sarId)
+        getAllCriterions(this.props.token, this.props.sarId)
             .then((responseJson) => {
                 // console.log('responseJson: ' + responseJson.data[0].name);
                 this.setState({
@@ -60,17 +61,17 @@ class CriterionViewer extends Component {
     }
 
     handleRefresh = () => {
-      this.setState(
-          {
-              refreshing: true
-          },
-          () => {
-              this._getAll();
-          }
-      );
-  };
+        this.setState(
+            {
+                refreshing: true
+            },
+            () => {
+                this._getAll();
+            }
+        );
+    };
 
-    renderItem({item}) {
+    renderItem({ item }) {
         return (
             <FolderItem
                 item={item}
@@ -102,16 +103,24 @@ class CriterionViewer extends Component {
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
                 >
-                    <FlatList
-                        data={this.state.data}
-                        extraData={this.state}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={this.renderItem.bind(this)}
-                        onRefresh={this.handleRefresh}
-                        refreshing={this.state.refreshing}
-                        onEndReached={this.handleLoadMore}
-                        onEndReachedThreshold={50}
-                    />
+                    {
+                        (this.state.data !== null && this.state.data.length === 0) ? (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                            </View>
+                        ) : (
+                                <FlatList
+                                    data={this.state.data}
+                                    extraData={this.state}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={this.renderItem.bind(this)}
+                                    onRefresh={this.handleRefresh}
+                                    refreshing={this.state.refreshing}
+                                    onEndReached={this.handleLoadMore}
+                                    onEndReachedThreshold={50}
+                                />
+                            )
+                    }
                 </Content>
                 <Loader loading={this.state.isLoading} />
             </Container>

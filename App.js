@@ -12,7 +12,7 @@ import { BackHandler } from "react-native";
 import { ToastAndroid } from "react-native";
 import SortList from './src/components/Merchant/SortList';
 import Folder from './src/components/FolderExplorer/FolderItem';
-import SuggestionType from './src/components/FolderExplorer/SuggestionType';
+import SuggestionTypeViewer from './src/components/FolderExplorer/SuggestionTypeViewer';
 import FolderComponent from './src/components/FolderExplorer/FolderItem';
 import SarViewer from './src/components/FolderExplorer/SarViewer';
 import CriterionViewer from './src/components/FolderExplorer/CriterionViewer';
@@ -101,8 +101,8 @@ class App extends Component {
               component={PDFViewer}
             />
             <Scene
-              key="suggestionType"
-              component={SuggestionType}
+              key="suggestionTypeViewer"
+              component={SuggestionTypeViewer}
             />
             <Scene
               key="criterionViewer"

@@ -3,6 +3,8 @@ import {
     TouchableOpacity,
     StyleSheet,
     FlatList,
+    View,
+    Text
 } from 'react-native';
 import {
     Content,
@@ -25,6 +27,7 @@ class SarViewer extends Component {
         this.state = {
             isLoading: true,
             refreshing: false,
+            data: null
         };
     }
 
@@ -98,16 +101,24 @@ class SarViewer extends Component {
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
                 >
-                    <FlatList
-                        data={this.state.data}
-                        extraData={this.state}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={this.renderItem.bind(this)}
-                        onRefresh={this.handleRefresh}
-                        refreshing={this.state.refreshing}
-                        onEndReached={this.handleLoadMore}
-                        onEndReachedThreshold={50}
-                    />
+                    {
+                        (this.state.data !== null && this.state.data.length === 0) ? (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                            </View>
+                        ) : (
+                                <FlatList
+                                    data={this.state.data}
+                                    extraData={this.state}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={this.renderItem.bind(this)}
+                                    onRefresh={this.handleRefresh}
+                                    refreshing={this.state.refreshing}
+                                    onEndReached={this.handleLoadMore}
+                                    onEndReachedThreshold={50}
+                                />
+                            )
+                    }
                 </Content>
                 <Loader loading={this.state.isLoading} />
             </Container>

@@ -26,11 +26,11 @@ export default class SuggestionTypeItem extends Component {
         if (type !== 'evidences') {
             iconName = "filetext1";
             timeView = <Text style={{ color: 'gray', paddingLeft: 15, fontSize: 15 }}>{moment(this.props.item.createdAt).format('DD/MM/YYYY HH:mm')}</Text>;
-            arrowView = <Icon name='angle-right' type="FontAwesome5" style={{ color: 'gray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />;
+            arrowView = null;
         } else {
             iconName = "folder1";
             timeView = null;
-            arrowView = null
+            arrowView = <Icon name='angle-right' type="FontAwesome5" style={{ color: 'darkgray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />;
         }
         let pressAction = function () {
             if (type !== 'evidences') {
@@ -47,16 +47,12 @@ export default class SuggestionTypeItem extends Component {
                         <View style={{ flex: 1, flexDirection: 'column' }}>
                             <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={3}>{item.content}</Text>
                             {
-                                (type !== "evidences") ? (
-                                    <Text style={{ color: 'gray', paddingLeft: 15, fontSize: 15 }}>{moment(this.props.item.createdAt).format('DD/MM/YYYY HH:mm')}</Text>
-                                ) : null
+                                timeView
                             }
                         </View>
                     </View>
                     {
-                        (type === "evidences") ? (
-                            <Icon name='angle-right' type="FontAwesome5" style={{ color: 'gray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />
-                        ) : null
+                        arrowView
                     }
                 </View>
             </TouchableOpacity>
