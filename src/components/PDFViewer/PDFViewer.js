@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Dimensions, ActivityIndicator, TouchableOpacity, Alert, View } from 'react-native';
+import { StyleSheet, Dimensions, ActivityIndicator, TouchableOpacity, Alert, View, Modal } from 'react-native';
 import {
     Header,
     Body,
@@ -14,18 +14,21 @@ import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
 import { updatePdf } from '../../api/accountApi';
 import { AppCommon } from '../../commons/commons';
+import DialogInput from "react-native-dialog-input";
 
 class PDFViewer extends React.Component {
     constructor(props) {
         super(props);
-        console.log('File Path: ' + this.props.filePath);
+        // console.log('File Path: ' + this.props.filePath);
         this.state = {
-            isLoading: false
+            isLoading: false,
+            isDialogVisible: false
         }
     }
 
-    handleUploadPdf = () => {
+    handleUploadPdf = (fileName) => {
         this.setState({
+            isDialogVisible: false,
             isLoading: true
         })
         var data = {
@@ -34,7 +37,7 @@ class PDFViewer extends React.Component {
             criterionId: this.props.flow.criterionId,
             subCriterionId: this.props.flow.subCriterionId,
             suggestionId: this.props.flow.suggestionId,
-            name: this.props.fileName
+            name: fileName
         }
         updatePdf(this.props.token, data)
             .then((responseJson) => {
@@ -58,6 +61,8 @@ class PDFViewer extends React.Component {
     }
 
     render() {
+        let fileName = this.props.fileName;
+        fileName = fileName.substring(0, fileName.length - 4);
         return (
             <Container>
                 <Header
@@ -74,14 +79,14 @@ class PDFViewer extends React.Component {
                     </Body>
                     {
                         (this.props.flow !== null) ? (
-                            <TouchableOpacity style={styles.headerButton} onPress={() => this.handleUploadPdf()} >
+                            <TouchableOpacity style={styles.headerButton} onPress={() => this.setState({ isDialogVisible: true })} >
                                 <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                         ) : (
-                            <TouchableOpacity style={styles.headerButton} onPress={() => null} >
-                                <Icon name={AppCommon.icon("cloud-download")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                            </TouchableOpacity>
-                        )
+                                <TouchableOpacity style={styles.headerButton} onPress={() => null} >
+                                    <Icon name={AppCommon.icon("cloud-download")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                                </TouchableOpacity>
+                            )
                     }
                 </Header>
                 <View style={styles.container}>
@@ -101,6 +106,13 @@ class PDFViewer extends React.Component {
                         enablePaging
                     />
                 </View>
+                <DialogInput isDialogVisible={this.state.isDialogVisible}
+                    title={"Set name for doc to upload"}
+                    hintInput={fileName}
+                    submitText={"Set"}
+                    submitInput={(inputText) => { this.handleUploadPdf(inputText) }}
+                    closeDialog={() => { this.setState({ isDialogVisible: false }) }}>
+                </DialogInput>
                 <Loader loading={this.state.isLoading} />
             </Container>
         )
