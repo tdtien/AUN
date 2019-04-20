@@ -52,12 +52,12 @@ class SubCriterionViewer extends Component {
     }
 
     detail(subCriterionId, index) {
-        if(index === 0) {
-            Actions.suggestionTypeViewer({data: this.state.data.implications, sType: 'implications'});
+        if (index === 0) {
+            Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.implications, sType: 'implications' });
         } else if (index === 1) {
-            Actions.suggestionTypeViewer({data: this.state.data.questions, sType: 'questions'});
+            Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.questions, sType: 'questions' });
         } else {
-            Actions.suggestionTypeViewer({data: this.state.data.evidences, sType: 'evidences'});
+            Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.evidences, sType: 'evidences' });
         }
     }
 
@@ -98,7 +98,7 @@ class SubCriterionViewer extends Component {
             <FolderItem
                 item={item}
                 parentView={this}
-                index = {index}
+                index={index}
             />
         )
     }
@@ -129,7 +129,7 @@ class SubCriterionViewer extends Component {
                     <FlatList
                         data={data}
                         keyExtractor={(item, index) => index.toString()}
-                        renderItem={({item, index}) => this.renderItem(item, index)}
+                        renderItem={({ item, index }) => this.renderItem(item, index)}
                         onRefresh={this.handleRefresh}
                         refreshing={this.state.refreshing}
                         onEndReached={this.handleLoadMore}

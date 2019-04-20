@@ -37,7 +37,7 @@ export default class EvidenceItem extends Component {
                         RNFS.writeFile(filePath, item.dataBase64, "base64")
                             .then(function (response) {
                                 console.log('Pdf is saved');
-                                Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64 });
+                                Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64, flow: null });
                             }).catch(function (error) {
                                 console.log(error);
                             })
@@ -46,7 +46,7 @@ export default class EvidenceItem extends Component {
                     RNFS.writeFile(filePath, item.dataBase64, "base64")
                         .then(function (response) {
                             console.log('Pdf is saved');
-                            Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64 });
+                            Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64, flow: null  });
                         }).catch(function (error) {
                             console.log(error);
                         })

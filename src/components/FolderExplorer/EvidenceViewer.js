@@ -117,6 +117,9 @@ class EvidenceViewer extends Component {
                             )
                     }
                 </Content>
+                <TouchableOpacity style={styles.addButton} onPress={() => Actions.merchant({ flow: this.props })}>
+                    <Icon name={AppCommon.icon("add")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                </TouchableOpacity>
                 <Loader loading={this.state.isLoading} />
             </Container>
         )
@@ -138,4 +141,15 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 10
     },
+    addButton: {
+        position: 'absolute',
+        width: 60,
+        height: 60,
+        bottom: 20,
+        right: 20,
+        borderRadius: 60,
+        backgroundColor: AppCommon.colors,
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 });

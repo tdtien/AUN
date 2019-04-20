@@ -130,6 +130,7 @@ export default class Merchant extends Component {
                 item={item}
                 action={this.handleDeleteItem}
                 version={this.state.version}
+                flow={this.props.flow}
             />
         );
     }
@@ -208,8 +209,8 @@ export default class Merchant extends Component {
                 style={{ backgroundColor: AppCommon.colors }}
                 rounded
             >
-                <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()} >
-                    <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
+                    <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
                 <Body style={{ flex: 1 }}>
                     <Title style={{ alignSelf: "center", color: 'white' }}>All Docs</Title>

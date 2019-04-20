@@ -38,7 +38,8 @@ class SubCriterionViewer extends Component {
     }
 
     detail(subcriterionId) {
-        Actions.suggestionViewer({ subcriterionId: subcriterionId });
+        var props = { sarId: this.props.sarId, criterionId: this.props.criterionId, subcriterionId: subcriterionId }
+        Actions.suggestionViewer(props);
     }
 
     _getAll = () => {

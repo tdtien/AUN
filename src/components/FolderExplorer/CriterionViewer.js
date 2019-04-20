@@ -38,7 +38,8 @@ class CriterionViewer extends Component {
     }
 
     detail(criterionId) {
-        Actions.subCriterionViewer({ criterionId: criterionId });
+        var props = {sarId: this.props.sarId, criterionId: criterionId }
+        Actions.subCriterionViewer(props);
     }
 
     _getAll = () => {

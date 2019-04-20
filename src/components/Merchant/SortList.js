@@ -92,13 +92,14 @@ class SortList extends Component {
                             let fileName = this.props.folderName + ".pdf";
                             let filePath = folderPath + "/" + fileName;
                             let that = this;
+                            let flow = this.props.flow;
                             RNFS.exists(folderPath).then((response) => {
                                 if (!response) {
                                     RNFS.mkdir(folderPath).then((response) => {
                                         RNFS.writeFile(filePath, that.state.byteArray, "base64")
                                             .then(function (response) {
                                                 console.log('Pdf is saved');
-                                                Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64 });
+                                                Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64, flow: flow });
                                             }).catch(function (error) {
                                                 console.log(error);
                                             })
@@ -107,7 +108,7 @@ class SortList extends Component {
                                     RNFS.writeFile(filePath, that.state.byteArray, "base64")
                                         .then(function (response) {
                                             console.log('Pdf is saved');
-                                            Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64 });
+                                            Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64, flow: flow });
                                         }).catch(function (error) {
                                             console.log(error);
                                         })

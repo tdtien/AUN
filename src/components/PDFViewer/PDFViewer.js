@@ -30,10 +30,10 @@ class PDFViewer extends React.Component {
         })
         var data = {
             file: this.props.base64,
-            sarId: 1,
-            criterionId: 1,
-            subCriterionId: 1,
-            suggestionId: 15,
+            sarId: this.props.flow.sarId,
+            criterionId: this.props.flow.criterionId,
+            subCriterionId: this.props.flow.subCriterionId,
+            suggestionId: this.props.flow.suggestionId,
             name: this.props.fileName
         }
         updatePdf(this.props.token, data)
@@ -72,9 +72,17 @@ class PDFViewer extends React.Component {
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: "white" }}>{this.props.fileName}</Title>
                     </Body>
-                    <TouchableOpacity style={styles.headerButton} onPress={() => this.handleUploadPdf()} >
-                        <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    </TouchableOpacity>
+                    {
+                        (this.props.flow !== null) ? (
+                            <TouchableOpacity style={styles.headerButton} onPress={() => this.handleUploadPdf()} >
+                                <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity style={styles.headerButton} onPress={() => null} >
+                                <Icon name={AppCommon.icon("cloud-download")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            </TouchableOpacity>
+                        )
+                    }
                 </Header>
                 <View style={styles.container}>
                     <Pdf

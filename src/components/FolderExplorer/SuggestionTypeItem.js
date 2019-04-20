@@ -20,6 +20,7 @@ export default class SuggestionTypeItem extends Component {
     render() {
         let type = this.props.sType;
         let item = this.props.item;
+        let flow = this.props.flow;
         let iconName;
         let timeView;
         let arrowView;
@@ -36,7 +37,8 @@ export default class SuggestionTypeItem extends Component {
             if (type !== 'evidences') {
                 Actions.textViewer({ data: item.content, title: type });
             } else {
-                Actions.evidenceViewer({ suggestionId: item.id });
+                let newFlow = { sarId: flow.sarId, criterionId: flow.criterionId, subcriterionId: flow.subcriterionId, suggestionId: item.id }
+                Actions.evidenceViewer(newFlow);
             }
         }
         return (

@@ -83,15 +83,15 @@ class App extends Component {
             >
               <Scene
                 hideNavBar
-                key="merchant"
-                component={Merchant}
-              />
-              <Scene
-                hideNavBar
                 key="sarViewer"
                 component={SarViewer}
               />
             </Drawer>
+            <Scene
+              hideNavBar
+              key="merchant"
+              component={Merchant}
+            />
             <Scene
               key="merchantDetail"
               component={MerchantDetail}
