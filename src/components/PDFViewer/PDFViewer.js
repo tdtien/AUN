@@ -46,7 +46,13 @@ class PDFViewer extends React.Component {
                 })
                 console.log('responseJson: ' + responseJson.msg);
                 if (responseJson.msg === 'Upload file successful')
-                    Alert.alert('Success', responseJson.msg);
+                    Alert.alert(
+                        'Success',
+                        responseJson.msg,
+                        [
+                            { text: 'OK', onPress: () => Actions.evidenceViewer(this.props.flow) }
+                        ]
+                    );
                 else {
                     Alert.alert('Error1', responseJson.msg);
                 }

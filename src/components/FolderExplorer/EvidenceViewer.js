@@ -85,7 +85,7 @@ class EvidenceViewer extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                     rounded
                 >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
+                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.popTo('suggestionTypeViewer')} >
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
