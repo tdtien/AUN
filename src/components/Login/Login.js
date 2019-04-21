@@ -57,7 +57,7 @@ class Login extends Component {
         this.setState({ isLoading: false });
         if (res.hasOwnProperty('token')) {
           this.props.login({ id: res.id, token: res.token, email: res.email, role: res.role });
-          Actions.merchant();
+          Actions.sarViewer();
         } else {
           Toast.show({
             text: res.msg,

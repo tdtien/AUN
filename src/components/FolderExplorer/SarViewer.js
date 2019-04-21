@@ -13,13 +13,16 @@ import {
     Header,
     Body,
     Title,
+    Footer,
+    Right
 } from 'native-base';
-import { getAllSars } from '../../api/directoryTreeApi';
+import { getAllSars, downloadSar } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
+import { setDirectoryInfo } from "../../actions/directoryAction";
 
 class SarViewer extends Component {
     constructor(props) {
@@ -27,7 +30,10 @@ class SarViewer extends Component {
         this.state = {
             isLoading: true,
             refreshing: false,
-            data: null
+            data: null,
+            isShowFooter: false,
+            directoryOffline: {},
+            choosenSarId: ''
         };
     }
 
@@ -69,6 +75,13 @@ class SarViewer extends Component {
         );
     };
 
+    handleShowFooter = (choosenSarId) => {
+        this.setState({
+            isShowFooter: true,
+            choosenSarId: choosenSarId
+        })
+    }
+
     renderItem({ item }) {
         return (
             <FolderItem
@@ -78,7 +91,59 @@ class SarViewer extends Component {
         )
     }
 
+    handleDownloadItem = () => {
+        this.setState({
+            isLoading: true,
+        })
+        //this.state.choosenSarId
+        downloadSar(this.props.token, 1)
+            .then((responseJson) => {
+                // console.log('responseJson sar: ' + responseJson.data[0].name);
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                    directoryOffline: responseJson.data
+                })
+                this.props.setDirectoryInfo({ email: this.props.email, directoryTree: responseJson.data});
+            })
+            .catch((error) => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                })
+                console.error('Error when download: ' + error);
+            });
+    }
+
     render() {
+        let leftHeaderButton = (this.state.isShowFooter) ? (
+            <TouchableOpacity style={styles.menuButton} onPress={() => {
+                this.setState({
+                    isShowFooter: false
+                })
+                Actions.pop()
+            }} >
+                <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+            </TouchableOpacity>
+        ) : (
+                <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()} >
+                    <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                </TouchableOpacity>
+            )
+        let footer = (this.state.isShowFooter) ?
+            (
+                <Footer
+                    style={{ backgroundColor: AppCommon.colors }}
+                >
+                    <Right>
+                        <View style={styles.footerButton}>
+                            <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => this.handleDownloadItem()} >
+                                <Icon name={AppCommon.icon("cloud-download")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            </TouchableOpacity>
+                        </View>
+                    </Right>
+                </Footer>
+            ) : null
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
@@ -87,9 +152,9 @@ class SarViewer extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                     rounded
                 >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()} >
-                        <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    </TouchableOpacity>
+                    {
+                        leftHeaderButton
+                    }
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: 'white' }}>All Sars</Title>
                     </Body>
@@ -120,19 +185,31 @@ class SarViewer extends Component {
                             )
                     }
                 </Content>
+                {
+                    footer
+                }
                 <Loader loading={this.state.isLoading} />
             </Container>
         )
     }
 }
 
-const mapStateToProps = state => {
+const mapDispatchToProps = dispatch => {
     return {
-        token: state.account.token,
+        setDirectoryInfo: item => {
+            dispatch(setDirectoryInfo(item));
+        }
     };
 };
 
-export default connect(mapStateToProps)(SarViewer);
+const mapStateToProps = state => {
+    return {
+        token: state.account.token,
+        email: state.account.email
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SarViewer);
 
 const styles = StyleSheet.create({
     menuButton: {
@@ -140,5 +217,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 10,
         paddingRight: 10
+    },
+    footerButton: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 20,
+        marginRight: 20
     },
 });

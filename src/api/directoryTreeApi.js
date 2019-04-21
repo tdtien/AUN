@@ -74,3 +74,18 @@ export async function getAllEvidences(token, suggestionId) {
             .catch(error => reject(error));
     });
 }
+
+export async function downloadSar(token, sarId) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/sars/${sarId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}

@@ -16,7 +16,6 @@ import SuggestionTypeViewer from './src/components/FolderExplorer/SuggestionType
 import FolderComponent from './src/components/FolderExplorer/FolderItem';
 import SarViewer from './src/components/FolderExplorer/SarViewer';
 import CriterionViewer from './src/components/FolderExplorer/CriterionViewer';
-import Test from './src/components/FolderExplorer/Test';
 import SubCriterionViewer from './src/components/FolderExplorer/SubCriterionViewer';
 import SuggestionViewer from './src/components/FolderExplorer/SuggestionViewer';
 import TextViewer from './src/components/FolderExplorer/TextViewer';
@@ -125,10 +124,6 @@ class App extends Component {
               key="evidenceViewer"
               component={EvidenceViewer}
             // initial
-            />
-            <Scene
-              key="test"
-              component={Test}
             />
           </Stack>
         </Router>
