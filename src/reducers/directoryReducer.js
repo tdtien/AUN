@@ -9,9 +9,15 @@ const directoryReducer = (state = initialState, action) => {
         case SET_DIRECTORY_INFO: {
             //chua xet dk trung
             let newState = state;
+            console.log('old state: ' + JSON.stringify(newState.directoryInfo));
             newState.directoryInfo[action.data.email] = action.data.directoryTree;
+            console.log('-------------------');
             console.log('new state: ' + JSON.stringify(newState.directoryInfo));
-            return newState;
+            return {...state, newState};
+
+            //reset directory redux
+            // let newState = {};
+            // return newState;
         }
         default:
             return state;

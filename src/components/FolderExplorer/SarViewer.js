@@ -96,7 +96,7 @@ class SarViewer extends Component {
             isLoading: true,
         })
         //this.state.choosenSarId
-        downloadSar(this.props.token, 1)
+        downloadSar(this.props.token, this.state.choosenSarId)
             .then((responseJson) => {
                 // console.log('responseJson sar: ' + responseJson.data[0].name);
                 this.setState({
