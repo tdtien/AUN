@@ -4,7 +4,9 @@ import {
     StyleSheet,
     FlatList,
     View,
-    Text
+    Text,
+    NetInfo,
+    Alert
 } from 'react-native';
 import {
     Content,
@@ -33,12 +35,29 @@ class SarViewer extends Component {
             data: null,
             isShowFooter: false,
             directoryOffline: {},
-            choosenSarId: ''
+            choosenSarId: '',
+            isConnected: true
         };
     }
 
     componentDidMount() {
+        NetInfo.isConnected.addEventListener(
+            'connectionChange',
+            this._handleConnectivityChange
+        );
         this._getAll();
+    }
+
+
+    _handleConnectivityChange = (isConnected) => {
+        this.setState({ isConnected: isConnected })
+    };
+
+    componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener(
+            'connectionChange',
+            this._handleConnectivityChange
+        );
     }
 
     detail(sarId) {
@@ -46,22 +65,35 @@ class SarViewer extends Component {
     }
 
     _getAll = () => {
-        getAllSars(this.props.token)
-            .then((responseJson) => {
-                // console.log('responseJson sar: ' + responseJson.data[0].name);
+        NetInfo.isConnected.fetch().done((isConnected) => {
+            this.setState({ isConnected: isConnected })
+            // Alert.alert('isConnected: ' + isConnected);
+            if (isConnected === true) {
+                getAllSars(this.props.token)
+                    .then((responseJson) => {
+                        // console.log('responseJson sar: ' + responseJson.data[0].name);
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                            data: responseJson.data
+                        })
+                    })
+                    .catch((error) => {
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                        })
+                        console.error('Error: ' + error);
+                    });
+            }
+            else {
                 this.setState({
                     isLoading: false,
-                    refreshing: false,
-                    data: responseJson.data
+                    refreshing: false
                 })
-            })
-            .catch((error) => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                })
-                console.error('Error: ' + error);
-            });
+                Alert.alert('Nofication', 'Network request fail');
+            }
+        });
     }
 
     handleRefresh = () => {
@@ -104,7 +136,7 @@ class SarViewer extends Component {
                     refreshing: false,
                     directoryOffline: responseJson.data
                 })
-                this.props.setDirectoryInfo({ email: this.props.email, directoryTree: responseJson.data});
+                this.props.setDirectoryInfo({ email: this.props.email, directoryTree: responseJson.data });
             })
             .catch((error) => {
                 this.setState({
