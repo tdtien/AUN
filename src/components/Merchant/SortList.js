@@ -93,13 +93,15 @@ class SortList extends Component {
                             let filePath = folderPath + "/" + fileName;
                             let that = this;
                             let flow = this.props.flow;
+                            let imageFolderPath = this.props.folderPath;
                             RNFS.exists(folderPath).then((response) => {
                                 if (!response) {
                                     RNFS.mkdir(folderPath).then((response) => {
                                         RNFS.writeFile(filePath, that.state.byteArray, "base64")
                                             .then(function (response) {
                                                 console.log('Pdf is saved');
-                                                Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64, flow: flow });
+                                                let props = { filePath: `file://${filePath}`, imageFolderPath: imageFolderPath, fileName: fileName, base64: responseJson.dataBase64, flow: flow }
+                                                Actions.pdfViewer(props);
                                             }).catch(function (error) {
                                                 console.log(error);
                                             })
@@ -108,7 +110,8 @@ class SortList extends Component {
                                     RNFS.writeFile(filePath, that.state.byteArray, "base64")
                                         .then(function (response) {
                                             console.log('Pdf is saved');
-                                            Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: responseJson.dataBase64, flow: flow });
+                                            let props = { filePath: `file://${filePath}`, imageFolderPath: imageFolderPath, fileName: fileName, base64: responseJson.dataBase64, flow: flow }
+                                            Actions.pdfViewer(props);
                                         }).catch(function (error) {
                                             console.log(error);
                                         })

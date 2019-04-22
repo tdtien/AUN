@@ -17,15 +17,47 @@ import { updatePdf } from '../../api/accountApi';
 import { AppCommon } from '../../commons/commons';
 import DialogInput from "react-native-dialog-input";
 import { validateFileName } from '../../commons/validation';
+import { deleteItem } from '../../commons/utilitiesFunction';
 
 class PDFViewer extends React.Component {
     constructor(props) {
         super(props);
-        // console.log('File Path: ' + this.props.filePath);
         this.state = {
             isLoading: false,
             isDialogVisible: false
         }
+    }
+
+    handleDeleteImageFolder = (folderPath) => {
+        Alert.alert(
+            'Delete image folder',
+            'Do you want to delete the image folder ?',
+            [
+                {
+                    text: 'No',
+                    style: 'cancel',
+                    onPress: () => Actions.evidenceViewer(this.props.flow),
+                },
+                {
+                    text: 'Yes', onPress: () => {
+                        this.setState({
+                            isLoading: true
+                        })
+                        deleteItem(folderPath).then(result => {
+                            this.setState({
+                                isLoading: false
+                            })
+                            Actions.evidenceViewer(this.props.flow)
+                        }).catch(error => {
+                            this.setState({
+                                isLoading: false
+                            })
+                            Alert.alert('Error', error.message);
+                        })
+                    }
+                }
+            ]
+        );
     }
 
     handleUploadPdf = (fileName) => {
@@ -56,7 +88,7 @@ class PDFViewer extends React.Component {
                         'Success',
                         responseJson.msg,
                         [
-                            { text: 'OK', onPress: () => Actions.evidenceViewer(this.props.flow) }
+                            { text: 'OK', onPress: () => this.handleDeleteImageFolder(this.props.imageFolderPath) }
                         ]
                     );
                 else {

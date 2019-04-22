@@ -297,7 +297,7 @@ class MerchantDetail extends Component {
                 <Body style={{ flex: 1 }}>
                     <Title style={{ alignSelf: "center", marginRight: 15, color: 'white' }}>{this.props.folderName}</Title>
                 </Body>
-                <TouchableOpacity style={styles.headerButton} onPress={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName, flow: this.props.flow })} >
+                <TouchableOpacity style={styles.headerButton} onPress={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName, folderPath: this.props.folderPath, flow: this.props.flow })} >
                     <Icon name="pdffile1" type="AntDesign" style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
                 <View style={styles.headerMoreButton}>
@@ -312,7 +312,7 @@ class MerchantDetail extends Component {
                                     <Text style={styles.popupItemText}>Select</Text>
                                 </View>
                             </MenuOption>
-                            <MenuOption onSelect={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName, flow: this.props.flow })}>
+                            <MenuOption onSelect={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName, folderPath: this.props.folderPath, flow: this.props.flow })}>
                                 <View style={styles.popupItem}>
                                     <Icon name="pdffile1" type="AntDesign" style={{ color: 'red', fontSize: AppCommon.icon_size }} />
                                     <Text style={styles.popupItemText}>Export to PDF</Text>
@@ -347,7 +347,7 @@ class MerchantDetail extends Component {
                 >
                     <Right>
                         <View style={styles.footerButton}>
-                            <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : Actions.sortList({ data: this.processData(), folderName: this.props.folderName, flow: this.props.flow })} >
+                            <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : Actions.sortList({ data: this.processData(), folderName: this.props.folderName, folderPath: this.props.folderPath, flow: this.props.flow })} >
                                 <Icon name="pdffile1" type="AntDesign" style={{ color: isDisable ? 'gray' : 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                             <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : this.handleDeleteMultipleImages()} >
