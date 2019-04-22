@@ -6,7 +6,8 @@ import {
     Title,
     Container,
     Icon,
-    Content
+    Content,
+    Toast
 } from "native-base";
 import Pdf from 'react-native-pdf';
 import { Actions } from "react-native-router-flux";
@@ -15,6 +16,7 @@ import Loader from '../Loader/Loader'
 import { updatePdf } from '../../api/accountApi';
 import { AppCommon } from '../../commons/commons';
 import DialogInput from "react-native-dialog-input";
+import { validateFileName } from '../../commons/validation';
 
 class PDFViewer extends React.Component {
     constructor(props) {
@@ -27,6 +29,10 @@ class PDFViewer extends React.Component {
     }
 
     handleUploadPdf = (fileName) => {
+        if (!validateFileName(fileName)) {
+            Alert.alert('Error', 'Your password just use alphabet, numbers and underscore');
+            return;
+        }
         this.setState({
             isDialogVisible: false,
             isLoading: true
