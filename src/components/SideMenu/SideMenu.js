@@ -42,14 +42,14 @@ class SideMenu extends Component {
                                 <Text note>{this.props.role}</Text>
                             </Body>
                         </ListItem>
-                        <ListItem button onPress={() => Actions.currentScene == '_merchant' ? Actions.drawerClose() : Actions.merchant()} icon noBorder >
+                        {/* <ListItem button onPress={() => Actions.currentScene == '_merchant' ? Actions.drawerClose() : Actions.merchant()} icon noBorder >
                             <Left>
                                 <Icon name={AppCommon.icon("document")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                             </Left>
                             <Body>
                                 <Text>All Docs</Text>
                             </Body>
-                        </ListItem>
+                        </ListItem> */}
                         <ListItem button onPress={() => Actions.currentScene == '_sarViewer' ? Actions.drawerClose() : Actions.sarViewer()} icon noBorder >
                             <Left>
                                 <Icon name={AppCommon.icon("tv")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
