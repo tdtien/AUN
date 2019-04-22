@@ -11,6 +11,7 @@ import {
 import { Actions } from "react-native-router-flux";
 import RNFS from 'react-native-fs'
 import moment from 'moment'
+import Swipeout from 'react-native-swipeout'
 
 export default class MerchantItem extends Component {
     constructor(props) {
@@ -66,24 +67,57 @@ export default class MerchantItem extends Component {
     };
 
     render() {
+        const swipeSetting = {
+            autoClose: true,
+            // onClose: (sectionID, rowId, direction) => {
+
+            // },
+            // onOpen: (sectionID, rowId, direction) => {
+
+            // },
+            right: [
+                {
+                    onPress: () => {
+                        Alert.alert(
+                            'Delete folder',
+                            'Are you sure you want to delete this folder',
+                            [
+                                {
+                                    text: 'Cancel',
+                                    style: 'cancel',
+                                    onPress: () => null,
+                                },
+                                {
+                                    text: 'OK',
+                                    onPress: () => { this.props.action(this.props.item) },
+                                }
+                            ]
+                        )
+                    },
+                    text: 'Delete', type: 'delete'
+                }
+            ]
+        }
         return (
-            <TouchableHighlight onPress={() => this.handleClickItem(`file://${this.props.item.path}`)}>
-                <View style={styles.container}>
-                    <Image
-                        style={styles.image}
-                        source={{ width: 140, height: 100, uri: `file://${this.state.previewImagePath}?ver=${this.props.version}`, cache: 'reload' }}
-                    />
-                    <View style={styles.information}>
-                        <Text style={styles.title}>{this.props.item.name}</Text>
-                        <View style={styles.subTitle}>
-                            <Text style={styles.subText}>{moment(this.state.date).format('DD/MM/YYYY HH:mm')}</Text>
-                            <View style={styles.badgeCount}>
-                                <Text style={styles.badgeText}>{this.state.count}</Text>
+            <Swipeout {...swipeSetting}>
+                <TouchableHighlight onPress={() => this.handleClickItem(`file://${this.props.item.path}`)}>
+                    <View style={styles.container}>
+                        <Image
+                            style={styles.image}
+                            source={{ width: 140, height: 100, uri: `file://${this.state.previewImagePath}?ver=${this.props.version}`, cache: 'reload' }}
+                        />
+                        <View style={styles.information}>
+                            <Text style={styles.title}>{this.props.item.name}</Text>
+                            <View style={styles.subTitle}>
+                                <Text style={styles.subText}>{moment(this.state.date).format('DD/MM/YYYY HH:mm')}</Text>
+                                <View style={styles.badgeCount}>
+                                    <Text style={styles.badgeText}>{this.state.count}</Text>
+                                </View>
                             </View>
                         </View>
                     </View>
-                </View>
-            </TouchableHighlight>
+                </TouchableHighlight>
+            </Swipeout>
         );
     }
 }

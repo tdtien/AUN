@@ -8,6 +8,7 @@ import { deleteItem } from '../../commons/utilitiesFunction';
 import CameraButton from "./CameraButton";
 import MerchantItem from "./MerchantItem";
 import moment from 'moment'
+import Loader from '../Loader/Loader';
 
 export default class Merchant extends Component {
     constructor(props) {
@@ -197,10 +198,26 @@ export default class Merchant extends Component {
         })
     }
 
+    handleDeleteItem = (item) => {
+        this.setState({
+            isLoading: true
+        })
+        deleteItem(`file://${item.path}`).then(result => {
+            let temp = this.state.data;
+            temp.splice(temp.indexOf(item), 1);
+            this.setState({
+                data: temp,
+                isLoading: false
+            })
+        }).catch(error => {
+            this.setState({
+                isLoading: false
+            })
+            Alert.alert('Error', error.message);
+        })
+    }
+
     render() {
-        // const ds = new ListView.DataSource({
-        //     rowHasChanged: (r1, r2) => r1 !== r2
-        // });
         let dataRender = this.state.searchText ? this.state.dataFilter : this.state.data;
         let header = (!this.state.isSearching) ? (
             <Header
@@ -283,6 +300,9 @@ export default class Merchant extends Component {
                 <CameraButton
                     folderPath={null}
                 />
+                {
+                    <Loader loading={this.state.isLoading} />
+                }
             </Container>
         );
     }

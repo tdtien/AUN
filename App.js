@@ -90,6 +90,7 @@ class App extends Component {
               hideNavBar
               key="merchant"
               component={Merchant}
+              // initial
             />
             <Scene
               key="merchantDetail"
