@@ -147,6 +147,10 @@ export default class ImageModal extends Component {
         )
     }
 
+    showDialog = (toggle) => {
+        this.setState({ isDialogVisible: toggle });
+    }
+
     render() {
         return (
             <Modal visible={this.state.visible} transparent onRequestClose={() => Actions.pop()}>
