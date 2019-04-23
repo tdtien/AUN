@@ -27,31 +27,32 @@ export default class EvidenceItem extends Component {
         // console.log('base64: ' + item.dataBase64);
         // console.log('token: ' + this.props.token);
         if (item.hasOwnProperty('dataBase64')) {
-            let folderPath = AppCommon.directoryPath + AppCommon.pdf_dir;
-            let fileName = item.name;
-            let filePath = folderPath + "/" + fileName;
-            let that = this;
-            RNFS.exists(folderPath).then((response) => {
-                if (!response) {
-                    RNFS.mkdir(folderPath).then((response) => {
-                        RNFS.writeFile(filePath, item.dataBase64, "base64")
-                            .then(function (response) {
-                                console.log('Pdf is saved');
-                                Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64, flow: null });
-                            }).catch(function (error) {
-                                console.log(error);
-                            })
-                    })
-                } else {
-                    RNFS.writeFile(filePath, item.dataBase64, "base64")
-                        .then(function (response) {
-                            console.log('Pdf is saved');
-                            Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64, flow: null  });
-                        }).catch(function (error) {
-                            console.log(error);
-                        })
-                }
-            })
+            Actions.pdfViewer({ filePath: `data:application/pdf;base64,${item.dataBase64}`, fileName: item.name, base64: item.dataBase64, flow: null });
+            // let folderPath = AppCommon.directoryPath + AppCommon.pdf_dir;
+            // let fileName = item.name;
+            // let filePath = folderPath + "/" + fileName;
+            // let that = this;
+            // RNFS.exists(folderPath).then((response) => {
+            //     if (!response) {
+            //         RNFS.mkdir(folderPath).then((response) => {
+            //             RNFS.writeFile(filePath, item.dataBase64, "base64")
+            //                 .then(function (response) {
+            //                     console.log('Pdf is saved');
+            //                     Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64, flow: null });
+            //                 }).catch(function (error) {
+            //                     console.log(error);
+            //                 })
+            //         })
+            //     } else {
+            //         RNFS.writeFile(filePath, item.dataBase64, "base64")
+            //             .then(function (response) {
+            //                 console.log('Pdf is saved');
+            //                 Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64, flow: null  });
+            //             }).catch(function (error) {
+            //                 console.log(error);
+            //             })
+            //     }
+            // })
         }
     }
 

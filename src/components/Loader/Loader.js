@@ -19,7 +19,7 @@ const Loader = props => {
             transparent={true}
             animationType={'none'}
             visible={loading}
-            onRequestClose={() => { console.log('close modal') }}>
+        >
             <StatusBar backgroundColor={AppCommon.colors} barStyle="dark-content" />
             <View style={styles.modalBackground}>
                 <View style={styles.activityIndicatorWrapper}>

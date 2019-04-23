@@ -42,7 +42,7 @@ export default class SuggestionTypeItem extends Component {
             }
         }
         return (
-            <TouchableOpacity activeOpacity={0.8} onPress={() => pressAction()}>
+            <TouchableOpacity activeOpacity={0.5} onPress={() => pressAction()}>
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
                         <Icon name={iconName} type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
