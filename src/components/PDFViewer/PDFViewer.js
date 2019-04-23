@@ -17,7 +17,7 @@ import { updatePdf } from '../../api/accountApi';
 import { AppCommon } from '../../commons/commons';
 import DialogInput from "react-native-dialog-input";
 import { validateFileName } from '../../commons/validation';
-import { deleteItem } from '../../commons/utilitiesFunction';
+import { deleteItem, popToSceneWithUpdate } from '../../commons/utilitiesFunction';
 
 class PDFViewer extends React.Component {
     constructor(props) {
@@ -36,7 +36,7 @@ class PDFViewer extends React.Component {
                 {
                     text: 'No',
                     style: 'cancel',
-                    onPress: () => Actions.evidenceViewer(this.props.flow),
+                    onPress: () => popToSceneWithUpdate('evidenceViewer', this.props.flow),
                 },
                 {
                     text: 'Yes', onPress: () => {
@@ -47,7 +47,7 @@ class PDFViewer extends React.Component {
                             this.setState({
                                 isLoading: false
                             })
-                            Actions.evidenceViewer(this.props.flow)
+                            popToSceneWithUpdate('evidenceViewer', this.props.flow)
                         }).catch(error => {
                             this.setState({
                                 isLoading: false

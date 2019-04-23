@@ -37,6 +37,10 @@ class EvidenceViewer extends Component {
         this._getAll();
     }
 
+    componentWillReceiveProps(props) {
+        this.handleRefresh();
+    }
+
     _getAll = () => {
         getAllEvidences(this.props.token, this.props.suggestionId)
             .then((responseJson) => {
