@@ -8,8 +8,7 @@ import MerchantDetail from './src/components/Merchant/MerchantDetail';
 import SideMenu from './src/components/SideMenu/SideMenu';
 import PDFViewer from './src/components/PDFViewer/PDFViewer';
 import { connect } from "react-redux";
-import { BackHandler } from "react-native";
-import { ToastAndroid } from "react-native";
+import { ToastAndroid, BackHandler, Alert } from "react-native";
 import SortList from './src/components/Merchant/SortList';
 import Folder from './src/components/FolderExplorer/FolderItem';
 import SuggestionTypeViewer from './src/components/FolderExplorer/SuggestionTypeViewer';
@@ -21,6 +20,8 @@ import SuggestionViewer from './src/components/FolderExplorer/SuggestionViewer';
 import TextViewer from './src/components/FolderExplorer/TextViewer';
 import EvidenceViewer from './src/components/FolderExplorer/EvidenceViewer';
 import { Root } from 'native-base';
+import { checkToken } from './src/api/accountApi';
+import { logoutAccount } from './src/actions/account';
 
 class App extends Component {
 
@@ -28,6 +29,26 @@ class App extends Component {
     super(props);
     this.state = {
 
+    }
+  }
+
+  componentDidMount() {
+    if (Actions.currentScene !== 'login') {
+      checkToken(this.props.token).then(response => {
+        if (response.hasOwnProperty('expire_time')) {
+          if (response.expire_time) {
+            Alert.alert(
+              'Error!',
+              response.msg,
+              [
+                { text: 'OK', onPress: () => this.props.logout() }
+              ]
+            );
+          }
+        }
+      }).catch(error => {
+        console.log(error);
+      })
     }
   }
 
@@ -90,7 +111,7 @@ class App extends Component {
               hideNavBar
               key="merchant"
               component={Merchant}
-              // initial
+            // initial
             />
             <Scene
               key="merchantDetail"
@@ -133,6 +154,14 @@ class App extends Component {
   }
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+    logout: () => {
+      dispatch(logoutAccount());
+    }
+  };
+};
+
 const mapStateToProps = state => {
   return {
     id: state.account.id,
@@ -141,4 +170,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

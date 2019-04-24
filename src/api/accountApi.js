@@ -23,6 +23,21 @@ export async function requestLogin(email, password) {
     })
 }
 
+export async function checkToken(token) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/validatetoken`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}
+
 // export function requestRegister(email, password) {
 //     return new Promise((resolve, reject) => {
 //         axios.post(registerURL, {
