@@ -33,6 +33,7 @@ export default class SuggestionTypeViewer extends Component {
                 item={item}
                 sType={this.props.sType}
                 flow={this.props.flow}
+                isConnected={this.props.isConnected}
             />
         )
     }

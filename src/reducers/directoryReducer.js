@@ -15,6 +15,9 @@ const directoryReducer = (state = initialState, action) => {
             console.log('new state: ' + JSON.stringify(newState.directoryInfo));
             return {...state, newState};
 
+            //Detach evidences file
+            
+
             //reset directory redux
             // let newState = {};
             // return newState;

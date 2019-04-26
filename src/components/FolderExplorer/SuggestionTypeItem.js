@@ -21,6 +21,7 @@ export default class SuggestionTypeItem extends Component {
         let type = this.props.sType;
         let item = this.props.item;
         let flow = this.props.flow;
+        let isConnected = this.props.isConnected;
         let iconName;
         let timeView;
         let arrowView;
@@ -35,9 +36,20 @@ export default class SuggestionTypeItem extends Component {
         }
         let pressAction = function () {
             if (type !== 'evidences') {
-                Actions.textViewer({ data: item.content, title: type });
+                if (isConnected) {
+                    Actions.textViewer({ data: item.content, title: type });
+                } else {
+                    Actions.textViewer({ data: item.name, title: type });
+                }
             } else {
-                let newFlow = { sarId: flow.sarId, criterionId: flow.criterionId, subcriterionId: flow.subcriterionId, suggestionId: item.id }
+                let newFlow = { 
+                    sarId: flow.sarId, 
+                    criterionId: flow.criterionId, 
+                    subcriterionId: flow.subcriterionId, 
+                    suggestionId: item.id, 
+                    isConnected: isConnected, 
+                    offlineSuggestionData: item
+                }
                 Actions.evidenceViewer(newFlow);
             }
         }
@@ -47,7 +59,7 @@ export default class SuggestionTypeItem extends Component {
                     <View style={styles.leftItem}>
                         <Icon name={iconName} type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
                         <View style={{ flex: 1, flexDirection: 'column' }}>
-                            <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={3}>{item.content}</Text>
+                            <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={3}>{isConnected ? item.content : item.name}</Text>
                             {
                                 timeView
                             }

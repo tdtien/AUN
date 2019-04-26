@@ -17,7 +17,7 @@ export default class FolderItem extends Component {
 
     render() {
         return (
-            <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.parentView.detail(this.props.item.id, this.props.index)}>
+            <TouchableOpacity activeOpacity={0.5} onLongPress={() => this.props.parentView.handleShowFooter(this.props.item.id)} onPress={() => this.props.parentView.detail(this.props.item.id, this.props.index)}>
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
                         <Icon name='folder1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />

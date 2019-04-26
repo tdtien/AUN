@@ -34,7 +34,6 @@ class SarViewer extends Component {
             refreshing: false,
             data: null,
             isShowFooter: false,
-            directoryOffline: {},
             choosenSarId: '',
             isConnected: true
         };
@@ -61,17 +60,21 @@ class SarViewer extends Component {
     }
 
     detail(sarId) {
-        Actions.criterionViewer({ sarId: sarId });
+        let props = {
+            sarId: sarId,
+            isConnected: this.state.isConnected,
+            offlineSarInfo: this.state.data
+        }
+        Actions.criterionViewer(props);
     }
 
     _getAll = () => {
         NetInfo.isConnected.fetch().done((isConnected) => {
             this.setState({ isConnected: isConnected })
-            // Alert.alert('isConnected: ' + isConnected);
             if (isConnected === true) {
                 getAllSars(this.props.token)
                     .then((responseJson) => {
-                        // console.log('responseJson sar: ' + responseJson.data[0].name);
+                        // console.log('responseJson sar: ' + JSON.stringify(responseJson.data));
                         this.setState({
                             isLoading: false,
                             refreshing: false,
@@ -89,9 +92,25 @@ class SarViewer extends Component {
             else {
                 this.setState({
                     isLoading: false,
-                    refreshing: false
+                    refreshing: false,
                 })
-                Alert.alert('Nofication', 'Network request fail');
+                Alert.alert('Nofication', 'Network request fail. Do you want to view offline ?',
+                    [
+                        {
+                            text: 'No',
+                            style: 'cancel',
+                            onPress: () => null,
+                        },
+                        {
+                            text: 'Yes', onPress: () => {
+                                this.setState({
+                                    data: this.props.directoryInfo[this.props.email],
+                                })
+                            }
+                        }
+                    ]
+                );
+
             }
         });
     }
@@ -99,7 +118,8 @@ class SarViewer extends Component {
     handleRefresh = () => {
         this.setState(
             {
-                refreshing: true
+                refreshing: true,
+                isShowFooter: false
             },
             () => {
                 this._getAll();
@@ -127,16 +147,13 @@ class SarViewer extends Component {
         this.setState({
             isLoading: true,
         })
-        //this.state.choosenSarId
         downloadSar(this.props.token, this.state.choosenSarId)
             .then((responseJson) => {
-                // console.log('responseJson sar: ' + responseJson.data[0].name);
                 this.setState({
                     isLoading: false,
                     refreshing: false,
-                    directoryOffline: responseJson.data
                 })
-                this.props.setDirectoryInfo({ email: this.props.email, directoryTree: responseJson.data });
+                this.props.setDirectoryInfo({ email: this.props.email, directoryTree: [responseJson.data] });
             })
             .catch((error) => {
                 this.setState({
@@ -237,7 +254,8 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
     return {
         token: state.account.token,
-        email: state.account.email
+        email: state.account.email,
+        directoryInfo: state.directory.directoryInfo
     };
 };
 

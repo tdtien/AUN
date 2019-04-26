@@ -52,34 +52,57 @@ class SubCriterionViewer extends Component {
     }
 
     detail(subCriterionId, index) {
-        if (index === 0) {
-            Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.implications, sType: 'implications' });
-        } else if (index === 1) {
-            Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.questions, sType: 'questions' });
+        if (this.props.isConnected) {
+            if (index === 0) {
+                Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.implications, sType: 'implications', isConnected: this.props.isConnected });
+            } else if (index === 1) {
+                Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.questions, sType: 'questions', isConnected: this.props.isConnected });
+            } else {
+                Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.evidences, sType: 'evidences', isConnected: this.props.isConnected });
+            }
         } else {
-            Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.evidences, sType: 'evidences' });
+            if (index === 0) {
+                let filterData = this.state.data.filter(item => item.type === "IMPLICATION")
+                Actions.suggestionTypeViewer({ flow: this.props, data: filterData, sType: 'implications', isConnected: this.props.isConnected });
+            } else if (index === 1) {
+                let filterData = this.state.data.filter(item => item.type === "QUESTION")
+                Actions.suggestionTypeViewer({ flow: this.props, data: filterData, sType: 'questions', isConnected: this.props.isConnected });
+            } else {
+                let filterData = this.state.data.filter(item => item.type === "EVIDENCE")
+                Actions.suggestionTypeViewer({ flow: this.props, data: filterData, sType: 'evidences', isConnected: this.props.isConnected });
+            }
         }
+
     }
 
     _getAll = () => {
         // this.props.subcriterionId
         // console.log('token: ' + this.props.token);
-        getAllSuggestions(this.props.token, this.props.subcriterionId)
-            .then((responseJson) => {
-                // console.log('data: ' + responseJson);
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    data: responseJson.data
+        if (this.props.isConnected) {
+            getAllSuggestions(this.props.token, this.props.subcriterionId)
+                .then((responseJson) => {
+                    // console.log('data: ' + responseJson);
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        data: responseJson.data
+                    })
                 })
+                .catch((error) => {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                    console.error('Error: ' + error);
+                });
+        } else {
+            let offlineSubCriterionData = this.props.offlineSubCriterionData.find(item => item.id === this.props.subcriterionId)
+            this.setState({
+                isLoading: false,
+                refreshing: false,
+                data: offlineSubCriterionData.suggestions
             })
-            .catch((error) => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                })
-                console.error('Error: ' + error);
-            });
+        }
     }
 
     handleRefresh = () => {
@@ -101,6 +124,10 @@ class SubCriterionViewer extends Component {
                 index={index}
             />
         )
+    }
+
+    handleShowFooter = (choosenSuggestionId) => {
+       
     }
 
     render() {

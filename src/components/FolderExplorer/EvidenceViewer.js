@@ -39,22 +39,30 @@ class EvidenceViewer extends Component {
     }
 
     _getAll = () => {
-        getAllEvidences(this.props.token, this.props.suggestionId)
-            .then((responseJson) => {
-                console.log('data: ' + responseJson.data);
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    data: responseJson.data
+        if (this.props.isConnected) {
+            getAllEvidences(this.props.token, this.props.suggestionId)
+                .then((responseJson) => {
+                    console.log('data: ' + responseJson.data);
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        data: responseJson.data
+                    })
                 })
+                .catch((error) => {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                    console.error('Error: ' + error);
+                });
+        } else {
+            this.setState({
+                isLoading: false,
+                refreshing: false,
+                data: this.props.offlineSuggestionData.evidences
             })
-            .catch((error) => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                })
-                console.error('Error: ' + error);
-            });
+        }
     }
 
     handleRefresh = () => {

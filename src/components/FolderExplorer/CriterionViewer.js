@@ -38,27 +38,42 @@ class CriterionViewer extends Component {
     }
 
     detail(criterionId) {
-        var props = {sarId: this.props.sarId, criterionId: criterionId }
+        var props = {
+            sarId: this.props.sarId,
+            criterionId: criterionId,
+            isConnected: this.props.isConnected,
+            offlineCriterionData: this.state.data
+        }
         Actions.subCriterionViewer(props);
     }
 
     _getAll = () => {
-        getAllCriterions(this.props.token, this.props.sarId)
-            .then((responseJson) => {
-                // console.log('responseJson: ' + responseJson.data[0].name);
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    data: responseJson.data
+        if (this.props.isConnected) {
+            getAllCriterions(this.props.token, this.props.sarId)
+                .then((responseJson) => {
+                    // console.log('responseJson: ' + responseJson.data[0].name);
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        data: responseJson.data
+                    })
                 })
+                .catch((error) => {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                    console.error('Error: ' + error);
+                });
+        } else {
+            let offlineCriterionData = this.props.offlineSarInfo.find(item => item.id === this.props.sarId);
+            this.setState({
+                isLoading: false,
+                refreshing: false,
+                data: offlineCriterionData.criterions
             })
-            .catch((error) => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                })
-                console.error('Error: ' + error);
-            });
+        }
+
     }
 
     handleRefresh = () => {
@@ -79,6 +94,10 @@ class CriterionViewer extends Component {
                 parentView={this}
             />
         )
+    }
+
+    handleShowFooter = (choosenCriterionId) => {
+       
     }
 
     render() {

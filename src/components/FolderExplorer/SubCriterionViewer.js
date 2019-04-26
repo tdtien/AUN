@@ -38,27 +38,44 @@ class SubCriterionViewer extends Component {
     }
 
     detail(subcriterionId) {
-        var props = { sarId: this.props.sarId, criterionId: this.props.criterionId, subcriterionId: subcriterionId }
+        var props = {
+            sarId: this.props.sarId, 
+            criterionId: this.props.criterionId, 
+            subcriterionId: subcriterionId,
+            isConnected: this.props.isConnected, 
+            offlineSubCriterionData: this.state.data
+        }
         Actions.suggestionViewer(props);
     }
 
     _getAll = () => {
-        getAllSubCriterions(this.props.token, this.props.criterionId)
-            .then((responseJson) => {
-                // console.log('responseJson: ' + responseJson.data[0].name);
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    data: responseJson.data
+        if (this.props.isConnected) {
+            getAllSubCriterions(this.props.token, this.props.criterionId)
+                .then((responseJson) => {
+                    // console.log('responseJson: ' + responseJson.data[0].name);
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        data: responseJson.data
+                    })
                 })
+                .catch((error) => {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                    console.error('Error: ' + error);
+                });
+        } else {
+            let offlineSubCriterionData = this.props.offlineCriterionData.find(item => item.id === this.props.criterionId)
+            // console.log('offineData: ' + JSON.stringify(offlineSubCriterionData.subCriterions));
+            this.setState({
+                isLoading: false,
+                refreshing: false,
+                data: offlineSubCriterionData.subCriterions
             })
-            .catch((error) => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                })
-                console.error('Error: ' + error);
-            });
+        }
+
     }
 
     handleRefresh = () => {
@@ -80,6 +97,10 @@ class SubCriterionViewer extends Component {
                 index={index}
             />
         )
+    }
+
+    handleShowFooter = (choosenSubCriterionId) => {
+       
     }
 
     render() {
