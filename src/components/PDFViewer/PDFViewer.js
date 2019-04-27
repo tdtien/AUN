@@ -107,6 +107,7 @@ class PDFViewer extends React.Component {
     render() {
         let fileName = this.props.fileName;
         fileName = fileName.substring(0, fileName.length - 4);
+        let uri = (this.props.base64 !== null) ? this.props.base64 : this.props.link
         return (
             <Container>
                 <Header
@@ -141,7 +142,7 @@ class PDFViewer extends React.Component {
                                 color={AppCommon.colors}
                             />
                         }}
-                        source={{ uri: this.props.filePath }}
+                        source={{ uri: uri }}
                         onError={(error) => {
                             console.log(error);
                         }}

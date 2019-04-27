@@ -42,7 +42,7 @@ class EvidenceViewer extends Component {
         if (this.props.isConnected) {
             getAllEvidences(this.props.token, this.props.suggestionId)
                 .then((responseJson) => {
-                    console.log('data: ' + responseJson.data);
+                    // console.log('data: ' + responseJson.data);
                     this.setState({
                         isLoading: false,
                         refreshing: false,
@@ -77,7 +77,7 @@ class EvidenceViewer extends Component {
     };
 
     handleOpenPdfFile = async (item) => {
-        var prop = await { filePath: `data:application/pdf;base64,${item.dataBase64}`, fileName: item.name, base64: item.dataBase64, flow: null };
+        var prop = await { filePath: `data:application/pdf;base64,${item.dataBase64}`, fileName: item.name, base64: null, link: item.link, flow: null };
         this.setState({ isLoading: false }, Actions.pdfViewer(prop));
         // console.log('base64: ' + item.dataBase64);
         // console.log('token: ' + this.props.token);
