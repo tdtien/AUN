@@ -127,13 +127,6 @@ class SarViewer extends Component {
         );
     };
 
-    handleShowFooter = (choosenSarId) => {
-        this.setState({
-            isShowFooter: true,
-            choosenSarId: choosenSarId
-        })
-    }
-
     renderItem({ item }) {
         return (
             <FolderItem
@@ -141,6 +134,13 @@ class SarViewer extends Component {
                 parentView={this}
             />
         )
+    }
+
+    handleShowFooter = (choosenSarId) => {
+        this.setState({
+            isShowFooter: true,
+            choosenSarId: choosenSarId
+        })
     }
 
     handleDownloadItem = () => {
@@ -153,7 +153,15 @@ class SarViewer extends Component {
                     isLoading: false,
                     refreshing: false,
                 })
-                this.props.setDirectoryInfo({ email: this.props.email, directoryTree: [responseJson.data] });
+                var directoryInfo = {
+                    email: this.props.email,
+                    directoryTree: responseJson.data,
+                    downloadItemType: 'sar',
+                    downloadFlow: {
+                        sarId: this.state.choosenSarId,
+                    }
+                }
+                this.props.setDirectoryInfo(directoryInfo);
             })
             .catch((error) => {
                 this.setState({
