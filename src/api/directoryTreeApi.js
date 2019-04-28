@@ -89,3 +89,18 @@ export async function downloadSar(token, sarId) {
             .catch(error => reject(error));
     });
 }
+
+export async function downloadCriterion(token, criterionId) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/criterions/${criterionId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}

@@ -22,6 +22,8 @@ import Loader from '../Loader/Loader'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
+import { downloadCriterion } from "../../api/directoryTreeApi";
+import DownloadButton from "./DownloadButton";
 
 class CriterionViewer extends Component {
     constructor(props) {
@@ -29,7 +31,9 @@ class CriterionViewer extends Component {
         this.state = {
             isLoading: true,
             refreshing: false,
-            data: null
+            data: null,
+            isShowFooter: false,
+            choosenCriterionId: ''
         };
     }
 
@@ -97,10 +101,54 @@ class CriterionViewer extends Component {
     }
 
     handleShowFooter = (choosenCriterionId) => {
-       
+        this.setState({
+            isShowFooter: true,
+            choosenCriterionId: choosenCriterionId
+        })
+    }
+
+    handleDownloadItem = () => {
+        this.setState({
+            isLoading: true,
+        })
+        downloadCriterion(this.props.token, this.state.choosenCriterionId)
+            .then((responseJson) => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                })
+                console.log('responseJson criterion: ' + JSON.stringify(responseJson.data));
+                // this.props.setDirectoryInfo({ email: this.props.email, directoryTree: [responseJson.data] });
+            })
+            .catch((error) => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                })
+                console.error('Error when download: ' + error);
+            });
     }
 
     render() {
+        let leftHeaderButton = (this.state.isShowFooter) ? (
+            <TouchableOpacity style={styles.menuButton} onPress={() => {
+                this.setState({
+                    isShowFooter: false
+                })
+            }} >
+                <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+            </TouchableOpacity>
+        ) : (
+                <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
+                    <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                </TouchableOpacity>
+            )
+        let footer = (this.state.isShowFooter) ?
+            (
+                <DownloadButton
+                    parentView={this}
+                />
+            ) : null
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
@@ -109,9 +157,9 @@ class CriterionViewer extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                     rounded
                 >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
-                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    </TouchableOpacity>
+                    {
+                        leftHeaderButton
+                    }
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: 'white' }}>All Criterions</Title>
                     </Body>
@@ -142,6 +190,9 @@ class CriterionViewer extends Component {
                             )
                     }
                 </Content>
+                {
+                    footer
+                }
                 <Loader loading={this.state.isLoading} />
             </Container>
         )

@@ -15,8 +15,6 @@ import {
     Header,
     Body,
     Title,
-    Footer,
-    Right
 } from 'native-base';
 import { getAllSars, downloadSar } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
@@ -25,6 +23,7 @@ import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
 import { setDirectoryInfo } from "../../actions/directoryAction";
+import DownloadButton from './DownloadButton';
 
 class SarViewer extends Component {
     constructor(props) {
@@ -189,17 +188,9 @@ class SarViewer extends Component {
             )
         let footer = (this.state.isShowFooter) ?
             (
-                <Footer
-                    style={{ backgroundColor: AppCommon.colors }}
-                >
-                    <Right>
-                        <View style={styles.footerButton}>
-                            <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => this.handleDownloadItem()} >
-                                <Icon name={AppCommon.icon("cloud-download")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                            </TouchableOpacity>
-                        </View>
-                    </Right>
-                </Footer>
+                <DownloadButton
+                    parentView={this}
+                />
             ) : null
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
@@ -275,13 +266,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 10,
         paddingRight: 10
-    },
-    footerButton: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: 20,
-        marginRight: 20
     },
 });
