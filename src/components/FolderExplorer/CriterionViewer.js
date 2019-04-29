@@ -24,6 +24,7 @@ import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
 import { downloadCriterion } from "../../api/directoryTreeApi";
 import DownloadButton from "./DownloadButton";
+import { setDirectoryInfo } from "../../actions/directoryAction";
 
 class CriterionViewer extends Component {
     constructor(props) {
@@ -117,17 +118,17 @@ class CriterionViewer extends Component {
                     isLoading: false,
                     refreshing: false,
                 })
-                // console.log('responseJson criterion: ' + JSON.stringify(directoryTree));
                 var directoryInfo = {
                     email: this.props.email,
-                    directoryTree: directoryTree,
+                    directoryTree: responseJson.data,
                     downloadItemType: 'criterion',
                     downloadFlow: {
                         sarInfo: this.props.sarInfo,
                         criterionInfo: this.state.choosenCriterionItem
                     }
                 }
-                // this.props.setDirectoryInfo(directoryInfo);
+                // console.log('responseJson criterion: ' + JSON.stringify(directoryInfo));
+                this.props.setDirectoryInfo(directoryInfo);
             })
             .catch((error) => {
                 this.setState({
@@ -211,10 +212,19 @@ class CriterionViewer extends Component {
 const mapStateToProps = state => {
     return {
         token: state.account.token,
+        email: state.account.email,
     };
 };
 
-export default connect(mapStateToProps)(CriterionViewer);
+const mapDispatchToProps = dispatch => {
+    return {
+        setDirectoryInfo: item => {
+            dispatch(setDirectoryInfo(item));
+        }
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CriterionViewer);
 
 const styles = StyleSheet.create({
     menuButton: {

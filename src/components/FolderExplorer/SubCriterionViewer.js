@@ -45,6 +45,7 @@ class SubCriterionViewer extends Component {
             isConnected: this.props.isConnected, 
             offlineSubCriterionData: this.state.data
         }
+        // console.log('subcri info: ' + JSON.stringify(props));
         Actions.suggestionViewer(props);
     }
 
