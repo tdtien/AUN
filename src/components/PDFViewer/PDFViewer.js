@@ -71,10 +71,10 @@ class PDFViewer extends React.Component {
         })
         var data = {
             file: this.props.base64,
-            sarId: this.props.flow.sarId,
-            criterionId: this.props.flow.criterionId,
-            subCriterionId: this.props.flow.subCriterionId,
-            suggestionId: this.props.flow.suggestionId,
+            sarId: this.props.flow.sarInfo.id,
+            criterionId: this.props.flow.criterionInfo.id,
+            subCriterionId: this.props.flow.subCriterionInfo.id,
+            suggestionId: this.props.flow.suggestionInfo.id,
             name: fileName
         }
         updatePdf(this.props.token, data)

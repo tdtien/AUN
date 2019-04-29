@@ -1,4 +1,5 @@
-const userAPI = 'https://aun-api.herokuapp.com/user';
+// const userAPI = 'https://aun-api.herokuapp.com/user';
+const userAPI = 'https://aun-app.azurewebsites.net/user';
 
 export async function getAllSars(token) {
     return new Promise((resolve, reject) => {

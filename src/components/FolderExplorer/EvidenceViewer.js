@@ -40,7 +40,7 @@ class EvidenceViewer extends Component {
 
     _getAll = () => {
         if (this.props.isConnected) {
-            getAllEvidences(this.props.token, this.props.suggestionId)
+            getAllEvidences(this.props.token, this.props.suggestionInfo.id)
                 .then((responseJson) => {
                     // console.log('data: ' + responseJson.data);
                     this.setState({

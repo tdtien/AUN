@@ -33,7 +33,7 @@ class CriterionViewer extends Component {
             refreshing: false,
             data: null,
             isShowFooter: false,
-            choosenCriterionId: ''
+            choosenCriterionItem: {}
         };
     }
 
@@ -41,10 +41,10 @@ class CriterionViewer extends Component {
         this._getAll();
     }
 
-    detail(criterionId) {
+    detail(item) {
         var props = {
-            sarId: this.props.sarId,
-            criterionId: criterionId,
+            sarInfo: this.props.sarInfo,
+            criterionInfo: item,
             isConnected: this.props.isConnected,
             offlineCriterionData: this.state.data
         }
@@ -53,7 +53,7 @@ class CriterionViewer extends Component {
 
     _getAll = () => {
         if (this.props.isConnected) {
-            getAllCriterions(this.props.token, this.props.sarId)
+            getAllCriterions(this.props.token, this.props.sarInfo.id)
                 .then((responseJson) => {
                     // console.log('responseJson: ' + responseJson.data[0].name);
                     this.setState({
@@ -70,7 +70,7 @@ class CriterionViewer extends Component {
                     console.error('Error: ' + error);
                 });
         } else {
-            let offlineCriterionData = this.props.offlineSarInfo.find(item => item.id === this.props.sarId);
+            let offlineCriterionData = this.props.offlineSarInfo.find(item => item.id === this.props.sarInfo.id);
             this.setState({
                 isLoading: false,
                 refreshing: false,
@@ -100,10 +100,10 @@ class CriterionViewer extends Component {
         )
     }
 
-    handleShowFooter = (choosenCriterionId) => {
+    handleShowFooter = (choosenCriterionItem) => {
         this.setState({
             isShowFooter: true,
-            choosenCriterionId: choosenCriterionId
+            choosenCriterionItem: choosenCriterionItem
         })
     }
 
@@ -111,14 +111,23 @@ class CriterionViewer extends Component {
         this.setState({
             isLoading: true,
         })
-        downloadCriterion(this.props.token, this.state.choosenCriterionId)
+        downloadCriterion(this.props.token, this.state.choosenCriterionItem.id)
             .then((responseJson) => {
                 this.setState({
                     isLoading: false,
                     refreshing: false,
                 })
-                console.log('responseJson criterion: ' + JSON.stringify(responseJson.data));
-                // this.props.setDirectoryInfo({ email: this.props.email, directoryTree: [responseJson.data] });
+                // console.log('responseJson criterion: ' + JSON.stringify(directoryTree));
+                var directoryInfo = {
+                    email: this.props.email,
+                    directoryTree: directoryTree,
+                    downloadItemType: 'criterion',
+                    downloadFlow: {
+                        sarInfo: this.props.sarInfo,
+                        criterionInfo: this.state.choosenCriterionItem
+                    }
+                }
+                // this.props.setDirectoryInfo(directoryInfo);
             })
             .catch((error) => {
                 this.setState({

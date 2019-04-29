@@ -33,7 +33,7 @@ class SarViewer extends Component {
             refreshing: false,
             data: null,
             isShowFooter: false,
-            choosenSarId: '',
+            choosenSarItem: {},
             isConnected: true
         };
     }
@@ -58,9 +58,9 @@ class SarViewer extends Component {
         );
     }
 
-    detail(sarId) {
+    detail(item) {
         let props = {
-            sarId: sarId,
+            sarInfo: item,
             isConnected: this.state.isConnected,
             offlineSarInfo: this.state.data
         }
@@ -135,10 +135,10 @@ class SarViewer extends Component {
         )
     }
 
-    handleShowFooter = (choosenSarId) => {
+    handleShowFooter = (choosenSarItem) => {
         this.setState({
             isShowFooter: true,
-            choosenSarId: choosenSarId
+            choosenSarItem: choosenSarItem
         })
     }
 
@@ -146,7 +146,7 @@ class SarViewer extends Component {
         this.setState({
             isLoading: true,
         })
-        downloadSar(this.props.token, this.state.choosenSarId)
+        downloadSar(this.props.token, this.state.choosenSarItem.id)
             .then((responseJson) => {
                 this.setState({
                     isLoading: false,
@@ -157,7 +157,7 @@ class SarViewer extends Component {
                     directoryTree: responseJson.data,
                     downloadItemType: 'sar',
                     downloadFlow: {
-                        sarId: this.state.choosenSarId,
+                        sarInfo: this.state.choosenSarItem
                     }
                 }
                 this.props.setDirectoryInfo(directoryInfo);

@@ -51,7 +51,7 @@ class SubCriterionViewer extends Component {
         this._getAll();
     }
 
-    detail(subCriterionId, index) {
+    detail(item, index) {
         if (this.props.isConnected) {
             if (index === 0) {
                 Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.implications, sType: 'implications', isConnected: this.props.isConnected });
@@ -76,12 +76,9 @@ class SubCriterionViewer extends Component {
     }
 
     _getAll = () => {
-        // this.props.subcriterionId
-        // console.log('token: ' + this.props.token);
         if (this.props.isConnected) {
-            getAllSuggestions(this.props.token, this.props.subcriterionId)
+            getAllSuggestions(this.props.token, this.props.subCriterionInfo.id)
                 .then((responseJson) => {
-                    // console.log('data: ' + responseJson);
                     this.setState({
                         isLoading: false,
                         refreshing: false,
@@ -96,7 +93,7 @@ class SubCriterionViewer extends Component {
                     console.error('Error: ' + error);
                 });
         } else {
-            let offlineSubCriterionData = this.props.offlineSubCriterionData.find(item => item.id === this.props.subcriterionId)
+            let offlineSubCriterionData = this.props.offlineSubCriterionData.find(item => item.id === this.props.subCriterionInfo.id)
             this.setState({
                 isLoading: false,
                 refreshing: false,

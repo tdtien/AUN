@@ -37,11 +37,11 @@ class SubCriterionViewer extends Component {
         this._getAll();
     }
 
-    detail(subcriterionId) {
+    detail(item) {
         var props = {
-            sarId: this.props.sarId, 
-            criterionId: this.props.criterionId, 
-            subcriterionId: subcriterionId,
+            sarInfo: this.props.sarInfo, 
+            criterionInfo: this.props.criterionInfo, 
+            subCriterionInfo: item,
             isConnected: this.props.isConnected, 
             offlineSubCriterionData: this.state.data
         }
@@ -50,7 +50,7 @@ class SubCriterionViewer extends Component {
 
     _getAll = () => {
         if (this.props.isConnected) {
-            getAllSubCriterions(this.props.token, this.props.criterionId)
+            getAllSubCriterions(this.props.token, this.props.criterionInfo.id)
                 .then((responseJson) => {
                     // console.log('responseJson: ' + responseJson.data[0].name);
                     this.setState({
@@ -67,7 +67,7 @@ class SubCriterionViewer extends Component {
                     console.error('Error: ' + error);
                 });
         } else {
-            let offlineSubCriterionData = this.props.offlineCriterionData.find(item => item.id === this.props.criterionId)
+            let offlineSubCriterionData = this.props.offlineCriterionData.find(item => item.id === this.props.criterionInfo.id)
             // console.log('offineData: ' + JSON.stringify(offlineSubCriterionData.subCriterions));
             this.setState({
                 isLoading: false,

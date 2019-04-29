@@ -43,10 +43,10 @@ export default class SuggestionTypeItem extends Component {
                 }
             } else {
                 let newFlow = { 
-                    sarId: flow.sarId, 
-                    criterionId: flow.criterionId, 
-                    subcriterionId: flow.subcriterionId, 
-                    suggestionId: item.id, 
+                    sarInfo: flow.sarInfo, 
+                    criterionInfo: flow.criterionInfo, 
+                    subCriterionInfo: flow.subCriterionInfo, 
+                    suggestionInfo: item, 
                     isConnected: isConnected, 
                     offlineSuggestionData: item
                 }
