@@ -38,7 +38,7 @@ var data = [
     }
 ]
 
-class SubCriterionViewer extends Component {
+class SuggestionViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -172,7 +172,7 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps)(SubCriterionViewer);
+export default connect(mapStateToProps)(SuggestionViewer);
 
 const styles = StyleSheet.create({
     menuButton: {
