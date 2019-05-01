@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
+import EvidenceItem from './EvidenceItem';
 
 class EvidenceViewer extends Component {
     constructor(props) {
@@ -76,49 +77,9 @@ class EvidenceViewer extends Component {
         );
     };
 
-    handleOpenPdfFile = async (item) => {
-        var prop = await { filePath: `data:application/pdf;base64,${item.dataBase64}`, fileName: item.name, base64: null, link: item.link, flow: null };
-        this.setState({ isLoading: false }, Actions.pdfViewer(prop));
-        // console.log('base64: ' + item.dataBase64);
-        // console.log('token: ' + this.props.token);
-        // let folderPath = AppCommon.directoryPath + AppCommon.pdf_dir;
-        // let fileName = item.name;
-        // let filePath = folderPath + "/" + fileName;
-        // let that = this;
-        // RNFS.exists(folderPath).then((response) => {
-        //     if (!response) {
-        //         RNFS.mkdir(folderPath).then((response) => {
-        //             RNFS.writeFile(filePath, item.dataBase64, "base64")
-        //                 .then(function (response) {
-        //                     console.log('Pdf is saved');
-        //                     Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64, flow: null });
-        //                 }).catch(function (error) {
-        //                     console.log(error);
-        //                 })
-        //         })
-        //     } else {
-        //         RNFS.writeFile(filePath, item.dataBase64, "base64")
-        //             .then(function (response) {
-        //                 console.log('Pdf is saved');
-        //                 Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64, flow: null  });
-        //             }).catch(function (error) {
-        //                 console.log(error);
-        //             })
-        //     }
-        // })
-    }
-
     renderItem(item, index) {
         return (
-            <TouchableOpacity activeOpacity={0.5} onPress={() => { this.setState({ isLoading: true }); this.handleOpenPdfFile(item) }}>
-                <View style={styles.item}>
-                    <View style={styles.leftItem}>
-                        <Icon name='pdffile1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
-                        <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={3}>{item.name}</Text>
-                    </View>
-                    {/* <Icon name={AppCommon.icon('more')} style={{ color: 'gray', fontSize: AppCommon.icon_size }} /> */}
-                </View>
-            </TouchableOpacity>
+            <EvidenceItem item={item} />
         )
     }
 
@@ -197,22 +158,5 @@ const styles = StyleSheet.create({
         backgroundColor: AppCommon.colors,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    item: {
-        flex: 1,
-        flexDirection: 'row',
-        backgroundColor: "white",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ECE9E9',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    },
-    leftItem: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
     }
 });
