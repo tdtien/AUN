@@ -9,29 +9,28 @@ const directoryReducer = (state = initialState, action) => {
         case SET_DIRECTORY_INFO: {
             let newState = state;
             //Check if there is no directory info in redux (sar directory, criterion directory)
-            // if (Object.keys(newState.directoryInfo).length === 0) {
-            //     console.log('Object is empty');
-            //     newState.directoryInfo[action.data.email] = [action.data.directoryTree];
-            //     console.log('new state: ' + JSON.stringify(newState.directoryInfo));
-            //     return newState;
-            // }
-
+            if (Object.keys(newState.directoryInfo).length === 0) {
+                console.log('Object is empty');
+                newState.directoryInfo[action.data.email] = [action.data.directoryTree];
+                console.log('new state: ' + JSON.stringify(newState.directoryInfo));
+                return { ...state, newState };
+            }
+            
+            let flow = action.data.downloadFlow;
             switch (action.data.downloadItemType) {
                 case 'sar':
-                    if (Object.keys(newState.directoryInfo).length === 0) {
-                        newState.directoryInfo[action.data.email] = [action.data.directoryTree];
-                        return newState;
+                    console.log('old state: ' + JSON.stringify(newState.directoryInfo));
+                    let index = newState.directoryInfo[action.data.email].findIndex(item => item.id === flow.sarInfo.id);
+                    if (index !== -1) {
+                        newState.directoryInfo[action.data.email][index] = action.data.directoryTree
                     } else {
-                        let index = newState.directoryInfo[action.data.email].findIndex(item => item.id == action.data.downloadFlow.sarInfo.id);
-                        if (index !== -1) {
-                            newState.directoryInfo[action.data.email][index] = action.data.directoryTree
-                        } else {
-                            newState.directoryInfo[action.data.email].push(action.data.directoryTree);
-                        }
+                        newState.directoryInfo[action.data.email].push(action.data.directoryTree);
                     }
+                    console.log('-------------------');
+                    console.log('new state: ' + JSON.stringify(newState.directoryInfo));
                     break;
                 case 'criterion':
-                    let flow = action.data.downloadFlow;
+                    // let flow = action.data.downloadFlow;
                     //Chua xu ly truong hop: co sar khac, nhung sar hien download chua co.
                     if (Object.keys(newState.directoryInfo).length === 0) {
                         console.log('Object is empty');
@@ -41,6 +40,7 @@ const directoryReducer = (state = initialState, action) => {
                             criterions: [action.data.directoryTree],
                         }
                         newState.directoryInfo[action.data.email] = [sarInfo];
+                        console.log('-------------------');
                         console.log('new state: ' + JSON.stringify(newState.directoryInfo));
                         return newState;
                     } else {
