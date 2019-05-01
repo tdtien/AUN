@@ -12,7 +12,6 @@ import {
 import { AppCommon } from '../../commons/commons';
 import Loader from '../Loader/Loader';
 import { Actions } from 'react-native-router-flux';
-import RNFS from "react-native-fs";
 
 export default class EvidenceItem extends Component {
     constructor(props) {
@@ -23,42 +22,12 @@ export default class EvidenceItem extends Component {
     }
 
     handleOpenPdfFile = (item) => {
-        this.setState({ isLoading: true })
-        // console.log('base64: ' + item.dataBase64);
-        // console.log('token: ' + this.props.token);
-        if (item.hasOwnProperty('dataBase64')) {
-            Actions.pdfViewer({ filePath: `data:application/pdf;base64,${item.dataBase64}`, fileName: item.name, base64: item.dataBase64, flow: null });
-            // let folderPath = AppCommon.directoryPath + AppCommon.pdf_dir;
-            // let fileName = item.name;
-            // let filePath = folderPath + "/" + fileName;
-            // let that = this;
-            // RNFS.exists(folderPath).then((response) => {
-            //     if (!response) {
-            //         RNFS.mkdir(folderPath).then((response) => {
-            //             RNFS.writeFile(filePath, item.dataBase64, "base64")
-            //                 .then(function (response) {
-            //                     console.log('Pdf is saved');
-            //                     Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64, flow: null });
-            //                 }).catch(function (error) {
-            //                     console.log(error);
-            //                 })
-            //         })
-            //     } else {
-            //         RNFS.writeFile(filePath, item.dataBase64, "base64")
-            //             .then(function (response) {
-            //                 console.log('Pdf is saved');
-            //                 Actions.pdfViewer({ filePath: `file://${filePath}`, fileName: fileName, base64: item.dataBase64, flow: null  });
-            //             }).catch(function (error) {
-            //                 console.log(error);
-            //             })
-            //     }
-            // })
-        }
+        Actions.pdfViewer({ fileName: item.name, base64: null, link: item.link, flow: null });
     }
 
     render() {
         return (
-            <TouchableOpacity activeOpacity={0.8} onPress={() => this.handleOpenPdfFile(this.props.item)}>
+            <TouchableOpacity activeOpacity={0.5} onPress={() => this.handleOpenPdfFile(this.props.item)}>
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
                         <Icon name='pdffile1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />

@@ -107,7 +107,7 @@ class PDFViewer extends React.Component {
     render() {
         let fileName = this.props.fileName;
         fileName = fileName.substring(0, fileName.length - 4);
-        let uri = (this.props.base64 !== null) ? this.props.filePath : this.props.link
+        let uri = (this.props.base64 !== null) ? `data:application/pdf;base64,${this.props.base64}` : this.props.link;
         return (
             <Container>
                 <Header

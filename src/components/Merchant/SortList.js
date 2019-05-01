@@ -88,43 +88,12 @@ class SortList extends Component {
                         this.setState({ isLoading: false })
                         if (responseJson.hasOwnProperty('dataBase64')) {
                             let props = {
-                                filePath: `data:application/pdf;base64,${responseJson.dataBase64}`,
                                 imageFolderPath: this.props.folderPath,
                                 fileName: this.props.folderName + ".pdf",
                                 base64: responseJson.dataBase64,
                                 flow: this.props.flow
                             };
                             Actions.pdfViewer(props);
-                            // this.setState({ byteArray: responseJson.dataBase64 })
-                            // let folderPath = AppCommon.directoryPath + AppCommon.pdf_dir;
-                            // let fileName = this.props.folderName + ".pdf";
-                            // let filePath = folderPath + "/" + fileName;
-                            // let that = this;
-                            // let flow = this.props.flow;
-                            // let imageFolderPath = this.props.folderPath;
-                            // RNFS.exists(folderPath).then((response) => {
-                            //     if (!response) {
-                            //         RNFS.mkdir(folderPath).then((response) => {
-                            //             RNFS.writeFile(filePath, that.state.byteArray, "base64")
-                            //                 .then(function (response) {
-                            //                     console.log('Pdf is saved');
-                            //                     let props = { filePath: `file://${filePath}`, imageFolderPath: imageFolderPath, fileName: fileName, base64: responseJson.dataBase64, flow: flow }
-                            //                     Actions.pdfViewer(props);
-                            //                 }).catch(function (error) {
-                            //                     console.log(error);
-                            //                 })
-                            //         })
-                            //     } else {
-                            //         RNFS.writeFile(filePath, that.state.byteArray, "base64")
-                            //             .then(function (response) {
-                            //                 console.log('Pdf is saved');
-                            //                 let props = { filePath: `file://${filePath}`, imageFolderPath: imageFolderPath, fileName: fileName, base64: responseJson.dataBase64, flow: flow }
-                            //                 Actions.pdfViewer(props);
-                            //             }).catch(function (error) {
-                            //                 console.log(error);
-                            //             })
-                            //     }
-                            // })
                         } else {
                             Alert.alert('Error', 'Cannot conver to pdf. Please contact developer to fix this issue');
                         }
