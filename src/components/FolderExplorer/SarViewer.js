@@ -152,6 +152,7 @@ class SarViewer extends Component {
                 this.setState({
                     isLoading: false,
                     refreshing: false,
+                    isShowFooter: false
                 })
                 let downloadFlow = {
                     sarInfo: this.state.choosenSarItem

@@ -8,59 +8,44 @@ const directoryReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_DIRECTORY_INFO: {
             let newState = state;
-            //Check if there is no directory info in redux (sar directory, criterion directory)
+            //Check if there is no directory info in redux 
             if (Object.keys(newState.directoryInfo).length === 0) {
                 console.log('Object is empty');
                 newState.directoryInfo[action.data.email] = [action.data.directoryTree];
                 console.log('new state: ' + JSON.stringify(newState.directoryInfo));
                 return { ...state, newState };
             }
-            
+
             let flow = action.data.downloadFlow;
+            let sarArray = newState.directoryInfo[action.data.email];
             switch (action.data.downloadItemType) {
                 case 'sar':
                     console.log('old state: ' + JSON.stringify(newState.directoryInfo));
-                    let index = newState.directoryInfo[action.data.email].findIndex(item => item.id === flow.sarInfo.id);
+                    let index = sarArray.findIndex(item => item.id === flow.sarInfo.id);
                     if (index !== -1) {
-                        newState.directoryInfo[action.data.email][index] = action.data.directoryTree
+                        sarArray[index] = action.data.directoryTree
                     } else {
-                        newState.directoryInfo[action.data.email].push(action.data.directoryTree);
+                        sarArray.push(action.data.directoryTree);
                     }
                     console.log('-------------------');
                     console.log('new state: ' + JSON.stringify(newState.directoryInfo));
                     break;
                 case 'criterion':
-                    // let flow = action.data.downloadFlow;
-                    //Chua xu ly truong hop: co sar khac, nhung sar hien download chua co.
-                    if (Object.keys(newState.directoryInfo).length === 0) {
-                        console.log('Object is empty');
-                        let sarInfo = {
-                            id: flow.sarInfo.id,
-                            name: flow.sarInfo.name,
-                            criterions: [action.data.directoryTree],
-                        }
-                        newState.directoryInfo[action.data.email] = [sarInfo];
-                        console.log('-------------------');
-                        console.log('new state: ' + JSON.stringify(newState.directoryInfo));
-                        return newState;
+                    console.log('old state: ' + JSON.stringify(newState.directoryInfo));
+                    let sarItem = sarArray.find(item => item.id === flow.sarInfo.id);
+                    if (sarItem === undefined) {
+                        sarArray.push(action.data.directoryTree);
                     } else {
-                        console.log('old state: ' + JSON.stringify(newState.directoryInfo));
-                        let sarIndex = newState.directoryInfo[action.data.email].findIndex(item => item.id == flow.sarInfo.id);
-                        if (sarIndex !== -1) {
-                            let sarItem = newState.directoryInfo[action.data.email][sarIndex];
-                            console.log('sarItem: ' + JSON.stringify(sarItem));
-                            let criterionIndex = sarItem.criterions.findIndex(item => item.id == flow.criterionInfo.id);
-                            if (criterionIndex !== -1) {
-                                newState.directoryInfo[action.data.email][sarIndex].criterions[criterionIndex] = action.data.directoryTree;
-                            } else {
-                                newState.directoryInfo[action.data.email][sarIndex].criterions.push(action.data.directoryTree);
-                            }
+                        let criterionIndex = sarItem.criterions.findIndex(item => item.id === flow.criterionInfo.id);
+                        let criterionItem = action.data.directoryTree.criterions[0];
+                        if (criterionIndex !== -1) {
+                            sarItem.criterions[criterionIndex] = criterionItem;
                         } else {
-                            newState.directoryInfo[action.data.email][sarIndex].criterions.push(action.data.directoryTree);
+                            sarItem.criterions.push(criterionItem);
                         }
-                        console.log('-------------------');
-                        console.log('new state: ' + JSON.stringify(newState.directoryInfo));
                     }
+                    console.log('-------------------');
+                    console.log('new state: ' + JSON.stringify(newState.directoryInfo));
                     break;
                 default:
                     break;

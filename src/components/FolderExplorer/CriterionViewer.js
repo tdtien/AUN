@@ -25,6 +25,7 @@ import FolderItem from './FolderItem'
 import { downloadCriterion } from "../../api/directoryTreeApi";
 import DownloadButton from "./DownloadButton";
 import { setDirectoryInfo } from "../../actions/directoryAction";
+import { createDirectoryTreeWith } from '../../commons/utilitiesFunction';
 
 class CriterionViewer extends Component {
     constructor(props) {
@@ -117,15 +118,19 @@ class CriterionViewer extends Component {
                 this.setState({
                     isLoading: false,
                     refreshing: false,
+                    isShowFooter: false
                 })
+                let downloadFlow = {
+                    sarInfo: this.props.sarInfo,
+                    criterionInfo: this.state.choosenCriterionItem
+                }
+                let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'criterion');
+                // console.log('directoryTree: ' + JSON.stringify(directoryTree));
                 var directoryInfo = {
                     email: this.props.email,
-                    directoryTree: responseJson.data,
+                    directoryTree: directoryTree,
                     downloadItemType: 'criterion',
-                    downloadFlow: {
-                        sarInfo: this.props.sarInfo,
-                        criterionInfo: this.state.choosenCriterionItem
-                    }
+                    downloadFlow: downloadFlow
                 }
                 // console.log('responseJson criterion: ' + JSON.stringify(directoryInfo));
                 this.props.setDirectoryInfo(directoryInfo);
