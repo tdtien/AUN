@@ -16,13 +16,12 @@ import {
     Body,
     Title,
 } from 'native-base';
-import { getAllCriterions } from '../../api/directoryTreeApi';
+import { getAllCriterions, downloadCriterion } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
-import { downloadCriterion } from "../../api/directoryTreeApi";
 import DownloadButton from "./DownloadButton";
 import { setDirectoryInfo } from "../../actions/directoryAction";
 import { createDirectoryTreeWith } from '../../commons/utilitiesFunction';
