@@ -42,19 +42,22 @@ export default class SuggestionItem extends Component {
                     Actions.textViewer({ data: item.name, title: type });
                 }
             } else {
-                let newFlow = { 
-                    sarInfo: flow.sarInfo, 
-                    criterionInfo: flow.criterionInfo, 
-                    subCriterionInfo: flow.subCriterionInfo, 
-                    suggestionInfo: item, 
-                    isConnected: isConnected, 
+                let newFlow = {
+                    sarInfo: flow.sarInfo,
+                    criterionInfo: flow.criterionInfo,
+                    subCriterionInfo: flow.subCriterionInfo,
+                    suggestionInfo: item,
+                    isConnected: isConnected,
                     offlineSuggestionData: item
                 }
                 Actions.evidenceViewer(newFlow);
             }
         }
         return (
-            <TouchableOpacity activeOpacity={0.5} onPress={() => pressAction()}>
+            <TouchableOpacity activeOpacity={0.5}
+                onLongPress={() => this.props.parentView.handleShowFooter(this.props.item)}
+                onPress={() => pressAction()}
+            >
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
                         <Icon name={iconName} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_largeSize }} />

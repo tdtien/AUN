@@ -123,7 +123,7 @@ export async function downloadSubCriterion(token, subCriterionId) {
 
 export async function downloadSuggestion(token, suggestionId) {
     return new Promise((resolve, reject) => {
-        fetch(`${userAPI}/subcriterions/${subCriterionId}`, {
+        fetch(`${userAPI}/suggestions/${suggestionId}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

@@ -48,7 +48,7 @@ class SuggestionTypeViewer extends Component {
             isLoading: true,
             refreshing: false,
             isShowFooter: false,
-            choosenSuggestionItem: {}
+            choosenSuggestionTypeItem: {}
         };
     }
 
@@ -129,10 +129,10 @@ class SuggestionTypeViewer extends Component {
         )
     }
 
-    handleShowFooter = (choosenSuggestionItem) => {
+    handleShowFooter = (choosenSuggestionTypeItem) => {
         this.setState({
             isShowFooter: true,
-            choosenSuggestionItem: choosenSuggestionItem
+            choosenSuggestionTypeItem: choosenSuggestionTypeItem
         })
     }
 
@@ -148,7 +148,7 @@ class SuggestionTypeViewer extends Component {
                     refreshing: false,
                     isShowFooter: false
                 })
-                let index = data.indexOf(this.state.choosenSuggestionItem);
+                let index = data.indexOf(this.state.choosenSuggestionTypeItem);
                 let filterData = responseJson.data;
                 if (index === 0) {
                     filterData.suggestions = {
@@ -167,7 +167,7 @@ class SuggestionTypeViewer extends Component {
                     sarInfo: this.props.sarInfo,
                     criterionInfo: this.props.criterionInfo,
                     subCriterionInfo: this.props.subCriterionInfo,
-                    suggestionTypeName: this.state.choosenSuggestionItem.name.toLowerCase()
+                    suggestionTypeName: this.state.choosenSuggestionTypeItem.name.toLowerCase()
                 }
                 let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'subCriterion');
                 // console.log('directoryTree: ' + JSON.stringify(directoryTree));

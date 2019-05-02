@@ -90,6 +90,38 @@ const directoryReducer = (state = initialState, action) => {
                         }
                         break;
                     }
+                case 'suggestion':
+                    {
+                        let sarItem = sarArray.find(item => item.id === flow.sarInfo.id);
+                        if (sarItem === undefined) {
+                            sarArray.push(directoryTree);
+                            break;
+                        }
+                        let criterionItem = sarItem.criterions.find(item => item.id === flow.criterionInfo.id);
+                        if (criterionItem === undefined) {
+                            sarItem.criterions.push(directoryTree.criterions[0]);
+                            break;
+                        }
+                        let subCriterionItem = criterionItem.subCriterions.find(item => item.id === flow.subCriterionInfo.id);
+                        if (criterionItem === undefined) {
+                            criterionItem.subCriterions.push(directoryTree.criterions[0].subCriterions[0]);
+                            break;
+                        }
+                        let suggestionArray = subCriterionItem.suggestions;
+                        let suggestionTypeNewItem = directoryTree.criterions[0].subCriterions[0].suggestions[flow.suggestionType];
+                        if (suggestionArray.hasOwnProperty(flow.suggestionType)) {
+                            let suggestionIndex = suggestionArray[flow.suggestionType].findIndex(item => item.id === flow.suggestionInfo.id);
+                            if (suggestionIndex !== -1) {
+                                let suggestionItem = suggestionArray[flow.suggestionType][suggestionIndex];
+                                suggestionItem = suggestionTypeNewItem[0];
+                            } else {
+                                suggestionArray[flow.suggestionType].push(suggestionTypeNewItem[0]);
+                            }
+                        } else {
+                            suggestionArray[flow.suggestionType] = suggestionTypeNewItem
+                        }
+                        break;
+                    }
                 default:
                     break;
             }

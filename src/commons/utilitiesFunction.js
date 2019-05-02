@@ -99,6 +99,23 @@ export function createDirectoryTreeWith(flow: Object, data: Object, type: string
                 }],
             }
             break;
+        case 'suggestion':
+            directoryTree = {
+                id: flow.sarInfo.id,
+                name: flow.sarInfo.name,
+                criterions: [{
+                    id: flow.criterionInfo.id,
+                    name: flow.criterionInfo.name,
+                    subCriterions: [{
+                        id: flow.subCriterionInfo.id,
+                        name: flow.subCriterionInfo.name,
+                        suggestions:{
+                            [flow.suggestionType]: [data]
+                        }
+                    }],
+                }],
+            }
+            break;
         default:
             break;
     }
