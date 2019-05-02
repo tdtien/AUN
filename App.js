@@ -11,12 +11,12 @@ import { connect } from "react-redux";
 import { ToastAndroid, BackHandler, Alert } from "react-native";
 import SortList from './src/components/Merchant/SortList';
 import Folder from './src/components/FolderExplorer/FolderItem';
-import SuggestionTypeViewer from './src/components/FolderExplorer/SuggestionTypeViewer';
+import SuggestionViewer from './src/components/FolderExplorer/SuggestionViewer';
 import FolderComponent from './src/components/FolderExplorer/FolderItem';
 import SarViewer from './src/components/FolderExplorer/SarViewer';
 import CriterionViewer from './src/components/FolderExplorer/CriterionViewer';
 import SubCriterionViewer from './src/components/FolderExplorer/SubCriterionViewer';
-import SuggestionViewer from './src/components/FolderExplorer/SuggestionViewer';
+import SuggestionTypeViewer from './src/components/FolderExplorer/SuggestionTypeViewer';
 import TextViewer from './src/components/FolderExplorer/TextViewer';
 import EvidenceViewer from './src/components/FolderExplorer/EvidenceViewer';
 import { Root } from 'native-base';
@@ -122,8 +122,8 @@ class App extends Component {
               component={PDFViewer}
             />
             <Scene
-              key="suggestionTypeViewer"
-              component={SuggestionTypeViewer}
+              key="suggestionViewer"
+              component={SuggestionViewer}
             />
             <Scene
               key="criterionViewer"
@@ -134,8 +134,8 @@ class App extends Component {
               component={SubCriterionViewer}
             />
             <Scene
-              key="suggestionViewer"
-              component={SuggestionViewer}
+              key="suggestionTypeViewer"
+              component={SuggestionTypeViewer}
             />
             <Scene
               key="textViewer"

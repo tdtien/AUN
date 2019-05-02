@@ -4,9 +4,7 @@ import {
     View,
     TouchableOpacity,
     StyleSheet,
-    ActivityIndicator,
     FlatList,
-    Alert
 } from 'react-native';
 import {
     Content,
@@ -16,191 +14,38 @@ import {
     Body,
     Title,
 } from 'native-base';
-import { getAllSuggestions, downloadSubCriterion, } from '../../api/directoryTreeApi';
-import { connect } from 'react-redux';
-import Loader from '../Loader/Loader'
-import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
-import FolderItem from './FolderItem'
-import DownloadButton from './DownloadButton';
-import { setDirectoryInfo } from "../../actions/directoryAction";
-import { createDirectoryTreeWith } from '../../commons/utilitiesFunction';
+import { Actions } from 'react-native-router-flux';
+import SuggestionItem from "./SuggestionItem";
 
-var data = [
-    {
-        "id": 1,
-        "name": "Implications"
-    },
-    {
-        "id": 2,
-        "name": "Questions"
-    },
-    {
-        "id": 3,
-        "name": "Evidences"
-    }
-]
-
-class SuggestionViewer extends Component {
+export default class SuggestionViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isLoading: true,
             refreshing: false,
-            isShowFooter: false,
-            choosenSuggestionItem: {}
         };
     }
 
-    componentDidMount() {
-        this._getAll();
-    }
-
-    detail(item) {
-        let index = data.indexOf(item);
-        if (this.props.isConnected) {
-            if (index === 0) {
-                Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.implications, sType: 'implications', isConnected: this.props.isConnected });
-            } else if (index === 1) {
-                Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.questions, sType: 'questions', isConnected: this.props.isConnected });
-            } else {
-                Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.evidences, sType: 'evidences', isConnected: this.props.isConnected });
-            }
-        } else {
-            if (index === 0) {
-                let filterData = this.state.data.filter(item => item.type === "IMPLICATION")
-                Actions.suggestionTypeViewer({ flow: this.props, data: filterData, sType: 'implications', isConnected: this.props.isConnected });
-            } else if (index === 1) {
-                let filterData = this.state.data.filter(item => item.type === "QUESTION")
-                Actions.suggestionTypeViewer({ flow: this.props, data: filterData, sType: 'questions', isConnected: this.props.isConnected });
-            } else {
-                let filterData = this.state.data.filter(item => item.type === "EVIDENCE")
-                Actions.suggestionTypeViewer({ flow: this.props, data: filterData, sType: 'evidences', isConnected: this.props.isConnected });
-            }
-        }
-
-    }
-
-    _getAll = () => {
-        if (this.props.isConnected) {
-            getAllSuggestions(this.props.token, this.props.subCriterionInfo.id)
-                .then((responseJson) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                        data: responseJson.data
-                    })
-                })
-                .catch((error) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                    })
-                    console.error('Error: ' + error);
-                });
-        } else {
-            let offlineSubCriterionData = this.props.offlineSubCriterionData.find(item => item.id === this.props.subCriterionInfo.id)
-            this.setState({
-                isLoading: false,
-                refreshing: false,
-                data: offlineSubCriterionData.suggestions
-            })
-        }
-    }
-
-    handleRefresh = () => {
-        this.setState(
-            {
-                refreshing: true
-            },
-            () => {
-                this._getAll();
-            }
-        );
-    };
-
-    renderItem(item, index) {
+    renderItem(item) {
         return (
-            <FolderItem
+            <SuggestionItem
                 item={item}
-                parentView={this}
-                index={index}
+                sType={this.props.sType}
+                flow={this.props.flow}
+                isConnected={this.props.isConnected}
             />
         )
     }
 
-    handleShowFooter = (choosenSuggestionItem) => {
-        this.setState({
-            isShowFooter: true,
-            choosenSuggestionItem: choosenSuggestionItem
-        })
-    }
-
-    handleDownloadItem = () => {
-        this.setState({
-            isLoading: true,
-        })
-        downloadSubCriterion(this.props.token, this.props.subCriterionInfo.id)
-            .then((responseJson) => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    isShowFooter: false
-                })
-                let downloadFlow = {
-                    sarInfo: this.props.sarInfo,
-                    criterionInfo: this.props.criterionInfo,
-                    subCriterionInfo: this.state.choosenSubCriterionItem
-                }
-                let index = data.indexOf(this.state.choosenSuggestionItem);
-                let filterData = responseJson.data.suggestions;
-                if (index === 0) {
-                    filterData = filterData.filter(item => item.type === "IMPLICATION")
-                } else if (index === 1) {
-                    filterData = filterData.filter(item => item.type === "QUESTION")
-                } else {
-                    filterData = filterData.filter(item => item.type === "EVIDENCE")
-                }
-                let directoryTree = createDirectoryTreeWith(downloadFlow, filterData, 'subCriterion');
-                // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                var directoryInfo = {
-                    email: this.props.email,
-                    directoryTree: directoryTree,
-                    downloadItemType: 'subCriterion',
-                    downloadFlow: downloadFlow
-                }
-                // console.log('responseJson suggestion: ' + JSON.stringify(directoryInfo));
-                // this.props.setDirectoryInfo(directoryInfo);
-            })
-            .catch((error) => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                })
-                console.error('Error when download: ' + error);
-            });
-    }
-
     render() {
-        let leftHeaderButton = (this.state.isShowFooter) ? (
-            <TouchableOpacity style={styles.menuButton} onPress={() => {
-                this.setState({
-                    isShowFooter: false
-                })
-            }} >
-                <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-            </TouchableOpacity>
-        ) : (
-                <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
-                    <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                </TouchableOpacity>
-            )
-        let footer = (this.state.isShowFooter) ?
-            (
-                <DownloadButton
-                    parentView={this}
-                />
-            ) : null
+        let type = this.props.sType;
+        let title = '';
+        if (type === "evidences") {
+            title = "All evidence types";
+        } else {
+            title = "All " + type.charAt(0).toUpperCase() + type.slice(1);
+        }
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
@@ -209,11 +54,11 @@ class SuggestionViewer extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                     rounded
                 >
-                    {
-                        leftHeaderButton
-                    }
+                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
+                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                    </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: 'white' }}>All Suggestions</Title>
+                        <Title style={{ alignSelf: "center", color: 'white' }}>{title}</Title>
                     </Body>
                     <TouchableOpacity style={styles.menuButton} onPress={() => null} >
                         <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
@@ -223,41 +68,28 @@ class SuggestionViewer extends Component {
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
                 >
-                    <FlatList
-                        data={data}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item, index }) => this.renderItem(item, index)}
-                        onRefresh={this.handleRefresh}
-                        refreshing={this.state.refreshing}
-                        onEndReached={this.handleLoadMore}
-                        onEndReachedThreshold={50}
-                    />
+                    {
+                        (this.props.data.length === 0) ? (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                            </View>
+                        ) : (
+                                <FlatList
+                                    data={this.props.data}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item, index }) => this.renderItem(item, index)}
+                                    onRefresh={this.handleRefresh}
+                                    refreshing={this.state.refreshing}
+                                    onEndReached={this.handleLoadMore}
+                                    onEndReachedThreshold={50}
+                                />
+                            )
+                    }
                 </Content>
-                {
-                    footer
-                }
-                <Loader loading={this.state.isLoading} />
             </Container>
         )
     }
 }
-
-const mapStateToProps = state => {
-    return {
-        token: state.account.token,
-        email: state.account.email,
-    };
-};
-
-const mapDispatchToProps = dispatch => {
-    return {
-        setDirectoryInfo: item => {
-            dispatch(setDirectoryInfo(item));
-        }
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(SuggestionViewer);
 
 const styles = StyleSheet.create({
     menuButton: {
