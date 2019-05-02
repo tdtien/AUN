@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import {
-    Text,
     View,
     TouchableOpacity,
     StyleSheet,
-    ActivityIndicator,
     FlatList,
-    Alert
+    ScrollView
 } from 'react-native';
 import {
     Content,
@@ -15,6 +13,8 @@ import {
     Header,
     Body,
     Title,
+    Button,
+    Text
 } from 'native-base';
 import { getAllCriterions, downloadCriterion } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
@@ -181,6 +181,24 @@ class CriterionViewer extends Component {
                         <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                 </Header>
+                <ScrollView
+                    style={{ maxHeight: 40 }}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
+                    ref={ref => this.scrollView = ref}
+                    onContentSizeChange={(contentWidth, contentHeight) => {
+                        this.scrollView.scrollToEnd({ animated: true });
+                    }}
+                >
+                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.popTo('_sarViewer')}>
+                        <Icon name={AppCommon.icon("tv")} type="Ionicons" style={{ color: 'gray', fontSize: 20 }} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} disabled>
+                        <Icon name="right" type="AntDesign" style={{ color: 'gray', fontSize: 20 }} />
+                        <Text style={{ color: AppCommon.colors }}>{this.props.sarInfo.name}</Text>
+                    </TouchableOpacity>
+                </ScrollView>
                 <Content
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}

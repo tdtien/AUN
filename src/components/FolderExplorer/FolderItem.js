@@ -18,7 +18,7 @@ export default class FolderItem extends Component {
 
     handleDetail = () => {
         // if (Actions.currentScene == '_sarViewer') {
-            this.props.parentView.detail(this.props.item);
+            this.props.parentView.detail(this.props.item, this.props.index);
         // } else {
             // this.props.parentView.handlePush(this.props.item);
         // }

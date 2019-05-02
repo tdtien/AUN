@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import {
-    Text,
     View,
     TouchableOpacity,
     StyleSheet,
-    ActivityIndicator,
-    FlatList,
-    Alert
+    ScrollView,
+    FlatList
 } from 'react-native';
 import {
+    Text,
     Content,
     Container,
     Icon,
@@ -186,6 +185,28 @@ class SubCriterionViewer extends Component {
                         <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                 </Header>
+                <ScrollView
+                    style={{ maxHeight: 40 }}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
+                    ref={ref => this.scrollView = ref}
+                    onContentSizeChange={(contentWidth, contentHeight) => {
+                        this.scrollView.scrollToEnd({ animated: true });
+                    }}
+                >
+                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.popTo('_sarViewer')}>
+                        <Icon name={AppCommon.icon("tv")} type="Ionicons" style={{ color: 'gray', fontSize: 20 }} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => Actions.popTo('criterionViewer')}>
+                        <Icon name="right" type="AntDesign" style={{ color: 'gray', fontSize: 15 }} />
+                        <Text style={{ color: 'gray' }}>{this.props.sarInfo.name}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} disabled>
+                        <Icon name="right" type="AntDesign" style={{ color: 'gray', fontSize: 15 }} />
+                        <Text style={{ color: AppCommon.colors }}>{this.props.criterionInfo.name}</Text>
+                    </TouchableOpacity>
+                </ScrollView>
                 <Content
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}

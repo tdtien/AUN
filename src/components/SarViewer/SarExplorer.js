@@ -53,7 +53,6 @@ class SarExplorer extends Component {
         if (this.state.scene[this.state.currentIdx].key === 'criterions') {
             getAllCriterions(this.props.token, id)
                 .then((responseJson) => {
-                    console.log(responseJson.data);
                     this.setState({
                         isLoading: false,
                         refreshing: false,
@@ -70,7 +69,6 @@ class SarExplorer extends Component {
         } else if (this.state.scene[this.state.currentIdx].key === 'subCriterions') {
             getAllSubCriterions(this.props.token, id)
                 .then((responseJson) => {
-                    console.log(responseJson.data);
                     this.setState({
                         isLoading: false,
                         refreshing: false,
@@ -110,14 +108,7 @@ class SarExplorer extends Component {
     }
 
     handleRefresh = () => {
-        this.setState(
-            {
-                refreshing: true
-            },
-            () => {
-                this.makeRemoteRequest(this.state.currentId);
-            }
-        );
+        this.setState({ refreshing: true }, this.makeRemoteRequest(this.state.currentId));
     };
 
     handlePop = () => {
@@ -142,7 +133,6 @@ class SarExplorer extends Component {
             <FolderItem
                 item={item}
                 parentView={this}
-
             />
         )
     }
