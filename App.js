@@ -22,6 +22,7 @@ import EvidenceViewer from './src/components/FolderExplorer/EvidenceViewer';
 import { Root } from 'native-base';
 import { checkToken } from './src/api/accountApi';
 import { logoutAccount } from './src/actions/account';
+import SarExplorer from './src/components/SarViewer/SarExplorer';
 
 class App extends Component {
 
@@ -111,7 +112,6 @@ class App extends Component {
               hideNavBar
               key="merchant"
               component={Merchant}
-            // initial
             />
             <Scene
               key="merchantDetail"
@@ -136,7 +136,6 @@ class App extends Component {
             <Scene
               key="suggestionViewer"
               component={SuggestionViewer}
-            // initial
             />
             <Scene
               key="textViewer"
@@ -145,7 +144,10 @@ class App extends Component {
             <Scene
               key="evidenceViewer"
               component={EvidenceViewer}
-            // initial
+            />
+            <Scene
+              key="sarExplorer"
+              component={SarExplorer}
             />
           </Stack>
         </Router>

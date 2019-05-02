@@ -30,7 +30,7 @@ export default class EvidenceItem extends Component {
             <TouchableOpacity activeOpacity={0.5} onPress={() => this.handleOpenPdfFile(this.props.item)}>
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
-                        <Icon name='pdffile1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
+                        <Icon name='pdffile1' type="AntDesign" style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
                         <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={3}>{this.props.item.name}</Text>
                     </View>
                     {/* <Icon name={AppCommon.icon('more')} style={{ color: 'gray', fontSize: AppCommon.icon_size }} /> */}

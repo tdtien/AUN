@@ -26,11 +26,11 @@ export default class SuggestionTypeItem extends Component {
         let timeView;
         let arrowView;
         if (type !== 'evidences') {
-            iconName = "filetext1";
+            iconName = AppCommon.icon("document");
             timeView = <Text style={{ color: 'gray', paddingLeft: 15, fontSize: 15 }}>{moment(this.props.item.createdAt).format('DD/MM/YYYY HH:mm')}</Text>;
             arrowView = null;
         } else {
-            iconName = "folder1";
+            iconName = AppCommon.icon("folder");
             timeView = null;
             arrowView = <Icon name='angle-right' type="FontAwesome5" style={{ color: 'darkgray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />;
         }
@@ -57,9 +57,9 @@ export default class SuggestionTypeItem extends Component {
             <TouchableOpacity activeOpacity={0.5} onPress={() => pressAction()}>
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
-                        <Icon name={iconName} type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
+                        <Icon name={iconName} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_largeSize }} />
                         <View style={{ flex: 1, flexDirection: 'column' }}>
-                            <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={3}>{isConnected ? item.content : item.name}</Text>
+                            <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={2}>{isConnected ? item.content : item.name}</Text>
                             {
                                 timeView
                             }

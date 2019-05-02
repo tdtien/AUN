@@ -9,18 +9,30 @@ import {
     Icon,
 } from 'native-base';
 import { AppCommon } from '../../commons/commons';
+import { Actions } from 'react-native-router-flux';
 
 export default class FolderItem extends Component {
     constructor(props) {
         super(props);
     }
 
+    handleDetail = () => {
+        // if (Actions.currentScene == '_sarViewer') {
+            this.props.parentView.detail(this.props.item);
+        // } else {
+            // this.props.parentView.handlePush(this.props.item);
+        // }
+    }
+
     render() {
         return (
-            <TouchableOpacity activeOpacity={0.5} onLongPress={() => this.props.parentView.handleShowFooter(this.props.item)} onPress={() => this.props.parentView.detail(this.props.item, this.props.index)}>
+            <TouchableOpacity activeOpacity={0.5}
+                onLongPress={() => this.props.parentView.handleShowFooter(this.props.item)}
+                onPress={() => this.handleDetail()}
+            >
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
-                        <Icon name='folder1' type="AntDesign" style={{ color: 'deepskyblue', fontSize: AppCommon.icon_largeSize }} />
+                        <Icon name={AppCommon.icon("folder")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_largeSize }} />
                         <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={3}>{this.props.item.name}</Text>
                     </View>
                     <Icon name='angle-right' type="FontAwesome5" style={{ color: 'darkgray', fontSize: AppCommon.icon_size, paddingLeft: 20 }} />
