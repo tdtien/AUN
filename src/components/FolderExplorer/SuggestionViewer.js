@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import {
+    Text,
     View,
     TouchableOpacity,
     StyleSheet,
-    ScrollView,
     FlatList,
+    ScrollView
 } from 'react-native';
 import {
-    Text,
     Content,
     Container,
     Icon,
@@ -28,93 +28,7 @@ export default class SuggestionViewer extends Component {
         };
     }
 
-    componentDidMount() {
-        this._getAll();
-    }
-
-    detail(item, index) {
-        // if (this.props.isConnected) {
-        //     if (index === 0) {
-        //         Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.implications, sType: 'implications', isConnected: this.props.isConnected });
-        //     } else if (index === 1) {
-        //         Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.questions, sType: 'questions', isConnected: this.props.isConnected });
-        //     } else {
-        //         Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.evidences, sType: 'evidences', isConnected: this.props.isConnected });
-        //     }
-        // } else {
-        //     if (index === 0) {
-        //         let filterData = this.state.data.filter(item => item.type === "IMPLICATION")
-        //         Actions.suggestionTypeViewer({ flow: this.props, data: filterData, sType: 'implications', isConnected: this.props.isConnected });
-        //     } else if (index === 1) {
-        //         let filterData = this.state.data.filter(item => item.type === "QUESTION")
-        //         Actions.suggestionTypeViewer({ flow: this.props, data: filterData, sType: 'questions', isConnected: this.props.isConnected });
-        //     } else {
-        //         let filterData = this.state.data.filter(item => item.type === "EVIDENCE")
-        //         Actions.suggestionTypeViewer({ flow: this.props, data: filterData, sType: 'evidences', isConnected: this.props.isConnected });
-        //     }
-        // }
-        var data, type;
-        if (index === 0) {
-            data = this.props.isConnected ? this.state.data.implications : this.state.data.filter(item => item.type === "IMPLICATION")
-            type = 'implications'
-        } else if (index === 1) {
-            data = this.props.isConnected ? this.state.data.questions : this.state.data.filter(item => item.type === "QUESTION")
-            type = 'questions'
-        } else {
-            data = this.props.isConnected ? this.state.data.evidences : this.state.data.filter(item => item.type === "EVIDENCE")
-            type = 'evidences'
-        }
-        Actions.suggestionTypeViewer({
-            sarInfo: this.props.sarInfo,
-            criterionInfo: this.props.criterionInfo,
-            subCriterionInfo: this.props.subCriterionInfo,
-            suggestionInfo: item,
-            flow: this.props, 
-            data: data, 
-            sType: type, 
-            isConnected: this.props.isConnected 
-        });
-    }
-
-    _getAll = () => {
-        if (this.props.isConnected) {
-            getAllSuggestions(this.props.token, this.props.subCriterionInfo.id)
-                .then((responseJson) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                        data: responseJson.data
-                    })
-                })
-                .catch((error) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                    })
-                    console.error('Error: ' + error);
-                });
-        } else {
-            let offlineSubCriterionData = this.props.offlineSubCriterionData.find(item => item.id === this.props.subCriterionInfo.id)
-            this.setState({
-                isLoading: false,
-                refreshing: false,
-                data: offlineSubCriterionData.suggestions
-            })
-        }
-    }
-
-    handleRefresh = () => {
-        this.setState(
-            {
-                refreshing: true
-            },
-            () => {
-                this._getAll();
-            }
-        );
-    };
-
-    renderItem(item, index) {
+    renderItem(item) {
         return (
             <SuggestionItem
                 item={item}
@@ -172,9 +86,13 @@ export default class SuggestionViewer extends Component {
                         <Icon name="right" type="AntDesign" style={{ color: 'gray', fontSize: 15 }} />
                         <Text style={{ color: 'gray' }}>{this.props.criterionInfo.name}</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => Actions.popTo('suggestionTypeViewer')}>
+                        <Icon name="right" type="AntDesign" style={{ color: 'gray', fontSize: 15 }} />
+                        <Text style={{ color: 'gray' }}>{this.props.subCriterionInfo.name}</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} disabled>
                         <Icon name="right" type="AntDesign" style={{ color: 'gray', fontSize: 15 }} />
-                        <Text style={{ color: AppCommon.colors }}>{this.props.subCriterionInfo.name}</Text>
+                        <Text style={{ color: AppCommon.colors }}>{this.props.suggestionInfo.name}</Text>
                     </TouchableOpacity>
                 </ScrollView>
                 <Content

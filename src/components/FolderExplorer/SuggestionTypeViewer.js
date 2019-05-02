@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import {
-    Text,
     View,
     TouchableOpacity,
     StyleSheet,
-    ActivityIndicator,
+    ScrollView,
     FlatList,
-    ScrollView
+    Alert
 } from 'react-native';
 import {
+    Text,
     Content,
     Container,
     Icon,
@@ -56,29 +56,49 @@ class SuggestionTypeViewer extends Component {
         this._getAll();
     }
 
-    detail(item) {
-        let index = data.indexOf(item);
-        if (this.props.isConnected) {
-            if (index === 0) {
-                Actions.suggestionViewer({ flow: this.props, data: this.state.data.implications, sType: 'implications', isConnected: this.props.isConnected });
-            } else if (index === 1) {
-                Actions.suggestionViewer({ flow: this.props, data: this.state.data.questions, sType: 'questions', isConnected: this.props.isConnected });
-            } else {
-                Actions.suggestionViewer({ flow: this.props, data: this.state.data.evidences, sType: 'evidences', isConnected: this.props.isConnected });
-            }
+    detail(item, index) {
+        // let index = data.indexOf(item);
+        // if (this.props.isConnected) {
+        //     if (index === 0) {
+        //         Actions.suggestionViewer({ flow: this.props, data: this.state.data.implications, sType: 'implications', isConnected: this.props.isConnected });
+        //     } else if (index === 1) {
+        //         Actions.suggestionViewer({ flow: this.props, data: this.state.data.questions, sType: 'questions', isConnected: this.props.isConnected });
+        //     } else {
+        //         Actions.suggestionViewer({ flow: this.props, data: this.state.data.evidences, sType: 'evidences', isConnected: this.props.isConnected });
+        //     }
+        // } else {
+        //     if (index === 0) {
+        //         let filterData = this.state.data.filter(item => item.type === "IMPLICATION")
+        //         Actions.suggestionViewer({ flow: this.props, data: filterData, sType: 'implications', isConnected: this.props.isConnected });
+        //     } else if (index === 1) {
+        //         let filterData = this.state.data.filter(item => item.type === "QUESTION")
+        //         Actions.suggestionViewer({ flow: this.props, data: filterData, sType: 'questions', isConnected: this.props.isConnected });
+        //     } else {
+        //         let filterData = this.state.data.filter(item => item.type === "EVIDENCE")
+        //         Actions.suggestionViewer({ flow: this.props, data: filterData, sType: 'evidences', isConnected: this.props.isConnected });
+        //     }
+        // }
+        let data, type;
+        if (index === 0) {
+            data = this.props.isConnected ? this.state.data.implications : this.state.data.filter(item => item.type === "IMPLICATION")
+            type = 'implications'
+        } else if (index === 1) {
+            data = this.props.isConnected ? this.state.data.questions : this.state.data.filter(item => item.type === "QUESTION")
+            type = 'questions'
         } else {
-            if (index === 0) {
-                let filterData = this.state.data.filter(item => item.type === "IMPLICATION")
-                Actions.suggestionViewer({ flow: this.props, data: filterData, sType: 'implications', isConnected: this.props.isConnected });
-            } else if (index === 1) {
-                let filterData = this.state.data.filter(item => item.type === "QUESTION")
-                Actions.suggestionViewer({ flow: this.props, data: filterData, sType: 'questions', isConnected: this.props.isConnected });
-            } else {
-                let filterData = this.state.data.filter(item => item.type === "EVIDENCE")
-                Actions.suggestionViewer({ flow: this.props, data: filterData, sType: 'evidences', isConnected: this.props.isConnected });
-            }
+            data = this.props.isConnected ? this.state.data.evidences : this.state.data.filter(item => item.type === "EVIDENCE")
+            type = 'evidences'
         }
-
+        Actions.suggestionViewer({
+            sarInfo: this.props.sarInfo,
+            criterionInfo: this.props.criterionInfo,
+            subCriterionInfo: this.props.subCriterionInfo,
+            suggestionInfo: item,
+            flow: this.props,
+            data: data,
+            sType: type,
+            isConnected: this.props.isConnected
+        });
     }
 
     _getAll = () => {
@@ -240,13 +260,9 @@ class SuggestionTypeViewer extends Component {
                         <Icon name="right" type="AntDesign" style={{ color: 'gray', fontSize: 15 }} />
                         <Text style={{ color: 'gray' }}>{this.props.criterionInfo.name}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} onPress={() => Actions.popTo('suggestionViewer')}>
-                        <Icon name="right" type="AntDesign" style={{ color: 'gray', fontSize: 15 }} />
-                        <Text style={{ color: 'gray' }}>{this.props.subCriterionInfo.name}</Text>
-                    </TouchableOpacity>
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }} disabled>
                         <Icon name="right" type="AntDesign" style={{ color: 'gray', fontSize: 15 }} />
-                        <Text style={{ color: AppCommon.colors }}>{this.props.suggestionInfo.name}</Text>
+                        <Text style={{ color: AppCommon.colors }}>{this.props.subCriterionInfo.name}</Text>
                     </TouchableOpacity>
                 </ScrollView>
                 <Content
