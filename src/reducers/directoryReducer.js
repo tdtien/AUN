@@ -78,6 +78,7 @@ const directoryReducer = (state = initialState, action) => {
 
 
             //reset directory redux
+            // console.log('Reset redux');
             // let newState = {};
             // return newState;
         }

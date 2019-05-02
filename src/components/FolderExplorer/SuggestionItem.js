@@ -12,7 +12,7 @@ import { AppCommon } from '../../commons/commons';
 import moment from "moment";
 import { Actions } from "react-native-router-flux";
 
-export default class SuggestionTypeItem extends Component {
+export default class SuggestionItem extends Component {
     constructor(props) {
         super(props);
     }

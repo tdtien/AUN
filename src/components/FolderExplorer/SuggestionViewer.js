@@ -5,7 +5,6 @@ import {
     StyleSheet,
     ScrollView,
     FlatList,
-    Alert
 } from 'react-native';
 import {
     Text,
@@ -16,29 +15,11 @@ import {
     Body,
     Title,
 } from 'native-base';
-import { getAllSuggestions } from '../../api/directoryTreeApi';
-import { connect } from 'react-redux';
-import Loader from '../Loader/Loader'
-import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
-import FolderItem from './FolderItem'
+import { Actions } from 'react-native-router-flux';
+import SuggestionItem from "./SuggestionItem";
 
-var data = [
-    {
-        "id": 1,
-        "name": "Implications"
-    },
-    {
-        "id": 2,
-        "name": "Questions"
-    },
-    {
-        "id": 3,
-        "name": "Evidences"
-    }
-]
-
-class SuggestionViewer extends Component {
+export default class SuggestionViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -135,19 +116,23 @@ class SuggestionViewer extends Component {
 
     renderItem(item, index) {
         return (
-            <FolderItem
+            <SuggestionItem
                 item={item}
-                parentView={this}
-                index={index}
+                sType={this.props.sType}
+                flow={this.props.flow}
+                isConnected={this.props.isConnected}
             />
         )
     }
 
-    handleShowFooter = (choosenSuggestionId) => {
-
-    }
-
     render() {
+        let type = this.props.sType;
+        let title = '';
+        if (type === "evidences") {
+            title = "All evidence types";
+        } else {
+            title = "All " + type.charAt(0).toUpperCase() + type.slice(1);
+        }
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
@@ -160,7 +145,7 @@ class SuggestionViewer extends Component {
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: 'white' }}>All Suggestions</Title>
+                        <Title style={{ alignSelf: "center", color: 'white' }}>{title}</Title>
                     </Body>
                     <TouchableOpacity style={styles.menuButton} onPress={() => null} >
                         <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
@@ -196,29 +181,28 @@ class SuggestionViewer extends Component {
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
                 >
-                    <FlatList
-                        data={data}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item, index }) => this.renderItem(item, index)}
-                        onRefresh={this.handleRefresh}
-                        refreshing={this.state.refreshing}
-                        onEndReached={this.handleLoadMore}
-                        onEndReachedThreshold={50}
-                    />
+                    {
+                        (this.props.data.length === 0) ? (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                            </View>
+                        ) : (
+                                <FlatList
+                                    data={this.props.data}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item, index }) => this.renderItem(item, index)}
+                                    onRefresh={this.handleRefresh}
+                                    refreshing={this.state.refreshing}
+                                    onEndReached={this.handleLoadMore}
+                                    onEndReachedThreshold={50}
+                                />
+                            )
+                    }
                 </Content>
-                <Loader loading={this.state.isLoading} />
             </Container>
         )
     }
 }
-
-const mapStateToProps = state => {
-    return {
-        token: state.account.token,
-    };
-};
-
-export default connect(mapStateToProps)(SuggestionViewer);
 
 const styles = StyleSheet.create({
     menuButton: {

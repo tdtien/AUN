@@ -50,7 +50,7 @@ class SubCriterionViewer extends Component {
             offlineSubCriterionData: this.state.data
         }
         // console.log('subcri info: ' + JSON.stringify(props));
-        Actions.suggestionViewer(props);
+        Actions.suggestionTypeViewer(props);
     }
 
     _getAll = () => {
