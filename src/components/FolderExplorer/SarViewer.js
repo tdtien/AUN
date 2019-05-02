@@ -103,8 +103,10 @@ class SarViewer extends Component {
                         },
                         {
                             text: 'Yes', onPress: () => {
+                                let downloadData = (Object.keys(this.props.directoryInfo).length === 0) ? [] : this.props.directoryInfo[this.props.email];
+                                console.log('downloadData: ' + JSON.stringify(downloadData));
                                 this.setState({
-                                    data: this.props.directoryInfo[this.props.email],
+                                    data: downloadData,
                                 })
                             }
                         }
@@ -222,7 +224,10 @@ class SarViewer extends Component {
                     {
                         (this.state.data !== null && this.state.data.length === 0) ? (
                             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                                <Text style={{ color: '#BDBDBD' }}>There is no content.</Text>
+                                <TouchableOpacity style = {{marginTop: 20}} onPress={() => this.handleRefresh()}>
+                                    <Text style={{ color: '#BDBDBD', textDecorationLine: 'underline' }}>Click here to reload</Text>
+                                </TouchableOpacity>
                             </View>
                         ) : (
                                 <FlatList
