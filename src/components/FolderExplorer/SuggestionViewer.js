@@ -25,6 +25,8 @@ export default class SuggestionViewer extends Component {
         this.state = {
             isLoading: true,
             refreshing: false,
+            isShowFooter: false,
+            choosenSuggestionItem: {}
         };
     }
 
@@ -43,7 +45,7 @@ export default class SuggestionViewer extends Component {
         let type = this.props.sType;
         let title = '';
         if (type === "evidences") {
-            title = "All evidence types";
+            title = "All Evidence Types";
         } else {
             title = "All " + type.charAt(0).toUpperCase() + type.slice(1);
         }
