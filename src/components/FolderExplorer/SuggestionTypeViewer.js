@@ -57,27 +57,6 @@ class SuggestionTypeViewer extends Component {
     }
 
     detail(item, index) {
-        // let index = data.indexOf(item);
-        // if (this.props.isConnected) {
-        //     if (index === 0) {
-        //         Actions.suggestionViewer({ flow: this.props, data: this.state.data.implications, sType: 'implications', isConnected: this.props.isConnected });
-        //     } else if (index === 1) {
-        //         Actions.suggestionViewer({ flow: this.props, data: this.state.data.questions, sType: 'questions', isConnected: this.props.isConnected });
-        //     } else {
-        //         Actions.suggestionViewer({ flow: this.props, data: this.state.data.evidences, sType: 'evidences', isConnected: this.props.isConnected });
-        //     }
-        // } else {
-        //     if (index === 0) {
-        //         let filterData = this.state.data.filter(item => item.type === "IMPLICATION")
-        //         Actions.suggestionViewer({ flow: this.props, data: filterData, sType: 'implications', isConnected: this.props.isConnected });
-        //     } else if (index === 1) {
-        //         let filterData = this.state.data.filter(item => item.type === "QUESTION")
-        //         Actions.suggestionViewer({ flow: this.props, data: filterData, sType: 'questions', isConnected: this.props.isConnected });
-        //     } else {
-        //         let filterData = this.state.data.filter(item => item.type === "EVIDENCE")
-        //         Actions.suggestionViewer({ flow: this.props, data: filterData, sType: 'evidences', isConnected: this.props.isConnected });
-        //     }
-        // }
         let data, type;
         if (index === 0) {
             data = this.props.isConnected ? this.state.data.implications : this.state.data.filter(item => item.type === "IMPLICATION")
@@ -105,6 +84,7 @@ class SuggestionTypeViewer extends Component {
         if (this.props.isConnected) {
             getAllSuggestions(this.props.token, this.props.subCriterionInfo.id)
                 .then((responseJson) => {
+                    // console.log('responseJson: ' + JSON.stringify(responseJson.data));
                     this.setState({
                         isLoading: false,
                         refreshing: false,
@@ -162,35 +142,43 @@ class SuggestionTypeViewer extends Component {
         })
         downloadSubCriterion(this.props.token, this.props.subCriterionInfo.id)
             .then((responseJson) => {
+                // console.log('responseJson: ' + JSON.stringify(responseJson.data));
                 this.setState({
                     isLoading: false,
                     refreshing: false,
                     isShowFooter: false
                 })
+                let index = data.indexOf(this.state.choosenSuggestionItem);
+                let filterData = responseJson.data;
+                if (index === 0) {
+                    filterData.suggestions = {
+                        'implications': filterData.suggestions.implications
+                    };
+                } else if (index === 1) {
+                    filterData.suggestions = {
+                        'questions': filterData.suggestions.questions
+                    };
+                } else {
+                    filterData.suggestions = {
+                        'evidences': filterData.suggestions.evidences
+                    };
+                }
                 let downloadFlow = {
                     sarInfo: this.props.sarInfo,
                     criterionInfo: this.props.criterionInfo,
-                    subCriterionInfo: this.state.choosenSubCriterionItem
+                    subCriterionInfo: this.props.subCriterionInfo,
+                    suggestionTypeName: this.state.choosenSuggestionItem.name.toLowerCase()
                 }
-                let index = data.indexOf(this.state.choosenSuggestionItem);
-                let filterData = responseJson.data.suggestions;
-                if (index === 0) {
-                    filterData = filterData.filter(item => item.type === "IMPLICATION")
-                } else if (index === 1) {
-                    filterData = filterData.filter(item => item.type === "QUESTION")
-                } else {
-                    filterData = filterData.filter(item => item.type === "EVIDENCE")
-                }
-                let directoryTree = createDirectoryTreeWith(downloadFlow, filterData, 'subCriterion');
+                let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'subCriterion');
                 // console.log('directoryTree: ' + JSON.stringify(directoryTree));
                 var directoryInfo = {
                     email: this.props.email,
                     directoryTree: directoryTree,
-                    downloadItemType: 'subCriterion',
+                    downloadItemType: 'suggestionType',
                     downloadFlow: downloadFlow
                 }
                 // console.log('responseJson suggestion: ' + JSON.stringify(directoryInfo));
-                // this.props.setDirectoryInfo(directoryInfo);
+                this.props.setDirectoryInfo(directoryInfo);
             })
             .catch((error) => {
                 this.setState({

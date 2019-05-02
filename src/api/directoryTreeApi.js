@@ -120,3 +120,18 @@ export async function downloadSubCriterion(token, subCriterionId) {
             .catch(error => reject(error));
     });
 }
+
+export async function downloadSuggestion(token, suggestionId) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/subcriterions/${subCriterionId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}

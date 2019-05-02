@@ -60,11 +60,33 @@ const directoryReducer = (state = initialState, action) => {
                             break;
                         }
                         let subCriterionIndex = criterionItem.subCriterions.findIndex(item => item.id === flow.subCriterionInfo.id);
-                        let subCriterionItem = directoryTree.criterions[0].subCriterions[0];
+                        let subCriterionNewItem = directoryTree.criterions[0].subCriterions[0];
                         if (subCriterionIndex !== -1) {
-                            criterionItem.subCriterions[subCriterionIndex] = subCriterionItem;
+                            criterionItem.subCriterions[subCriterionIndex] = subCriterionNewItem;
                         } else {
-                            criterionItem.subCriterions.push(subCriterionItem);
+                            criterionItem.subCriterions.push(subCriterionNewItem);
+                        }
+                        break;
+                    }
+                case 'suggestionType':
+                    {
+                        let sarItem = sarArray.find(item => item.id === flow.sarInfo.id);
+                        if (sarItem === undefined) {
+                            sarArray.push(directoryTree);
+                            break;
+                        }
+                        let criterionItem = sarItem.criterions.find(item => item.id === flow.criterionInfo.id);
+                        if (criterionItem === undefined) {
+                            sarItem.criterions.push(directoryTree.criterions[0]);
+                            break;
+                        }
+                        let subCriterionIndex = criterionItem.subCriterions.findIndex(item => item.id === flow.subCriterionInfo.id);
+                        let subCriterionNewItem = directoryTree.criterions[0].subCriterions[0];
+                        if (subCriterionIndex !== -1) {
+                            let subCriterionItem = criterionItem.subCriterions[subCriterionIndex];
+                            subCriterionItem.suggestions[flow.suggestionTypeName] = subCriterionNewItem.suggestions[flow.suggestionTypeName]
+                        } else {
+                            criterionItem.subCriterions.push(subCriterionNewItem);
                         }
                         break;
                     }
