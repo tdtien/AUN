@@ -105,3 +105,18 @@ export async function downloadCriterion(token, criterionId) {
             .catch(error => reject(error));
     });
 }
+
+export async function downloadSubCriterion(token, subCriterionId) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/subcriterions/${subCriterionId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}

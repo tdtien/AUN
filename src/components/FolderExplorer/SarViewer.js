@@ -24,6 +24,7 @@ import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
 import { setDirectoryInfo } from "../../actions/directoryAction";
 import DownloadButton from './DownloadButton';
+import { createDirectoryTreeWith } from '../../commons/utilitiesFunction';
 
 class SarViewer extends Component {
     constructor(props) {
@@ -151,14 +152,18 @@ class SarViewer extends Component {
                 this.setState({
                     isLoading: false,
                     refreshing: false,
+                    isShowFooter: false
                 })
+                let downloadFlow = {
+                    sarInfo: this.state.choosenSarItem
+                }
+                let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'sar');
+                // console.log('directoryTree: ' + JSON.stringify(directoryTree));
                 var directoryInfo = {
                     email: this.props.email,
-                    directoryTree: responseJson.data,
+                    directoryTree: directoryTree,
                     downloadItemType: 'sar',
-                    downloadFlow: {
-                        sarInfo: this.state.choosenSarItem
-                    }
+                    downloadFlow: downloadFlow
                 }
                 this.props.setDirectoryInfo(directoryInfo);
             })

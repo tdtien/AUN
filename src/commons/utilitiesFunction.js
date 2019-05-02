@@ -74,3 +74,33 @@ export function popToSceneWithUpdate(scene, props) {
     setTimeout(() => { Actions.refresh(props) }, 500);
     Actions.popTo(scene);
 }
+
+export function createDirectoryTreeWith(flow: Object, data: Object, type: string) {
+    let directoryTree = {};
+    switch (type) {
+        case 'sar':
+            directoryTree = data;
+            break;
+        case 'criterion':
+            directoryTree = {
+                id: flow.sarInfo.id,
+                name: flow.sarInfo.name,
+                criterions: [data],
+            }
+            break;
+        case 'subCriterion':
+            directoryTree = {
+                id: flow.sarInfo.id,
+                name: flow.sarInfo.name,
+                criterions: [{
+                    id: flow.criterionInfo.id,
+                    name: flow.criterionInfo.name,
+                    subCriterions: [data],
+                }],
+            }
+            break;
+        default:
+            break;
+    }
+    return directoryTree;
+}
