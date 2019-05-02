@@ -16,12 +16,15 @@ import {
     Body,
     Title,
 } from 'native-base';
-import { getAllSuggestions } from '../../api/directoryTreeApi';
+import { getAllSuggestions, downloadSubCriterion, } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
+import DownloadButton from './DownloadButton';
+import { setDirectoryInfo } from "../../actions/directoryAction";
+import { createDirectoryTreeWith } from '../../commons/utilitiesFunction';
 
 var data = [
     {
@@ -44,6 +47,8 @@ class SuggestionViewer extends Component {
         this.state = {
             isLoading: true,
             refreshing: false,
+            isShowFooter: false,
+            choosenSuggestionItem: {}
         };
     }
 
@@ -51,7 +56,8 @@ class SuggestionViewer extends Component {
         this._getAll();
     }
 
-    detail(item, index) {
+    detail(item) {
+        let index = data.indexOf(item);
         if (this.props.isConnected) {
             if (index === 0) {
                 Actions.suggestionTypeViewer({ flow: this.props, data: this.state.data.implications, sType: 'implications', isConnected: this.props.isConnected });
@@ -123,11 +129,78 @@ class SuggestionViewer extends Component {
         )
     }
 
-    handleShowFooter = (choosenSuggestionId) => {
-       
+    handleShowFooter = (choosenSuggestionItem) => {
+        this.setState({
+            isShowFooter: true,
+            choosenSuggestionItem: choosenSuggestionItem
+        })
+    }
+
+    handleDownloadItem = () => {
+        this.setState({
+            isLoading: true,
+        })
+        downloadSubCriterion(this.props.token, this.props.subCriterionInfo.id)
+            .then((responseJson) => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                    isShowFooter: false
+                })
+                let downloadFlow = {
+                    sarInfo: this.props.sarInfo,
+                    criterionInfo: this.props.criterionInfo,
+                    subCriterionInfo: this.state.choosenSubCriterionItem
+                }
+                let index = data.indexOf(this.state.choosenSuggestionItem);
+                let filterData = responseJson.data.suggestions;
+                if (index === 0) {
+                    filterData = filterData.filter(item => item.type === "IMPLICATION")
+                } else if (index === 1) {
+                    filterData = filterData.filter(item => item.type === "QUESTION")
+                } else {
+                    filterData = filterData.filter(item => item.type === "EVIDENCE")
+                }
+                let directoryTree = createDirectoryTreeWith(downloadFlow, filterData, 'subCriterion');
+                // console.log('directoryTree: ' + JSON.stringify(directoryTree));
+                var directoryInfo = {
+                    email: this.props.email,
+                    directoryTree: directoryTree,
+                    downloadItemType: 'subCriterion',
+                    downloadFlow: downloadFlow
+                }
+                // console.log('responseJson suggestion: ' + JSON.stringify(directoryInfo));
+                // this.props.setDirectoryInfo(directoryInfo);
+            })
+            .catch((error) => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                })
+                console.error('Error when download: ' + error);
+            });
     }
 
     render() {
+        let leftHeaderButton = (this.state.isShowFooter) ? (
+            <TouchableOpacity style={styles.menuButton} onPress={() => {
+                this.setState({
+                    isShowFooter: false
+                })
+            }} >
+                <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+            </TouchableOpacity>
+        ) : (
+                <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
+                    <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                </TouchableOpacity>
+            )
+        let footer = (this.state.isShowFooter) ?
+            (
+                <DownloadButton
+                    parentView={this}
+                />
+            ) : null
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
@@ -136,9 +209,9 @@ class SuggestionViewer extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                     rounded
                 >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
-                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    </TouchableOpacity>
+                    {
+                        leftHeaderButton
+                    }
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: 'white' }}>All Suggestions</Title>
                     </Body>
@@ -160,6 +233,9 @@ class SuggestionViewer extends Component {
                         onEndReachedThreshold={50}
                     />
                 </Content>
+                {
+                    footer
+                }
                 <Loader loading={this.state.isLoading} />
             </Container>
         )
@@ -169,10 +245,19 @@ class SuggestionViewer extends Component {
 const mapStateToProps = state => {
     return {
         token: state.account.token,
+        email: state.account.email,
     };
 };
 
-export default connect(mapStateToProps)(SuggestionViewer);
+const mapDispatchToProps = dispatch => {
+    return {
+        setDirectoryInfo: item => {
+            dispatch(setDirectoryInfo(item));
+        }
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SuggestionViewer);
 
 const styles = StyleSheet.create({
     menuButton: {
