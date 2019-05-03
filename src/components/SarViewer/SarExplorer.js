@@ -12,11 +12,11 @@ import {
 import { connect } from 'react-redux';
 import { AppCommon } from "../../commons/commons";
 import { Header, Container, Content, Icon, Body, Title, Text } from "native-base";
-import Loader from "../Loader/Loader";
-import { getAllCriterions, getAllSubCriterions, getAllSuggestions } from "../../api/directoryTreeApi";
-import FolderItem from "../FolderExplorer/FolderItem";
+import { getAllCriterions, getAllSubCriterions, getAllSuggestions, getAllEvidences } from "../../api/directoryTreeApi";
 import { Actions } from "react-native-router-flux";
 import SuggestionItem from "../FolderExplorer/SuggestionItem";
+import SarFolder from "./SarFolder";
+import SarItem from "./SarItem";
 
 const window = Dimensions.get('window');
 class SarExplorer extends Component {
@@ -31,7 +31,8 @@ class SarExplorer extends Component {
                 { key: 'criterions', title: 'All Criterions' },
                 { key: 'subCriterions', title: 'All Subcriterions' },
                 { key: 'suggestionTypes', title: 'All Suggestion Types' },
-                { key: 'suggestions', title: 'All ' }
+                { key: 'suggestions', title: 'All ' },
+                { key: 'evidences', title: 'All Evidences' }
             ],
             currentIdx: 0,
             data: [],
@@ -62,8 +63,10 @@ class SarExplorer extends Component {
     }
 
     makeRemoteRequest = (id) => {
-        if (this.state.scene[this.state.currentIdx].key === 'criterions') {
-            getAllCriterions(this.props.token, id)
+        const { scene, currentIdx, dataSuggestions } = this.state;
+        const { token } = this.props;
+        if (scene[currentIdx].key === 'criterions') {
+            getAllCriterions(token, id)
                 .then((responseJson) => {
                     this.setState({
                         isLoading: false,
@@ -78,8 +81,8 @@ class SarExplorer extends Component {
                     })
                     console.error('Error: ' + error);
                 });
-        } else if (this.state.scene[this.state.currentIdx].key === 'subCriterions') {
-            getAllSubCriterions(this.props.token, id)
+        } else if (scene[currentIdx].key === 'subCriterions') {
+            getAllSubCriterions(token, id)
                 .then((responseJson) => {
                     this.setState({
                         isLoading: false,
@@ -94,8 +97,8 @@ class SarExplorer extends Component {
                     })
                     console.error('Error: ' + error);
                 });
-        } else if (this.state.scene[this.state.currentIdx].key === 'suggestionTypes') {
-            getAllSuggestions(this.props.token, id)
+        } else if (scene[currentIdx].key === 'suggestionTypes') {
+            getAllSuggestions(token, id)
                 .then((responseJson) => {
                     let data = [
                         { id: 'implications', name: 'Implications' },
@@ -116,12 +119,28 @@ class SarExplorer extends Component {
                     })
                     console.error('Error: ' + error);
                 });
-        } else if (this.state.scene[this.state.currentIdx].key === 'suggestions') {
+        } else if (scene[currentIdx].key === 'suggestions') {
             this.setState({
                 isLoading: false,
                 refreshing: false,
-                data: this.state.dataSuggestions[id]
+                data: dataSuggestions[id]
             })
+        } else if (scene[currentIdx].key === 'evidences') {
+            getAllEvidences(token, id)
+                .then((responseJson) => {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        data: responseJson.data
+                    })
+                })
+                .catch((error) => {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                    console.error('Error: ' + error);
+                });
         } else {
             this.setState({
                 isLoading: false,
@@ -131,14 +150,17 @@ class SarExplorer extends Component {
     }
 
     handleRefresh = () => {
-        this.setState({ refreshing: false }, this.makeRemoteRequest(this.state.currentItem.id));
+        this.setState({ refreshing: true }, () => this.makeRemoteRequest(this.state.currentItem.id));
     };
 
     handlePop = () => {
         if (this.state.currentIdx > 0) {
             this.state.currentIdx--;
             let item = this.state.previousItem.pop();
-            this.setState({ isLoading: true, currentItem: item }, this.makeRemoteRequest(item.id));
+            this.setState({
+                isLoading: true,
+                currentItem: item
+            }, () => this.makeRemoteRequest(item.id));
         } else {
             Actions.pop();
         }
@@ -149,35 +171,44 @@ class SarExplorer extends Component {
             let item = this.state.previousItem[index];
             this.state.currentIdx = index;
             this.state.previousItem.splice(index, this.state.previousItem.length - index)
-            this.setState({ isLoading: true, currentItem: item }, this.makeRemoteRequest(item.id));
+            this.setState({
+                isLoading: true,
+                currentItem: item
+            }, () => this.makeRemoteRequest(item.id));
         }
     }
 
     handlePush = (item) => {
         this.state.currentIdx++;
         this.state.previousItem.push(this.state.currentItem);
-        this.setState({ isLoading: false, currentItem: item }, this.makeRemoteRequest(item.id));
+        this.setState({
+            isLoading: true,
+            currentItem: item
+        }, () => this.makeRemoteRequest(item.id));
+
     }
 
     renderItem = ({ item }) => {
-        if (typeof this.state.currentItem.id === 'string') {
-            return (<SuggestionItem
+        let itemType = ['IMPLICATION', 'QUESTION', 'FILE']
+        if (item.hasOwnProperty('type') && itemType.indexOf(item.type) >= 0) {
+            return (<SarItem
                 item={item}
-                sType={this.state.currentItem.id}
-                isConnected={this.state.isConnected}
+                type={item.type}
             />)
         }
         return (
-            <FolderItem
+            <SarFolder
                 item={item}
-                parentView={this}
+                type={this.state.currentItem.id}
+                onPress={() => this.handlePush(item)}
             />
         )
     }
 
     render() {
-        let scene = this.state.scene[this.state.currentIdx]
-        let title = scene.key === 'suggestions' ? scene.title + this.state.currentItem.name : scene.title
+        const { currentItem, scene, currentIdx } = this.state;
+        let currentScene = scene[currentIdx]
+        let title = currentScene.key === 'suggestions' ? currentScene.title + currentItem.name : currentScene.title
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
@@ -228,7 +259,9 @@ class SarExplorer extends Component {
                     })}
                     <TouchableOpacity style={styles.breadCrumbItem} disabled>
                         <Icon name="right" type="AntDesign" style={styles.crumbArrow} />
-                        <Text style={styles.activeCrumbItem}>{this.state.currentItem.name}</Text>
+                        <Text style={styles.activeCrumbItem}>
+                            {currentItem.hasOwnProperty('type') && currentItem.type === 'EVIDENCE' ? currentItem.content : currentItem.name}
+                        </Text>
                     </TouchableOpacity>
                 </ScrollView>
                 <Content
@@ -247,7 +280,7 @@ class SarExplorer extends Component {
                             ) : (
                                     <FlatList
                                         data={this.state.data}
-                                        extraData={this.state}
+                                        extraData={this.state.data}
                                         keyExtractor={(item, index) => index.toString()}
                                         renderItem={this.renderItem}
                                         onRefresh={this.handleRefresh}
@@ -279,7 +312,8 @@ const styles = StyleSheet.create({
         color: 'gray'
     },
     activeCrumbItem: {
-        color: AppCommon.colors
+        color: AppCommon.colors,
+        paddingRight: 10
     },
     crumbArrow: {
         color: 'gray',

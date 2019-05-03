@@ -9,26 +9,17 @@ import {
     Icon,
 } from 'native-base';
 import { AppCommon } from '../../commons/commons';
-import { Actions } from 'react-native-router-flux';
 
 export default class FolderItem extends Component {
     constructor(props) {
         super(props);
     }
 
-    handleDetail = () => {
-        // if (Actions.currentScene == '_sarViewer') {
-            this.props.parentView.detail(this.props.item, this.props.index);
-        // } else {
-            // this.props.parentView.handlePush(this.props.item);
-        // }
-    }
-
     render() {
         return (
             <TouchableOpacity activeOpacity={0.5}
                 onLongPress={() => this.props.parentView.handleShowFooter(this.props.item)}
-                onPress={() => this.handleDetail()}
+                onPress={() => this.props.parentView.detail(this.props.item, this.props.index)}
             >
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
