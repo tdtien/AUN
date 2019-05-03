@@ -20,6 +20,10 @@ import Loader from '../Loader/Loader'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
 import EvidenceItem from './EvidenceItem';
+import { setDirectoryInfo } from "../../actions/directoryAction";
+import { createDirectoryTreeWith, createFolder } from '../../commons/utilitiesFunction';
+import DownloadButton from './DownloadButton';
+import RNFS from "react-native-fs";
 
 class EvidenceViewer extends Component {
     constructor(props) {
@@ -27,7 +31,9 @@ class EvidenceViewer extends Component {
         this.state = {
             isLoading: true,
             refreshing: false,
-            data: null
+            data: null,
+            isShowFooter: false,
+            choosenEvidenceItem: {}
         };
     }
 
@@ -79,11 +85,83 @@ class EvidenceViewer extends Component {
 
     renderItem(item, index) {
         return (
-            <EvidenceItem item={item} />
+            <EvidenceItem
+                item={item}
+                parentView={this}
+            />
         )
     }
 
+    handleShowFooter = (choosenEvidenceItem) => {
+        this.setState({
+            isShowFooter: true,
+            choosenEvidenceItem: choosenEvidenceItem
+        })
+    }
+
+    handleDownloadItem = () => {
+        this.setState({
+            isLoading: true,
+        })
+        let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + this.props.email;
+        createFolder(pdfFolderPath)
+            .then(response => {
+                let url = this.state.choosenEvidenceItem.link;
+                let filePath = pdfFolderPath + '/' + this.state.choosenEvidenceItem.name + '.pdf';
+                RNFS.downloadFile({ fromUrl: url, toFile: filePath }).promise.then(response => {
+                    console.log('Success');
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        isShowFooter: false
+                    })
+                    let downloadFlow = {
+                        sarInfo: this.props.sarInfo,
+                        criterionInfo: this.props.criterionInfo,
+                        subCriterionInfo: this.props.subCriterionInfo,
+                        suggestionInfo: this.props.suggestionInfo,
+                        evidenceInfo: this.state.choosenEvidenceItem
+                    }
+                    let directoryTree = createDirectoryTreeWith(downloadFlow, this.state.choosenEvidenceItem, 'evidence');
+                    // console.log('directoryTree: ' + JSON.stringify(directoryTree));
+                    var directoryInfo = {
+                        email: this.props.email,
+                        directoryTree: directoryTree,
+                        downloadItemType: 'evidence',
+                        downloadFlow: downloadFlow
+                    }
+                    // console.log('responseJson suggestion: ' + JSON.stringify(directoryInfo));
+                    this.props.setDirectoryInfo(directoryInfo);
+                })
+            }).catch(error => {
+                console.log('Error: ' + JSON.stringify(error));
+            })
+    }
+
     render() {
+        let leftHeaderButton = (this.state.isShowFooter) ? (
+            <TouchableOpacity style={styles.menuButton} onPress={() => {
+                this.setState({
+                    isShowFooter: false
+                })
+            }} >
+                <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+            </TouchableOpacity>
+        ) : (
+                <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
+                    <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                </TouchableOpacity>
+            )
+        let footer = (this.state.isShowFooter) ?
+            (
+                <DownloadButton
+                    parentView={this}
+                />
+            ) : (
+                <TouchableOpacity style={styles.addButton} onPress={() => Actions.merchant({ flow: this.props })}>
+                    <Icon name={AppCommon.icon("add")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                </TouchableOpacity>
+            )
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
@@ -92,9 +170,9 @@ class EvidenceViewer extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                     rounded
                 >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
-                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    </TouchableOpacity>
+                    {
+                        leftHeaderButton
+                    }
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: 'white' }}>All Evidences</Title>
                     </Body>
@@ -124,9 +202,9 @@ class EvidenceViewer extends Component {
                             )
                     }
                 </Content>
-                <TouchableOpacity style={styles.addButton} onPress={() => Actions.merchant({ flow: this.props })}>
-                    <Icon name={AppCommon.icon("add")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                </TouchableOpacity>
+                {
+                    footer
+                }
                 <Loader loading={this.state.isLoading} />
             </Container>
         )
@@ -136,10 +214,19 @@ class EvidenceViewer extends Component {
 const mapStateToProps = state => {
     return {
         token: state.account.token,
+        email: state.account.email,
     };
 };
 
-export default connect(mapStateToProps)(EvidenceViewer);
+const mapDispatchToProps = dispatch => {
+    return {
+        setDirectoryInfo: item => {
+            dispatch(setDirectoryInfo(item));
+        }
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(EvidenceViewer);
 
 const styles = StyleSheet.create({
     menuButton: {

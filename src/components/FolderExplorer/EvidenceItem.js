@@ -27,7 +27,10 @@ export default class EvidenceItem extends Component {
 
     render() {
         return (
-            <TouchableOpacity activeOpacity={0.5} onPress={() => this.handleOpenPdfFile(this.props.item)}>
+            <TouchableOpacity activeOpacity={0.5}
+                onLongPress={() => this.props.parentView.handleShowFooter(this.props.item)}
+                onPress={() => this.handleOpenPdfFile(this.props.item)}
+            >
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
                         <Icon name='pdffile1' type="AntDesign" style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />

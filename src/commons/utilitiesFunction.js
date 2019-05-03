@@ -2,15 +2,19 @@ import RNFS from 'react-native-fs'
 import { Actions } from 'react-native-router-flux';
 
 export function createFolder(mainPath) {
-    RNFS.exists(mainPath).then(function (response) {
-        if (!response) {
-            RNFS.mkdir(mainPath).then(function (response) {
-                return true;
-            }).catch(function (error) {
-                return false;
-            })
-        }
-        return true;
+    return new Promise((resolve, reject) => {
+        RNFS.exists(mainPath).then(function (response) {
+            if (!response) {
+                RNFS.mkdir(mainPath).then(function (response) {
+                    resolve(response);
+                }).catch(function (error) {
+                    reject(error);
+                })
+            }
+            else {
+                resolve(true);
+            }
+        })
     })
 }
 
@@ -109,8 +113,30 @@ export function createDirectoryTreeWith(flow: Object, data: Object, type: string
                     subCriterions: [{
                         id: flow.subCriterionInfo.id,
                         name: flow.subCriterionInfo.name,
-                        suggestions:{
+                        suggestions: {
                             [flow.suggestionType]: [data]
+                        }
+                    }],
+                }],
+            }
+            break;
+        case 'evidence':
+            directoryTree = {
+                id: flow.sarInfo.id,
+                name: flow.sarInfo.name,
+                criterions: [{
+                    id: flow.criterionInfo.id,
+                    name: flow.criterionInfo.name,
+                    subCriterions: [{
+                        id: flow.subCriterionInfo.id,
+                        name: flow.subCriterionInfo.name,
+                        suggestions: {
+                            evidences: [{
+                                id: flow.suggestionInfo.id,
+                                content: flow.suggestionInfo.content,
+                                type: flow.suggestionInfo.type,
+                                evidences: [data]
+                            }]
                         }
                     }],
                 }],

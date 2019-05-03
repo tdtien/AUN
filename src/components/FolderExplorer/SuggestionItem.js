@@ -42,7 +42,7 @@ export default class SuggestionItem extends Component {
                     Actions.textViewer({ data: item.name, title: type });
                 }
             } else {
-                let newFlow = {
+                let props = {
                     sarInfo: flow.sarInfo,
                     criterionInfo: flow.criterionInfo,
                     subCriterionInfo: flow.subCriterionInfo,
@@ -50,7 +50,7 @@ export default class SuggestionItem extends Component {
                     isConnected: isConnected,
                     offlineSuggestionData: item
                 }
-                Actions.evidenceViewer(newFlow);
+                Actions.evidenceViewer(props);
             }
         }
         return (
