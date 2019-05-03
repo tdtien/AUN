@@ -36,11 +36,7 @@ export default class SuggestionItem extends Component {
         }
         let pressAction = function () {
             if (type !== 'evidences') {
-                if (isConnected) {
-                    Actions.textViewer({ data: item.content, title: type });
-                } else {
-                    Actions.textViewer({ data: item.name, title: type });
-                }
+                Actions.textViewer({ data: item.content, title: type });
             } else {
                 let props = {
                     sarInfo: flow.sarInfo,
@@ -62,7 +58,7 @@ export default class SuggestionItem extends Component {
                     <View style={styles.leftItem}>
                         <Icon name={iconName} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_largeSize }} />
                         <View style={{ flex: 1, flexDirection: 'column' }}>
-                            <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={2}>{isConnected ? item.content : item.name}</Text>
+                            <Text style={{ color: 'black', paddingHorizontal: 15, fontSize: AppCommon.font_size }} numberOfLines={2}>{item.content}</Text>
                             {
                                 timeView
                             }

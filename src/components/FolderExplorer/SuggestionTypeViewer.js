@@ -24,7 +24,7 @@ import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
 import DownloadButton from './DownloadButton';
 import { setDirectoryInfo } from "../../actions/directoryAction";
-import { createDirectoryTreeWith } from '../../commons/utilitiesFunction';
+import { createDirectoryTreeWith, downloadAllEvidences } from '../../commons/utilitiesFunction';
 
 var data = [
     {
@@ -59,13 +59,13 @@ class SuggestionTypeViewer extends Component {
     detail(item, index) {
         let data, type;
         if (index === 0) {
-            data = this.props.isConnected ? this.state.data.implications : this.state.data.filter(item => item.type === "IMPLICATION")
+            data = this.state.data.implications
             type = 'implications'
         } else if (index === 1) {
-            data = this.props.isConnected ? this.state.data.questions : this.state.data.filter(item => item.type === "QUESTION")
+            data = this.state.data.questions
             type = 'questions'
         } else {
-            data = this.props.isConnected ? this.state.data.evidences : this.state.data.filter(item => item.type === "EVIDENCE")
+            data = this.state.data.evidences
             type = 'evidences'
         }
         Actions.suggestionViewer({
@@ -143,11 +143,6 @@ class SuggestionTypeViewer extends Component {
         downloadSubCriterion(this.props.token, this.props.subCriterionInfo.id)
             .then((responseJson) => {
                 // console.log('responseJson: ' + JSON.stringify(responseJson.data));
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    isShowFooter: false
-                })
                 let index = data.indexOf(this.state.choosenSuggestionTypeItem);
                 let filterData = responseJson.data;
                 if (index === 0) {
@@ -169,16 +164,32 @@ class SuggestionTypeViewer extends Component {
                     subCriterionInfo: this.props.subCriterionInfo,
                     suggestionTypeName: this.state.choosenSuggestionTypeItem.name.toLowerCase()
                 }
-                let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'subCriterion');
+                let directoryTree = createDirectoryTreeWith(downloadFlow, filterData, 'subCriterion');
                 // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                var directoryInfo = {
-                    email: this.props.email,
-                    directoryTree: directoryTree,
-                    downloadItemType: 'suggestionType',
-                    downloadFlow: downloadFlow
-                }
-                // console.log('responseJson suggestion: ' + JSON.stringify(directoryInfo));
-                this.props.setDirectoryInfo(directoryInfo);
+                let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + this.props.email;
+                downloadAllEvidences(directoryTree, pdfFolderPath)
+                    .then(response => {
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                            isShowFooter: false
+                        })
+                        var directoryInfo = {
+                            email: this.props.email,
+                            directoryTree: response,
+                            downloadItemType: 'suggestionType',
+                            downloadFlow: downloadFlow
+                        }
+                        // console.log('responseJson suggestion type: ' + JSON.stringify(directoryInfo));
+                        this.props.setDirectoryInfo(directoryInfo);
+                    }).catch(error => {
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                            isShowFooter: false
+                        })
+                        console.log('Error when download: ' + error);
+                    })
             })
             .catch((error) => {
                 this.setState({

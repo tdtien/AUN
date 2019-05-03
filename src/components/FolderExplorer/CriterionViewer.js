@@ -24,7 +24,7 @@ import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
 import DownloadButton from "./DownloadButton";
 import { setDirectoryInfo } from "../../actions/directoryAction";
-import { createDirectoryTreeWith } from '../../commons/utilitiesFunction';
+import { createDirectoryTreeWith, downloadAllEvidences } from '../../commons/utilitiesFunction';
 
 class CriterionViewer extends Component {
     constructor(props) {
@@ -114,25 +114,36 @@ class CriterionViewer extends Component {
         })
         downloadCriterion(this.props.token, this.state.choosenCriterionItem.id)
             .then((responseJson) => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    isShowFooter: false
-                })
                 let downloadFlow = {
                     sarInfo: this.props.sarInfo,
                     criterionInfo: this.state.choosenCriterionItem
                 }
                 let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'criterion');
                 // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                var directoryInfo = {
-                    email: this.props.email,
-                    directoryTree: directoryTree,
-                    downloadItemType: 'criterion',
-                    downloadFlow: downloadFlow
-                }
-                // console.log('responseJson criterion: ' + JSON.stringify(directoryInfo));
-                this.props.setDirectoryInfo(directoryInfo);
+                let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + this.props.email;
+                downloadAllEvidences(directoryTree, pdfFolderPath)
+                    .then(response => {
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                            isShowFooter: false
+                        })
+                        var directoryInfo = {
+                            email: this.props.email,
+                            directoryTree: response,
+                            downloadItemType: 'criterion',
+                            downloadFlow: downloadFlow
+                        }
+                        // console.log('responseJson criterion: ' + JSON.stringify(directoryInfo));
+                        this.props.setDirectoryInfo(directoryInfo);
+                    }).catch(error => {
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                            isShowFooter: false
+                        })
+                        console.log('Error when download: ' + error);
+                    })
             })
             .catch((error) => {
                 this.setState({

@@ -21,7 +21,7 @@ import SuggestionItem from "./SuggestionItem";
 import { connect } from 'react-redux';
 import DownloadButton from './DownloadButton';
 import { setDirectoryInfo } from "../../actions/directoryAction";
-import { createDirectoryTreeWith } from '../../commons/utilitiesFunction';
+import { createDirectoryTreeWith, downloadAllEvidences } from '../../commons/utilitiesFunction';
 import Loader from '../Loader/Loader'
 import { downloadSuggestion } from '../../api/directoryTreeApi';
 
@@ -62,11 +62,6 @@ class SuggestionViewer extends Component {
         downloadSuggestion(this.props.token, this.state.choosenSuggestionItem.id)
             .then((responseJson) => {
                 // console.log('responseJson: ' + JSON.stringify(responseJson.data));
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    isShowFooter: false
-                })
                 let downloadFlow = {
                     sarInfo: this.props.sarInfo,
                     criterionInfo: this.props.criterionInfo,
@@ -76,14 +71,31 @@ class SuggestionViewer extends Component {
                 }
                 let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'suggestion');
                 // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                var directoryInfo = {
-                    email: this.props.email,
-                    directoryTree: directoryTree,
-                    downloadItemType: 'suggestion',
-                    downloadFlow: downloadFlow
-                }
-                // console.log('responseJson suggestion: ' + JSON.stringify(directoryInfo));
-                this.props.setDirectoryInfo(directoryInfo);
+                let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + this.props.email;
+                downloadAllEvidences(directoryTree, pdfFolderPath)
+                    .then(response => {
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                            isShowFooter: false
+                        })
+                        var directoryInfo = {
+                            email: this.props.email,
+                            directoryTree: response,
+                            downloadItemType: 'suggestion',
+                            downloadFlow: downloadFlow
+                        }
+                        // console.log('responseJson suggestion: ' + JSON.stringify(directoryInfo));
+                        this.props.setDirectoryInfo(directoryInfo);
+                    }).catch(error => {
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                            isShowFooter: false
+                        })
+                        console.log('Error when download: ' + error);
+                    })
+
             })
             .catch((error) => {
                 this.setState({
@@ -174,7 +186,7 @@ class SuggestionViewer extends Component {
                     contentContainerStyle={{ flex: 1 }}
                 >
                     {
-                        (this.props.data.length === 0) ? (
+                        (this.props.data === undefined || this.props.data.length === 0) ? (
                             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
                             </View>

@@ -24,7 +24,7 @@ import { AppCommon } from '../../commons/commons';
 import FolderItem from './FolderItem'
 import { setDirectoryInfo } from "../../actions/directoryAction";
 import DownloadButton from './DownloadButton';
-import { createDirectoryTreeWith } from '../../commons/utilitiesFunction';
+import { createDirectoryTreeWith, downloadAllEvidences } from '../../commons/utilitiesFunction';
 
 class SarViewer extends Component {
     constructor(props) {
@@ -104,7 +104,7 @@ class SarViewer extends Component {
                         {
                             text: 'Yes', onPress: () => {
                                 let downloadData = (Object.keys(this.props.directoryInfo).length === 0) ? [] : this.props.directoryInfo[this.props.email];
-                                console.log('downloadData: ' + JSON.stringify(downloadData));
+                                // console.log('downloadData: ' + JSON.stringify(downloadData));
                                 this.setState({
                                     data: downloadData,
                                 })
@@ -151,23 +151,33 @@ class SarViewer extends Component {
         })
         downloadSar(this.props.token, this.state.choosenSarItem.id)
             .then((responseJson) => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    isShowFooter: false
-                })
                 let downloadFlow = {
                     sarInfo: this.state.choosenSarItem
                 }
                 let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'sar');
-                // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                var directoryInfo = {
-                    email: this.props.email,
-                    directoryTree: directoryTree,
-                    downloadItemType: 'sar',
-                    downloadFlow: downloadFlow
-                }
-                this.props.setDirectoryInfo(directoryInfo);
+                let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + this.props.email;
+                downloadAllEvidences(directoryTree, pdfFolderPath)
+                    .then(response => {
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                            isShowFooter: false
+                        })
+                        var directoryInfo = {
+                            email: this.props.email,
+                            directoryTree: response,
+                            downloadItemType: 'sar',
+                            downloadFlow: downloadFlow
+                        }
+                        this.props.setDirectoryInfo(directoryInfo);
+                    }).catch(error => {
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                            isShowFooter: false
+                        })
+                        console.log('Error when download: ' + error);
+                    })
             })
             .catch((error) => {
                 this.setState({
@@ -225,7 +235,7 @@ class SarViewer extends Component {
                         (this.state.data !== null && this.state.data.length === 0) ? (
                             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ color: '#BDBDBD' }}>There is no content.</Text>
-                                <TouchableOpacity style = {{marginTop: 20}} onPress={() => this.handleRefresh()}>
+                                <TouchableOpacity style={{ marginTop: 20 }} onPress={() => this.handleRefresh()}>
                                     <Text style={{ color: '#BDBDBD', textDecorationLine: 'underline' }}>Click here to reload</Text>
                                 </TouchableOpacity>
                             </View>

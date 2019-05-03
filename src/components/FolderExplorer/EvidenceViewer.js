@@ -21,7 +21,7 @@ import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
 import EvidenceItem from './EvidenceItem';
 import { setDirectoryInfo } from "../../actions/directoryAction";
-import { createDirectoryTreeWith, createFolder } from '../../commons/utilitiesFunction';
+import { createDirectoryTreeWith, createFolder, downloadAllEvidences } from '../../commons/utilitiesFunction';
 import DownloadButton from './DownloadButton';
 import RNFS from "react-native-fs";
 
@@ -103,38 +103,38 @@ class EvidenceViewer extends Component {
         this.setState({
             isLoading: true,
         })
+        let downloadFlow = {
+            sarInfo: this.props.sarInfo,
+            criterionInfo: this.props.criterionInfo,
+            subCriterionInfo: this.props.subCriterionInfo,
+            suggestionInfo: this.props.suggestionInfo,
+            evidenceInfo: this.state.choosenEvidenceItem
+        }
+        let directoryTree = createDirectoryTreeWith(downloadFlow, this.state.choosenEvidenceItem, 'evidence');
+        // console.log('directoryTree: ' + JSON.stringify(directoryTree));
         let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + this.props.email;
-        createFolder(pdfFolderPath)
+        downloadAllEvidences(directoryTree, pdfFolderPath)
             .then(response => {
-                let url = this.state.choosenEvidenceItem.link;
-                let filePath = pdfFolderPath + '/' + this.state.choosenEvidenceItem.name + '.pdf';
-                RNFS.downloadFile({ fromUrl: url, toFile: filePath }).promise.then(response => {
-                    console.log('Success');
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                        isShowFooter: false
-                    })
-                    let downloadFlow = {
-                        sarInfo: this.props.sarInfo,
-                        criterionInfo: this.props.criterionInfo,
-                        subCriterionInfo: this.props.subCriterionInfo,
-                        suggestionInfo: this.props.suggestionInfo,
-                        evidenceInfo: this.state.choosenEvidenceItem
-                    }
-                    let directoryTree = createDirectoryTreeWith(downloadFlow, this.state.choosenEvidenceItem, 'evidence');
-                    // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                    var directoryInfo = {
-                        email: this.props.email,
-                        directoryTree: directoryTree,
-                        downloadItemType: 'evidence',
-                        downloadFlow: downloadFlow
-                    }
-                    // console.log('responseJson suggestion: ' + JSON.stringify(directoryInfo));
-                    this.props.setDirectoryInfo(directoryInfo);
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                    isShowFooter: false
                 })
+                var directoryInfo = {
+                    email: this.props.email,
+                    directoryTree: response,
+                    downloadItemType: 'evidence',
+                    downloadFlow: downloadFlow
+                }
+                // console.log('responseJson evidence: ' + JSON.stringify(directoryInfo));
+                this.props.setDirectoryInfo(directoryInfo);
             }).catch(error => {
-                console.log('Error: ' + JSON.stringify(error));
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                    isShowFooter: false
+                })
+                console.log('Error when download: ' + error);
             })
     }
 

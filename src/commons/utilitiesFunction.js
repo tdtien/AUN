@@ -6,7 +6,7 @@ export function createFolder(mainPath) {
         RNFS.exists(mainPath).then(function (response) {
             if (!response) {
                 RNFS.mkdir(mainPath).then(function (response) {
-                    resolve(response);
+                    resolve(true);
                 }).catch(function (error) {
                     reject(error);
                 })
@@ -41,6 +41,55 @@ export async function folderToBase64(files) {
             })
     }
     return array;
+}
+
+export function downloadEvidence(url, filePath) {
+    return new Promise((resolve, reject) => {
+        RNFS.downloadFile({
+            fromUrl: url,
+            toFile: filePath
+        }).promise.then(response => {
+            resolve(true);
+        }).catch(error => {
+            console.log('Error when download evidence:' + error);
+            reject(error);
+        })
+    })
+}
+
+export function downloadAllEvidences(directoryTree, pdfFolderPath) {
+    return new Promise((resolve, reject) => {
+        let promises = [];
+        createFolder(pdfFolderPath)
+            .then(response => {
+                let criterionArray = directoryTree.criterions;
+                for (let criterion of criterionArray) {
+                    let subCriterionArray = criterion.subCriterions;
+                    for (let subCriterion of subCriterionArray) {
+                        if (!subCriterion.suggestions.hasOwnProperty('evidences')) {
+                            resolve(directoryTree);
+                        } else {
+                            let evidenceTypeArray = subCriterion.suggestions.evidences;
+                            for (let evidenceType of evidenceTypeArray) {
+                                let evidenceArray = evidenceType.evidences;
+                                for (let evidence of evidenceArray) {
+                                    let filePath = pdfFolderPath + '/' + evidence.name + '.pdf';
+                                    promises.push(downloadEvidence(evidence.link, filePath))
+                                    evidence.link = filePath;
+                                }
+                            }
+                        }
+                    }
+                }
+                Promise.all(promises).then(() => {
+                    console.log('Download completed');
+                    resolve(directoryTree);
+                })
+            }).catch(error => {
+                console.log('Error when create folder: ' + error);
+                reject(error);
+            })
+    })
 }
 
 export function deleteItem(mainPath) {
