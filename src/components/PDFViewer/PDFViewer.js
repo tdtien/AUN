@@ -62,7 +62,7 @@ class PDFViewer extends React.Component {
 
     handleUploadPdf = (fileName) => {
         if (!validateFileName(fileName)) {
-            Alert.alert('Error', 'Your password just use alphabet, numbers and underscore');
+            Alert.alert('Error', 'Your file name just use alphabet, numbers and underscore');
             return;
         }
         this.setState({

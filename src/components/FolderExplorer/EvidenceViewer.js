@@ -38,6 +38,7 @@ class EvidenceViewer extends Component {
     }
 
     componentDidMount() {
+        console.log('role: ' + this.props.role);
         this._getAll();
     }
 
@@ -158,9 +159,11 @@ class EvidenceViewer extends Component {
                     parentView={this}
                 />
             ) : (
-                <TouchableOpacity style={styles.addButton} onPress={() => Actions.merchant({ flow: this.props })}>
-                    <Icon name={AppCommon.icon("add")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                </TouchableOpacity>
+                (this.props.role !== 'REVIEWER') ? (
+                    <TouchableOpacity style={styles.addButton} onPress={() => Actions.merchant({ flow: this.props })}>
+                        <Icon name={AppCommon.icon("add")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                    </TouchableOpacity>
+                ) : null
             )
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
@@ -215,6 +218,7 @@ const mapStateToProps = state => {
     return {
         token: state.account.token,
         email: state.account.email,
+        role: state.account.role,
     };
 };
 
