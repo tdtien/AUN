@@ -33,12 +33,11 @@ class EvidenceViewer extends Component {
             refreshing: false,
             data: null,
             isShowFooter: false,
-            choosenEvidenceItem: {}
+            choosenEvidenceItem: {},
         };
     }
 
     componentDidMount() {
-        console.log('role: ' + this.props.role);
         this._getAll();
     }
 
@@ -50,11 +49,11 @@ class EvidenceViewer extends Component {
         if (this.props.isConnected) {
             getAllEvidences(this.props.token, this.props.suggestionInfo.id)
                 .then((responseJson) => {
-                    // console.log('data: ' + responseJson.data);
+                    // console.log('data evidences: ' + JSON.stringify(responseJson.data));
                     this.setState({
                         isLoading: false,
                         refreshing: false,
-                        data: responseJson.data
+                        data: responseJson.data,
                     })
                 })
                 .catch((error) => {
@@ -68,7 +67,7 @@ class EvidenceViewer extends Component {
             this.setState({
                 isLoading: false,
                 refreshing: false,
-                data: this.props.offlineSuggestionData.evidences
+                data: this.props.offlineSuggestionData.evidences,
             })
         }
     }
@@ -89,6 +88,7 @@ class EvidenceViewer extends Component {
             <EvidenceItem
                 item={item}
                 parentView={this}
+                evidenceArray={this.state.data}
             />
         )
     }

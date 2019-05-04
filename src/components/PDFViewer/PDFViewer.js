@@ -1,5 +1,14 @@
 import React from 'react';
-import { StyleSheet, Dimensions, ActivityIndicator, TouchableOpacity, Alert, View, Modal } from 'react-native';
+import {
+    StyleSheet,
+    Dimensions,
+    ActivityIndicator,
+    TouchableOpacity,
+    Alert,
+    View,
+    Modal,
+    Text,
+} from 'react-native';
 import {
     Header,
     Body,
@@ -22,10 +31,37 @@ import { deleteItem, popToSceneWithUpdate } from '../../commons/utilitiesFunctio
 class PDFViewer extends React.Component {
     constructor(props) {
         super(props);
+        console.log('evidenceArray: ' + JSON.stringify(this.props.evidenceArray));
+        console.log('currentEvidence: ' + JSON.stringify(this.props.currentEvidence));
         this.state = {
             isLoading: false,
-            isDialogVisible: false
+            isDialogVisible: false,
+            isShowPdfView: false,
+            screenWidth: Dimensions.get('window').width,
+            currentEvidence: this.props.currentEvidence,
+            fileName: this.props.fileName,
         }
+    }
+
+    componentDidMount() {
+        Dimensions.addEventListener(
+            'change',
+            this._handleUpdateScreenSize
+        );
+    }
+
+    componentWillUnmount() {
+        Dimensions.removeEventListener(
+            'change',
+            this._handleUpdateScreenSize
+        );
+    }
+
+    _handleUpdateScreenSize = (size) => {
+        const { width, height } = size.window;
+        this.setState({
+            screenWidth: width,
+        });
     }
 
     handleDeleteImageFolder = (folderPath) => {
@@ -104,10 +140,44 @@ class PDFViewer extends React.Component {
             });
     }
 
+    handleViewEvidences = (type) => {
+        let length = this.props.evidenceArray.length;
+        let currentIndex = this.props.evidenceArray.findIndex(item => item.id === this.state.currentEvidence.id);
+        let newIndex = (type === 'next') ? (currentIndex + 1) : (currentIndex - 1);
+        if (newIndex === length || newIndex < 0) {
+            return;
+        }
+        this.setState({
+            currentEvidence: this.props.evidenceArray[newIndex],
+            fileName: this.props.evidenceArray[newIndex].name
+        });
+    }
+
     render() {
         let fileName = this.props.fileName;
         fileName = fileName.substring(0, fileName.length - 4);
-        let uri = (this.props.base64 !== null) ? `data:application/pdf;base64,${this.props.base64}` : this.props.link;
+        let uri = (this.props.base64 !== null) ? `data:application/pdf;base64,${this.props.base64}` : this.state.currentEvidence.link;
+        let pdfArrayView = (this.props.evidenceArray !== undefined && this.props.evidenceArray.length > 1) ? (
+            <View
+                style={{
+                    width: this.state.screenWidth,
+                    height: 40,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    backgroundColor: '#cccccc',
+                    paddingHorizontal: 20,
+                    opacity: 0.5,
+                }}
+            >
+                <TouchableOpacity onPress={() => this.handleViewEvidences('back')}>
+                    <Text style={{ fontSize: 17, color: 'black' }}>Back</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => this.handleViewEvidences('next')}>
+                    <Text style={{ fontSize: 17, color: 'black' }}>Next</Text>
+                </TouchableOpacity>
+            </View >
+        ) : null
         return (
             <Container>
                 <Header
@@ -120,7 +190,7 @@ class PDFViewer extends React.Component {
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: "white" }}>{this.props.fileName}</Title>
+                        <Title style={{ alignSelf: "center", color: "white" }}>{this.state.fileName}</Title>
                     </Body>
                     {
                         (this.props.flow !== null) ? (
@@ -133,7 +203,11 @@ class PDFViewer extends React.Component {
                                 </TouchableOpacity>
                             )
                     }
+
                 </Header>
+                {
+                    (this.state.isShowPdfView) ? pdfArrayView : null
+                }
                 <View style={styles.container}>
                     <Pdf
                         onLoadProgress={() => {
@@ -146,9 +220,17 @@ class PDFViewer extends React.Component {
                         onError={(error) => {
                             console.log(error);
                         }}
-                        style={styles.pdf}
+                        style={{
+                            flex: 1,
+                            width: this.state.screenWidth
+                        }}
+                        onPageSingleTap={() => {
+                            this.setState({
+                                isShowPdfView: !this.state.isShowPdfView
+                            })
+                        }}
                         fitPolicy={0}
-                        enablePaging
+                    // enablePaging
                     />
                 </View>
                 <DialogInput isDialogVisible={this.state.isDialogVisible}
@@ -179,10 +261,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         overflow: 'hidden',
         backgroundColor: '#F7F5F5'
-    },
-    pdf: {
-        flex: 1,
-        width: Dimensions.get('window').width,
     },
     headerButton: {
         alignItems: 'center',

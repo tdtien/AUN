@@ -22,7 +22,7 @@ export default class EvidenceItem extends Component {
     }
 
     handleOpenPdfFile = (item) => {
-        Actions.pdfViewer({ fileName: item.name, base64: null, link: item.link, flow: null });
+        Actions.pdfViewer({ fileName: item.name, base64: null, currentEvidence: item, flow: null, evidenceArray: this.props.evidenceArray });
     }
 
     render() {
