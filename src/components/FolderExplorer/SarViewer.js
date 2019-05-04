@@ -25,17 +25,27 @@ import FolderItem from './FolderItem'
 import { setDirectoryInfo } from "../../actions/directoryAction";
 import DownloadButton from './DownloadButton';
 import { createDirectoryTreeWith, downloadAllEvidences } from '../../commons/utilitiesFunction';
+import {
+    MenuContext,
+    Menu,
+    MenuOptions,
+    MenuOption,
+    MenuTrigger,
+} from 'react-native-popup-menu';
+import NetworkMenuOption from './NetworkMenuOption';
 
 class SarViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: true,
+            isLoading: false,
             refreshing: false,
             data: null,
             isShowFooter: false,
             choosenSarItem: {},
-            isConnected: true
+            // isConnected: true
+            isNetworkConnected: true,
+            isUserChooseConnect: true
         };
     }
 
@@ -43,13 +53,20 @@ class SarViewer extends Component {
         NetInfo.isConnected.addEventListener(
             'connectionChange',
             this._handleConnectivityChange
+
         );
-        this._getAll();
+
+        NetInfo.isConnected.fetch().done((isConnected) => {
+            this.setState({
+                isNetworkConnected: isConnected,
+            }, () => this._getAll());
+        });
     }
 
-
     _handleConnectivityChange = (isConnected) => {
-        this.setState({ isConnected: isConnected })
+        this.setState({
+            isNetworkConnected: isConnected
+        })
     };
 
     componentWillUnmount() {
@@ -60,61 +77,87 @@ class SarViewer extends Component {
     }
 
     detail(item) {
-        let props = {
-            sarInfo: item,
-            isConnected: this.state.isConnected,
-            offlineSarInfo: this.state.data
+        console.log('this.state.isUserChooseConnect: ' + this.state.isUserChooseConnect);
+        if (this.state.isNetworkConnected == false && this.state.isUserChooseConnect == true) {
+            Alert.alert('Nofication', 'Network request fail. Do you want to view offline ?',
+                [
+                    {
+                        text: 'No',
+                        style: 'cancel',
+                        onPress: () => null
+                    },
+                    {
+                        text: 'Yes', onPress: () => {
+                            let downloadData = (Object.keys(this.props.directoryInfo).length === 0) ? [] : this.props.directoryInfo[this.props.email];
+                            // console.log('downloadData: ' + JSON.stringify(downloadData));
+                            this.setState({
+                                data: downloadData,
+                            })
+                        }
+                    }
+                ]
+            );
+        } else {
+            let props = {
+                sarInfo: item,
+                isConnected: this.state.isNetworkConnected && this.state.isUserChooseConnect,
+                offlineSarInfo: this.state.data
+            }
+            Actions.criterionViewer(props);
         }
-        Actions.criterionViewer(props);
     }
 
     _getAll = () => {
-        NetInfo.isConnected.fetch().done((isConnected) => {
-            this.setState({ isConnected: isConnected })
-            if (isConnected === true) {
-                getAllSars(this.props.token)
-                    .then((responseJson) => {
-                        // console.log('responseJson sar: ' + JSON.stringify(responseJson.data));
-                        this.setState({
-                            isLoading: false,
-                            refreshing: false,
-                            data: responseJson.data
-                        })
+        let isConnected = this.state.isNetworkConnected && this.state.isUserChooseConnect;
+        if (isConnected === true) {
+            getAllSars(this.props.token)
+                .then((responseJson) => {
+                    // console.log('responseJson sar: ' + JSON.stringify(responseJson.data));
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        data: responseJson.data
                     })
-                    .catch((error) => {
-                        this.setState({
-                            isLoading: false,
-                            refreshing: false,
-                        })
-                        console.error('Error: ' + error);
-                    });
-            }
-            else {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
                 })
-                Alert.alert('Nofication', 'Network request fail. Do you want to view offline ?',
-                    [
-                        {
-                            text: 'No',
-                            style: 'cancel',
-                            onPress: () => null,
-                        },
-                        {
-                            text: 'Yes', onPress: () => {
-                                let downloadData = (Object.keys(this.props.directoryInfo).length === 0) ? [] : this.props.directoryInfo[this.props.email];
-                                // console.log('downloadData: ' + JSON.stringify(downloadData));
-                                this.setState({
-                                    data: downloadData,
-                                })
-                            }
+                .catch((error) => {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                    console.error('Error: ' + error);
+                });
+        }
+        else {
+            this.setState({
+                isLoading: false,
+                refreshing: false,
+            })
+            let notification = (this.state.isNetworkConnected) ? 'Do you want to view offline ?' : 'Network request fail. Do you want to view offline ?';
+            Alert.alert('Nofication', notification,
+                [
+                    {
+                        text: 'No',
+                        style: 'cancel',
+                        onPress: () => {
+                            this.setState({
+                                isUserChooseConnect: true
+                            }, () => { (this.state.isNetworkConnected) ? this._getAll() : null })
                         }
-                    ]
-                );
-
-            }
-        });
+                    },
+                    {
+                        text: 'Yes', onPress: () => {
+                            let downloadData = (Object.keys(this.props.directoryInfo).length === 0) ? [] : this.props.directoryInfo[this.props.email];
+                            // console.log('downloadData: ' + JSON.stringify(downloadData));
+                            this.setState({
+                                data: downloadData,
+                                isUserChooseConnect: false
+                            })
+                        }
+                    }
+                ]
+            );
+            console.log()
+        }
     }
 
     handleRefresh = () => {
@@ -188,6 +231,16 @@ class SarViewer extends Component {
             });
     }
 
+    handleNetworkConnection = (isConnected) => {
+        console.log('user choose: ' + isConnected);
+        if (isConnected !== this.state.isUserChooseConnect) {
+            this.setState({
+                isUserChooseConnect: isConnected,
+                isLoading: true
+            }, () => this._getAll())
+        }
+    }
+
     render() {
         let leftHeaderButton = (this.state.isShowFooter) ? (
             <TouchableOpacity style={styles.menuButton} onPress={() => {
@@ -223,9 +276,9 @@ class SarViewer extends Component {
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: 'white' }}>All Sars</Title>
                     </Body>
-                    <TouchableOpacity style={styles.menuButton} onPress={() => null} >
-                        <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    </TouchableOpacity>
+                    <NetworkMenuOption
+                        parentView={this}
+                    />
                 </Header>
                 <Content
                     style={{ flex: 1 }}
@@ -257,7 +310,7 @@ class SarViewer extends Component {
                     footer
                 }
                 <Loader loading={this.state.isLoading} />
-            </Container>
+            </Container >
         )
     }
 }
@@ -280,6 +333,13 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, mapDispatchToProps)(SarViewer);
 
+const triggerStyles = {
+    triggerWrapper: {
+        padding: 10,
+    },
+    TriggerTouchableComponent: TouchableOpacity,
+};
+
 const styles = StyleSheet.create({
     menuButton: {
         alignItems: 'center',
@@ -287,4 +347,20 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 10
     },
+    headerMoreButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    popupItem: {
+        flex: 1,
+        flexDirection: 'row',
+        marginVertical: 10,
+        marginHorizontal: 20,
+        alignItems: 'center',
+    },
+    popupItemText: {
+        paddingLeft: 25,
+        fontSize: 17,
+        color: '#2F4F4F'
+    }
 });
