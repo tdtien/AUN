@@ -128,7 +128,15 @@ export function popToSceneWithUpdate(scene, props) {
     Actions.popTo(scene);
 }
 
-export function createDirectoryTreeWith(flow: Object, data: Object, type: string) {
+export function isEmptyJson(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+
+export function createDirectoryTreeWith(flow, data, type) {
     let directoryTree = {};
     switch (type) {
         case 'sar':

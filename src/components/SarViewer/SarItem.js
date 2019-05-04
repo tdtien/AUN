@@ -10,7 +10,7 @@ export default class SarItem extends Component {
     handlePress = () => {
         const { item, type } = this.props;
         if (type !== 'FILE') {
-            Actions.textViewer({ data: item.content, title: type.toLowerCase().charAt(0).toUpperCase() })
+            Actions.textViewer({ data: item.content, title: type.toLowerCase().charAt(0).toUpperCase() + type.toLowerCase().slice(1) })
         } else {
             Actions.pdfViewer({ fileName: item.name, base64: null, link: item.link, flow: null })
         }

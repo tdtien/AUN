@@ -12,11 +12,11 @@ import {
 import { connect } from 'react-redux';
 import { AppCommon } from "../../commons/commons";
 import { Header, Container, Content, Icon, Body, Title, Text } from "native-base";
-import { getAllCriterions, getAllSubCriterions, getAllSuggestions, getAllEvidences } from "../../api/directoryTreeApi";
+import { getAllCriterions, getAllSubCriterions, getAllSuggestions, getAllEvidences, getAllSars } from "../../api/directoryTreeApi";
 import { Actions } from "react-native-router-flux";
-import SuggestionItem from "../FolderExplorer/SuggestionItem";
 import SarFolder from "./SarFolder";
 import SarItem from "./SarItem";
+import { isEmptyJson } from "../../commons/utilitiesFunction";
 
 const window = Dimensions.get('window');
 class SarExplorer extends Component {
@@ -28,6 +28,7 @@ class SarExplorer extends Component {
             isLoading: true,
             refreshing: false,
             scene: [
+                { key: 'sars', title: 'All Sars' },
                 { key: 'criterions', title: 'All Criterions' },
                 { key: 'subCriterions', title: 'All Subcriterions' },
                 { key: 'suggestionTypes', title: 'All Suggestion Types' },
@@ -38,7 +39,7 @@ class SarExplorer extends Component {
             data: [],
             dataSuggestions: {},
             isShowFooter: false,
-            currentItem: this.props.sarInfo,
+            currentItem: {},
             previousItem: [],
         }
     }
@@ -48,7 +49,7 @@ class SarExplorer extends Component {
             'connectionChange',
             this.handleConnectivityChange
         );
-        this.makeRemoteRequest(this.state.currentItem.id);
+        this.makeRemoteRequest();
     }
 
     handleConnectivityChange = (isConnected) => {
@@ -62,10 +63,26 @@ class SarExplorer extends Component {
         );
     }
 
-    makeRemoteRequest = (id) => {
+    makeRemoteRequest = (id = 0) => {
         const { scene, currentIdx, dataSuggestions } = this.state;
         const { token } = this.props;
-        if (scene[currentIdx].key === 'criterions') {
+        if (scene[currentIdx].key === 'sars') {
+            getAllSars(token)
+                .then((responseJson) => {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        data: responseJson.data
+                    })
+                })
+                .catch((error) => {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                    console.error('Error: ' + error);
+                });
+        } else if (scene[currentIdx].key === 'criterions') {
             getAllCriterions(token, id)
                 .then((responseJson) => {
                     this.setState({
@@ -154,22 +171,33 @@ class SarExplorer extends Component {
     };
 
     handlePop = () => {
-        if (this.state.currentIdx > 0) {
-            this.state.currentIdx--;
+        if (--this.state.currentIdx > 0) {
             let item = this.state.previousItem.pop();
             this.setState({
                 isLoading: true,
                 currentItem: item
             }, () => this.makeRemoteRequest(item.id));
         } else {
-            Actions.pop();
+            this.setState({
+                isLoading: true,
+                currentItem: {},
+                previousItem: [],
+                currentIdx: 0
+            }, () => this.makeRemoteRequest())
         }
     }
 
-    handlePopTo = (index) => {
-        if (index >= 0 && index < this.state.currentIdx) {
+    handlePopTo = (index, isRoot = false) => {
+        if (isRoot) {
+            this.setState({
+                isLoading: true,
+                currentItem: {},
+                previousItem: [],
+                currentIdx: 0
+            }, () => this.makeRemoteRequest())
+        } else if (index >= 0 && index < this.state.currentIdx) {
             let item = this.state.previousItem[index];
-            this.state.currentIdx = index;
+            this.state.currentIdx = index + 1;
             this.state.previousItem.splice(index, this.state.previousItem.length - index)
             this.setState({
                 isLoading: true,
@@ -179,8 +207,10 @@ class SarExplorer extends Component {
     }
 
     handlePush = (item) => {
+        if (this.state.currentIdx !== 0) {
+            this.state.previousItem.push(this.state.currentItem);
+        }
         this.state.currentIdx++;
-        this.state.previousItem.push(this.state.currentItem);
         this.setState({
             isLoading: true,
             currentItem: item
@@ -206,7 +236,7 @@ class SarExplorer extends Component {
     }
 
     render() {
-        const { currentItem, scene, currentIdx } = this.state;
+        const { currentItem, scene, currentIdx, previousItem } = this.state;
         let currentScene = scene[currentIdx]
         let title = currentScene.key === 'suggestions' ? currentScene.title + currentItem.name : currentScene.title
         return (
@@ -216,14 +246,15 @@ class SarExplorer extends Component {
                     iosBarStyle="light-content"
                     style={{ backgroundColor: AppCommon.colors }}
                 >
-                    <TouchableOpacity style={styles.menuButton}
-                        onPress={() => this.state.isShowFooter ?
-                            this.setState({ isShowFooter: false })
-                            :
-                            this.handlePop()}
-                    >
-                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    </TouchableOpacity>
+                    {currentIdx !== 0 ? (
+                        <TouchableOpacity style={styles.menuButton} onPress={() => this.handlePop()}>
+                            <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                        </TouchableOpacity>
+                    ) : (
+                            <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()}>
+                                <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            </TouchableOpacity>
+                        )}
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: 'white' }}>{title}</Title>
                     </Body>
@@ -242,10 +273,10 @@ class SarExplorer extends Component {
                         }
                     }}
                 >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.popTo('_sarViewer')}>
+                    <TouchableOpacity style={styles.menuButton} onPress={() => this.handlePopTo(0, true)}>
                         <Icon name={AppCommon.icon("tv")} type="Ionicons" style={{ color: 'gray', fontSize: 20 }} />
                     </TouchableOpacity>
-                    {this.state.previousItem.map((item, index) => {
+                    {previousItem.length == 0 ? <View /> : previousItem.map((item, index) => {
                         return (
                             <TouchableOpacity
                                 key={item.id + index}
@@ -257,12 +288,13 @@ class SarExplorer extends Component {
                             </TouchableOpacity>
                         )
                     })}
-                    <TouchableOpacity style={styles.breadCrumbItem} disabled>
-                        <Icon name="right" type="AntDesign" style={styles.crumbArrow} />
-                        <Text style={styles.activeCrumbItem}>
-                            {currentItem.hasOwnProperty('type') && currentItem.type === 'EVIDENCE' ? currentItem.content : currentItem.name}
-                        </Text>
-                    </TouchableOpacity>
+                    {isEmptyJson(currentItem) ? <View /> :
+                        <TouchableOpacity style={styles.breadCrumbItem} disabled>
+                            <Icon name="right" type="AntDesign" style={styles.crumbArrow} />
+                            <Text style={styles.activeCrumbItem}>
+                                {currentItem.hasOwnProperty('type') && currentItem.type === 'EVIDENCE' ? currentItem.content : currentItem.name}
+                            </Text>
+                        </TouchableOpacity>}
                 </ScrollView>
                 <Content
                     style={{ flex: 1 }}
