@@ -107,6 +107,11 @@ class App extends Component {
                 key="sarViewer"
                 component={SarViewer}
               />
+              <Scene
+                hideNavBar
+                key="sarExplorer"
+                component={SarExplorer}
+              />
             </Drawer>
             <Scene
               hideNavBar
@@ -144,10 +149,6 @@ class App extends Component {
             <Scene
               key="evidenceViewer"
               component={EvidenceViewer}
-            />
-            <Scene
-              key="sarExplorer"
-              component={SarExplorer}
             />
           </Stack>
         </Router>
