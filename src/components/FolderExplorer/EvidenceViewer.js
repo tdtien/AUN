@@ -273,18 +273,18 @@ class EvidenceViewer extends Component {
                 }}>
                     <View style={{
                         backgroundColor: 'white',
-                        padding: 20,
+                        padding: 25,
                         display: 'flex',
                     }}>
                         <Text style={{ paddingBottom: 15, fontSize: 20, fontWeight: 'bold', color: 'black' }}>Please choose how to upload</Text>
                         {pickerOptions.map((item, index) => {
                             return (
                                 <TouchableOpacity key={index} onPress={() => this.handlePickerValue(item)} style={{ paddingVertical: 12 }}>
-                                    <Text style={{ fontSize: 17 }}>{item.title}</Text>
+                                    <Text style={{ fontSize: 18, color: '#1a1a1a' }}>{item.title}</Text>
                                 </TouchableOpacity>
                             )
                         })}
-                        <TouchableOpacity onPress={() => this.handleUploadByLink()} style={{ alignItems: 'flex-end' }}>
+                        <TouchableOpacity onPress={() => this.togglePicker()} style={{ alignItems: 'flex-end', marginTop: 10 }}>
                             <Text style={{ fontSize: 15, color: AppCommon.colors }}>CANCEL</Text>
                         </TouchableOpacity>
                     </View>
