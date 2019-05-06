@@ -77,6 +77,7 @@ class SarViewer extends Component {
     }
 
     detail(item) {
+        console.log('this.state.isNetworkConnected: ' + this.state.isNetworkConnected);
         console.log('this.state.isUserChooseConnect: ' + this.state.isUserChooseConnect);
         if (this.state.isNetworkConnected == false && this.state.isUserChooseConnect == true) {
             Alert.alert('Nofication', 'Network request fail. Do you want to view offline ?',
@@ -92,6 +93,7 @@ class SarViewer extends Component {
                             // console.log('downloadData: ' + JSON.stringify(downloadData));
                             this.setState({
                                 data: downloadData,
+                                isUserChooseConnect: false
                             })
                         }
                     }
@@ -108,6 +110,9 @@ class SarViewer extends Component {
     }
 
     _getAll = () => {
+        this.setState({
+            isLoading: true,
+        })
         let isConnected = this.state.isNetworkConnected && this.state.isUserChooseConnect;
         if (isConnected === true) {
             getAllSars(this.props.token)
@@ -132,7 +137,7 @@ class SarViewer extends Component {
                 isLoading: false,
                 refreshing: false,
             })
-            let notification = (this.state.isNetworkConnected) ? 'Do you want to view offline ?' : 'Network request fail. Do you want to view offline ?';
+            let notification = (this.state.isNetworkConnected) ? 'The network is connected. Do you want to view offline ?' : 'Network request fail. Do you want to view offline ?';
             Alert.alert('Nofication', notification,
                 [
                     {
@@ -236,7 +241,6 @@ class SarViewer extends Component {
         if (isConnected !== this.state.isUserChooseConnect) {
             this.setState({
                 isUserChooseConnect: isConnected,
-                isLoading: true
             }, () => this._getAll())
         }
     }
