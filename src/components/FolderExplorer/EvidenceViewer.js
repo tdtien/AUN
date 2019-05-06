@@ -3,8 +3,11 @@ import {
     Text,
     View,
     TouchableOpacity,
+    TouchableHighlight,
     StyleSheet,
-    FlatList
+    FlatList,
+    Modal,
+    Alert
 } from 'react-native';
 import {
     Content,
@@ -13,6 +16,9 @@ import {
     Header,
     Body,
     Title,
+    Form,
+    InputGroup,
+    Input,
 } from 'native-base';
 import { getAllEvidences } from '../../api/directoryTreeApi';
 import { connect } from 'react-redux';
@@ -23,7 +29,23 @@ import EvidenceItem from './EvidenceItem';
 import { setDirectoryInfo } from "../../actions/directoryAction";
 import { createDirectoryTreeWith, createFolder, downloadAllEvidences } from '../../commons/utilitiesFunction';
 import DownloadButton from './DownloadButton';
-import RNFS from "react-native-fs";
+import DialogInput from "react-native-dialog-input";
+import { updatePdf } from '../../api/accountApi';
+
+const pickerOptions = [
+    {
+        key: 'images',
+        title: 'Upload from images in device...',
+    },
+    {
+        key: 'link',
+        title: 'Upload from link...'
+    },
+    {
+        key: 'evidence',
+        title: 'Upload from evidence in device...'
+    }
+]
 
 class EvidenceViewer extends Component {
     constructor(props) {
@@ -34,6 +56,10 @@ class EvidenceViewer extends Component {
             data: null,
             isShowFooter: false,
             choosenEvidenceItem: {},
+            isShowPicker: false,
+            isShowDialog: false,
+            linkUpload: '',
+            fileNameUpload: ''
         };
     }
 
@@ -139,6 +165,74 @@ class EvidenceViewer extends Component {
             })
     }
 
+    togglePicker = () => {
+        this.setState({
+            isShowPicker: !this.state.isShowPicker
+        })
+    }
+
+    toggleDialog = () => {
+        this.setState({
+            isShowDialog: !this.state.isShowDialog
+        })
+    }
+
+    handlePickerValue = (item) => {
+        this.setState({
+            isShowPicker: false
+        })
+        if (item.key === 'images') {
+            Actions.merchant({ flow: this.props })
+        } else if (item.key === 'link') {
+            this.setState({
+                isShowDialog: true
+            })
+        }
+    }
+
+    handleUploadByLink = () => {
+        this.setState({
+            isShowDialog: false,
+            isLoading: true
+        })
+        var data = {
+            type: 'LINK',
+            link: this.state.linkUpload,
+            sarId: this.props.sarInfo.id,
+            criterionId: this.props.criterionInfo.id,
+            subCriterionId: this.props.subCriterionInfo.id,
+            suggestionId: this.props.suggestionInfo.id,
+            name: this.state.fileNameUpload,
+        }
+        updatePdf(this.props.token, data)
+            .then((responseJson) => {
+                this.setState({
+                    isLoading: false
+                })
+                console.log('responseJson: ' + JSON.stringify(responseJson));
+                if (responseJson.success === false) {
+                    Alert.alert('Error', 'Invalid data. Please check your data input.');
+                } else {
+                    if (responseJson.msg === 'Upload file successful') {
+                        Alert.alert(
+                            'Success',
+                            responseJson.msg,
+                            [
+                                { text: 'OK', onPress: () => this.handleRefresh() }
+                            ]
+                        );
+                    }
+                }
+            })
+            .catch((error) => {
+                this.setState({
+                    isLoading: false
+                })
+                console.log('Error2: ' + error);
+                Alert.alert('Error', error);
+            });
+    }
+
     render() {
         let leftHeaderButton = (this.state.isShowFooter) ? (
             <TouchableOpacity style={styles.menuButton} onPress={() => {
@@ -160,11 +254,99 @@ class EvidenceViewer extends Component {
                 />
             ) : (
                 (this.props.role !== 'REVIEWER') ? (
-                    <TouchableOpacity style={styles.addButton} onPress={() => Actions.merchant({ flow: this.props })}>
+                    <TouchableOpacity style={styles.addButton} onPress={() => this.togglePicker()}>
                         <Icon name={AppCommon.icon("add")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                 ) : null
             )
+        let uploadPicker = (this.state.isShowPicker) ? (
+            <Modal
+                visible={true}
+                transparent={true}
+            >
+                <View style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                    justifyContent: 'space-around',
+                    backgroundColor: '#00000040'
+                }}>
+                    <View style={{
+                        backgroundColor: 'white',
+                        padding: 20,
+                        display: 'flex',
+                    }}>
+                        <Text style={{ paddingBottom: 15, fontSize: 20, fontWeight: 'bold', color: 'black' }}>Please choose how to upload</Text>
+                        {pickerOptions.map((item, index) => {
+                            return (
+                                <TouchableOpacity key={index} onPress={() => this.handlePickerValue(item)} style={{ paddingVertical: 12 }}>
+                                    <Text style={{ fontSize: 17 }}>{item.title}</Text>
+                                </TouchableOpacity>
+                            )
+                        })}
+                        <TouchableOpacity onPress={() => this.handleUploadByLink()} style={{ alignItems: 'flex-end' }}>
+                            <Text style={{ fontSize: 15, color: AppCommon.colors }}>CANCEL</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                </View>
+            </Modal>
+        ) : null
+        let dialogInput = (this.state.isShowDialog) ? (
+            <View>
+                <Modal
+                    visible={true}
+                    transparent={true}
+                >
+                    <View style={{
+                        flex: 1,
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        justifyContent: 'space-around',
+                        backgroundColor: '#00000040'
+                    }}>
+                        <View style={{
+                            backgroundColor: 'white',
+                            padding: 20,
+                            // display: 'flex',
+                        }}>
+                            <Text style={{ paddingBottom: 15, fontSize: 20, fontWeight: 'bold', color: 'black' }}>Component information to upload</Text>
+                            <Form>
+                                <InputGroup style={styles.dataInput}>
+                                    <Icon name={AppCommon.icon("link")} style={{ color: 'black', fontSize: AppCommon.icon_size }} />
+                                    <Input
+                                        style={styles.textInput}
+                                        placeholder="Set link..."
+                                        autoCapitalize="none"
+                                        onChangeText={linkUpload => this.setState({ linkUpload: linkUpload })}
+                                    />
+                                </InputGroup>
+                                <InputGroup style={styles.dataInput}>
+                                    <Icon name="filetext1" type="AntDesign" style={{ color: 'black', fontSize: AppCommon.icon_size }} />
+                                    <Input
+                                        style={styles.textInput}
+                                        placeholder="Set file name..."
+                                        onChangeText={fileNameUpload => this.setState({ fileNameUpload: fileNameUpload })}
+                                    />
+                                </InputGroup>
+                            </Form>
+                            <View style={{
+                                flexDirection: 'row',
+                                justifyContent: 'flex-end',
+                                marginTop: 10
+                            }}>
+                                <TouchableOpacity onPress={() => this.toggleDialog()} style={{ marginTop: 10 }}>
+                                    <Text style={{ fontSize: 15, color: AppCommon.colors }}>CANCEL</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => this.handleUploadByLink()} style={{ marginTop: 10, marginLeft: 20 }}>
+                                    <Text style={{ fontSize: 15, color: AppCommon.colors }}>UPLOAD</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+            </View>
+        ) : null
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
@@ -208,6 +390,12 @@ class EvidenceViewer extends Component {
                 {
                     footer
                 }
+                {
+                    uploadPicker
+                }
+                {
+                    dialogInput
+                }
                 <Loader loading={this.state.isLoading} />
             </Container>
         )
@@ -249,5 +437,13 @@ const styles = StyleSheet.create({
         backgroundColor: AppCommon.colors,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    dataInput: {
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    textInput: {
+        marginLeft: 10,
+        marginTop: 5
     }
 });

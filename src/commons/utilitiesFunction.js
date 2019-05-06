@@ -124,7 +124,7 @@ export function popWithUpdate(props = {}) {
 }
 
 export function popToSceneWithUpdate(scene, props) {
-    setTimeout(() => { Actions.refresh(props) }, 500);
+    setTimeout(() => { Actions.refresh(props) }, 300);
     Actions.popTo(scene);
 }
 

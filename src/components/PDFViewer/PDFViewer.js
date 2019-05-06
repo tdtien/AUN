@@ -106,6 +106,7 @@ class PDFViewer extends React.Component {
             isLoading: true
         })
         var data = {
+            type: 'FILE',
             file: this.props.base64,
             sarId: this.props.flow.sarInfo.id,
             criterionId: this.props.flow.criterionInfo.id,
@@ -199,7 +200,7 @@ class PDFViewer extends React.Component {
                             </TouchableOpacity>
                         ) : (
                                 <TouchableOpacity style={styles.headerButton} onPress={() => null} >
-                                    <Icon name={AppCommon.icon("cloud-download")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                                    <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
                             )
                     }

@@ -38,7 +38,7 @@ class SarViewer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: false,
+            isLoading: true,
             refreshing: false,
             data: null,
             isShowFooter: false,
@@ -110,9 +110,6 @@ class SarViewer extends Component {
     }
 
     _getAll = () => {
-        this.setState({
-            isLoading: true,
-        })
         let isConnected = this.state.isNetworkConnected && this.state.isUserChooseConnect;
         if (isConnected === true) {
             getAllSars(this.props.token)
@@ -145,7 +142,8 @@ class SarViewer extends Component {
                         style: 'cancel',
                         onPress: () => {
                             this.setState({
-                                isUserChooseConnect: true
+                                isUserChooseConnect: true,
+                                isLoading: true,
                             }, () => { (this.state.isNetworkConnected) ? this._getAll() : null })
                         }
                     },
@@ -241,6 +239,7 @@ class SarViewer extends Component {
         if (isConnected !== this.state.isUserChooseConnect) {
             this.setState({
                 isUserChooseConnect: isConnected,
+                isLoading: true,
             }, () => this._getAll())
         }
     }
