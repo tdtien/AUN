@@ -18,25 +18,27 @@ import {
     Footer,
     Container,
     Content,
-    Button
+    CheckBox
 } from "native-base";
 import { Actions } from "react-native-router-flux";
 import { AppCommon } from "../../commons/commons";
 import RNFS from "react-native-fs";
 import { connect } from 'react-redux'
-import { folderToBase64, popWithUpdate, deleteItem, deleteMultipleItems, popToSceneWithUpdate } from "../../commons/utilitiesFunction";
+import {
+    popWithUpdate,
+    deleteItem,
+    deleteMultipleItems,
+    popToSceneWithUpdate
+} from "../../commons/utilitiesFunction";
 import Loader from '../Loader/Loader'
 import CameraButton from "./CameraButton";
 import {
-    MenuContext,
     Menu,
     MenuOptions,
     MenuOption,
     MenuTrigger,
 } from 'react-native-popup-menu';
-import { CheckBox } from 'react-native-elements'
 import { FlatGrid } from "react-native-super-grid";
-import { convert2Pdf } from "../../api/accountApi";
 
 const screenWidth = Dimensions.get('window').width;
 const columns = 2;
@@ -250,10 +252,10 @@ class MerchantDetail extends Component {
                     source={{ width: imageWidth, height: imageHeight, uri: `file://${item.path}?ver=${this.state.version}`, cache: "reload" }}
                 >
                     <CheckBox
-                        containerStyle={{ margin: 0, padding: 0, marginTop: 10 }}
+                        style={{ margin: 0, padding: 0, marginTop: 10 }}
                         checked={checked}
                         onPress={() => this.handleCheckBoxPressed(item)}
-                        checkedColor={'white'}
+                        color="green"
                     />
                 </ImageBackground>
             </TouchableOpacity>
@@ -263,7 +265,7 @@ class MerchantDetail extends Component {
                         style={{ width: imageWidth, height: imageHeight, flex: 1, justifyContent: "flex-end" }}
                         source={{ width: imageWidth, height: imageHeight, uri: `file://${item.path}?ver=${this.state.version}`, cache: "reload" }}
                     >
-                        <View style={{ backgroundColor: 'rgba(204, 204, 204, 0.5)'}}>
+                        <View style={{ backgroundColor: 'rgba(204, 204, 204, 0.5)' }}>
                             <Text style={{ color: 'white', padding: 5 }}>{index + 1}</Text>
                         </View>
                     </ImageBackground>
