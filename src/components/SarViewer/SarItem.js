@@ -8,11 +8,11 @@ import { AppCommon } from '../../commons/commons';
 export default class SarItem extends Component {
 
     handlePress = () => {
-        const { item, type } = this.props;
-        if (type !== 'FILE') {
+        const { item, type, data } = this.props;
+        if (type !== 'FILE' && type !== 'LINK') {
             Actions.textViewer({ data: item.content, title: type.toLowerCase().charAt(0).toUpperCase() + type.toLowerCase().slice(1) })
         } else {
-            Actions.pdfViewer({ fileName: item.name, base64: null, link: item.link, flow: null })
+            Actions.pdfViewer({ fileName: item.name, base64: null, currentEvidence: item, flow: null, evidenceArray: data })
         }
     }
 
@@ -22,15 +22,16 @@ export default class SarItem extends Component {
             <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => this.handlePress()}
+                onLongPress={this.props.onLongPress}
             >
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
-                        {type !== 'FILE' ?
+                        {type !== 'FILE' && type !== 'LINK' ?
                             (<Icon name={AppCommon.icon("document")} style={styles.icon} />) :
                             (<Icon name='pdffile1' type='AntDesign' style={styles.icon} />)}
                         <View style={styles.content}>
                             <Text style={styles.shortDescription} numberOfLines={2}>
-                                {type !== 'FILE' ? item.content : item.name}
+                                {type !== 'FILE' && type !== 'LINK' ? item.content : item.name}
                             </Text>
                             <Text style={styles.time}>
                                 {moment(this.props.item.createdAt).format('DD/MM/YYYY HH:mm')}

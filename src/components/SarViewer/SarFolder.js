@@ -5,25 +5,26 @@ import {
     View,
     Text
 } from "react-native";
-import { Icon } from "native-base";
+import { Icon, CheckBox } from "native-base";
 import { AppCommon } from "../../commons/commons";
 
 export default class SarFolder extends Component {
     render() {
-        const { item, type } = this.props;
+        const { item, type, downloadMode } = this.props;
         return (
             <TouchableOpacity
                 activeOpacity={0.5}
-                onPress={this.props.onPress}
+                onPress={downloadMode ? null : this.props.onPress}
+                onLongPress={this.props.onLongPress}
             >
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
                         <Icon name={AppCommon.icon("folder")} style={styles.icon} />
                         <Text style={styles.name} numberOfLines={3}>
-                            {typeof type === 'string' && type === 'evidences' ? item.content: item.name}
+                            {typeof type === 'string' && type === 'evidences' ? item.content : item.name}
                         </Text>
                     </View>
-                    <Icon name='angle-right' type="FontAwesome5" style={styles.rightIcon} />
+                    {downloadMode ? (<CheckBox checked={item.checked} onPress={this.props.toggleChecked}/>) : (<View />)}
                 </View>
             </TouchableOpacity>
         )
@@ -40,7 +41,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#ECE9E9',
         alignItems: 'center',
-        justifyContent: 'space-between'
     },
     leftItem: {
         flex: 1,
