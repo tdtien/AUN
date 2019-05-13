@@ -27,10 +27,19 @@ import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
 import EvidenceItem from './EvidenceItem';
 import { setDirectoryInfo } from "../../actions/directoryAction";
-import { createDirectoryTreeWith, createFolder, downloadAllEvidences } from '../../commons/utilitiesFunction';
+import {
+    createDirectoryTreeWith,
+    createFolder,
+    downloadAllEvidences,
+    fileToBase64
+} from '../../commons/utilitiesFunction';
 import DownloadButton from './DownloadButton';
 import DialogInput from "react-native-dialog-input";
 import { updatePdf } from '../../api/accountApi';
+import {
+    DocumentPicker,
+    DocumentPickerUtil,
+} from 'react-native-document-picker';
 
 const pickerOptions = [
     {
@@ -56,10 +65,12 @@ class EvidenceViewer extends Component {
             data: null,
             isShowFooter: false,
             choosenEvidenceItem: {},
-            isShowPicker: false,
-            isShowDialog: false,
+            isShowUploadPicker: false,
+            isShowLinkUploadDialog: false,
+            isShowFileUploadDialog: false,
             linkUpload: '',
-            fileNameUpload: ''
+            fileNameUpload: '',
+            database64Upload: '',
         };
     }
 
@@ -165,44 +176,48 @@ class EvidenceViewer extends Component {
             })
     }
 
-    togglePicker = () => {
+    toggleUploadPicker = () => {
         this.setState({
-            isShowPicker: !this.state.isShowPicker
+            isShowUploadPicker: !this.state.isShowUploadPicker
         })
     }
 
-    toggleDialog = () => {
+    toggleLinkDialog = () => {
         this.setState({
-            isShowDialog: !this.state.isShowDialog
+            isShowLinkUploadDialog: !this.state.isShowLinkUploadDialog
         })
     }
 
     handlePickerValue = (item) => {
         this.setState({
-            isShowPicker: false
+            isShowUploadPicker: false
         })
         if (item.key === 'images') {
             Actions.merchant({ flow: this.props })
         } else if (item.key === 'link') {
             this.setState({
-                isShowDialog: true
+                isShowLinkUploadDialog: true
             })
+        } else if (item.key === 'evidence') {
+            this.handleShowFilePicker();
         }
     }
 
-    handleUploadByLink = () => {
+    handleUploadItem = (type, data) => {
         this.setState({
-            isShowDialog: false,
+            isShowLinkUploadDialog: false,
+            isShowFileUploadDialog: false,
             isLoading: true
         })
         var data = {
-            type: 'LINK',
-            link: this.state.linkUpload,
+            type: type,
+            link: (type === 'LINK') ? data.linkUpload : null,
+            file: (type === 'FILE') ? data.base64 : null,
             sarId: this.props.sarInfo.id,
             criterionId: this.props.criterionInfo.id,
             subCriterionId: this.props.subCriterionInfo.id,
             suggestionId: this.props.suggestionInfo.id,
-            name: this.state.fileNameUpload,
+            name: data.fileNameUpload,
         }
         updatePdf(this.props.token, data)
             .then((responseJson) => {
@@ -228,9 +243,51 @@ class EvidenceViewer extends Component {
                 this.setState({
                     isLoading: false
                 })
-                console.log('Error2: ' + error);
+                console.log('Error: ' + error);
                 Alert.alert('Error', error);
             });
+    }
+
+    handleUploadByLink = () => {
+        let type = 'LINK';
+        let data = {
+            linkUpload: this.state.linkUpload,
+            fileNameUpload: this.state.fileNameUpload
+        }
+        this.handleUploadItem(type, data);
+    }
+
+    handleUploadByFile = (fileName) => {
+        let type = 'FILE';
+        let data = {
+            base64: this.state.database64Upload,
+            fileNameUpload: fileName
+        }
+        this.handleUploadItem(type, data);
+    }
+
+    handleShowFilePicker = () => {
+        DocumentPicker.show(
+            {
+                filetype: [DocumentPickerUtil.pdf()],
+            },
+            (error, response) => {
+                console.log('response : ' + JSON.stringify(response));
+                if (response !== null) {
+                    // console.log('URI : ' + response.uri);
+                    fileToBase64(response.uri)
+                        .then(database64 => {
+                            console.log('database64 : ' + JSON.stringify(database64));
+                            this.setState({
+                                database64Upload: database64,
+                                fileNameUpload: response.fileName,
+                                isShowFileUploadDialog: true
+                            })
+                        })
+                }
+            }
+        )
+
     }
 
     render() {
@@ -254,12 +311,12 @@ class EvidenceViewer extends Component {
                 />
             ) : (
                 (this.props.role !== 'REVIEWER') ? (
-                    <TouchableOpacity style={styles.addButton} onPress={() => this.togglePicker()}>
+                    <TouchableOpacity style={styles.addButton} onPress={() => this.toggleUploadPicker()}>
                         <Icon name={AppCommon.icon("add")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                 ) : null
             )
-        let uploadPicker = (this.state.isShowPicker) ? (
+        let uploadPicker = (this.state.isShowUploadPicker) ? (
             <Modal
                 visible={true}
                 transparent={true}
@@ -284,7 +341,7 @@ class EvidenceViewer extends Component {
                                 </TouchableOpacity>
                             )
                         })}
-                        <TouchableOpacity onPress={() => this.togglePicker()} style={{ alignItems: 'flex-end', marginTop: 10 }}>
+                        <TouchableOpacity onPress={() => this.toggleUploadPicker()} style={{ alignItems: 'flex-end', marginTop: 10 }}>
                             <Text style={{ fontSize: 15, color: AppCommon.colors }}>CANCEL</Text>
                         </TouchableOpacity>
                     </View>
@@ -292,7 +349,7 @@ class EvidenceViewer extends Component {
                 </View>
             </Modal>
         ) : null
-        let dialogInput = (this.state.isShowDialog) ? (
+        let linkUploadDialog = (this.state.isShowLinkUploadDialog) ? (
             <View>
                 <Modal
                     visible={true}
@@ -310,7 +367,7 @@ class EvidenceViewer extends Component {
                             padding: 20,
                             // display: 'flex',
                         }}>
-                            <Text style={{ paddingBottom: 15, fontSize: 20, fontWeight: 'bold', color: 'black' }}>Component information to upload</Text>
+                            <Text style={{ paddingBottom: 15, fontSize: 20, fontWeight: 'bold', color: 'black' }}>Complete information to upload</Text>
                             <Form>
                                 <InputGroup style={styles.dataInput}>
                                     <Icon name={AppCommon.icon("link")} style={{ color: 'black', fontSize: AppCommon.icon_size }} />
@@ -335,7 +392,7 @@ class EvidenceViewer extends Component {
                                 justifyContent: 'flex-end',
                                 marginTop: 10
                             }}>
-                                <TouchableOpacity onPress={() => this.toggleDialog()} style={{ marginTop: 10 }}>
+                                <TouchableOpacity onPress={() => this.toggleLinkDialog()} style={{ marginTop: 10 }}>
                                     <Text style={{ fontSize: 15, color: AppCommon.colors }}>CANCEL</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.handleUploadByLink()} style={{ marginTop: 10, marginLeft: 20 }}>
@@ -394,8 +451,15 @@ class EvidenceViewer extends Component {
                     uploadPicker
                 }
                 {
-                    dialogInput
+                    linkUploadDialog
                 }
+                <DialogInput isDialogVisible={this.state.isShowFileUploadDialog}
+                    title={"Set name for doc to upload"}
+                    hintInput={this.state.fileNameUpload}
+                    submitText={"Set"}
+                    submitInput={(inputText) => { this.handleUploadByFile(inputText) }}
+                    closeDialog={() => { this.setState({ isShowFileUploadDialog: false }) }}>
+                </DialogInput>
                 <Loader loading={this.state.isLoading} />
             </Container>
         )
