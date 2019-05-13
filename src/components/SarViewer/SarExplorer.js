@@ -114,17 +114,19 @@ class SarExplorer extends Component {
             localData = directoryInfo[email].find(item => item.id === id).criterions;
         } else if (scene[currentIdx].key === 'subCriterions') {
             localData = directoryInfo[email].find(item => item.id === previousItem[0].id).criterions
-                            .find(item => item.id === id).subCriterions;
+                .find(item => item.id === id).subCriterions;
         } else if (scene[currentIdx].key === 'suggestionTypes') {
             localData = [
                 { id: 'implications', name: 'Implications' },
                 { id: 'questions', name: 'Questions' },
                 { id: 'evidences', name: 'Evidence Types' }
             ]
-            this.setState({dataSuggestions: directoryInfo[email]
-                .find(item => item.id === previousItem[0].id).criterions
-                .find(item => item.id === previousItem[1].id).subCriterions
-                .find(item => item.id === id).suggestions})
+            this.setState({
+                dataSuggestions: directoryInfo[email]
+                    .find(item => item.id === previousItem[0].id).criterions
+                    .find(item => item.id === previousItem[1].id).subCriterions
+                    .find(item => item.id === id).suggestions
+            })
         } else if (scene[currentIdx].key === 'suggestions') {
             localData = this.state.dataSuggestions[id]
         } else if (scene[currentIdx].key === 'evidences') {
@@ -224,7 +226,6 @@ class SarExplorer extends Component {
                         refreshing: false,
                         data: responseJson.data
                     })
-                    console.log(responseJson.data)
                 })
                 .catch((error) => {
                     this.setState({
@@ -330,11 +331,11 @@ class SarExplorer extends Component {
         this.setState({ isLoading: true })
         let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + email;
         if (scene[currentIdx].key === 'sars') {
-            for (var i = 0; i < selectedData.length; i++) {
-                downloadSar(token, selectedData[i].id)
+            selectedData.forEach((selectedItem) => {
+                downloadSar(token, selectedItem.id)
                     .then((responseJson) => {
                         let downloadFlow = {
-                            sarInfo: selectedData[i]
+                            sarInfo: selectedItem
                         }
                         let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'sar');
                         downloadAllEvidences(directoryTree, pdfFolderPath)
@@ -367,14 +368,14 @@ class SarExplorer extends Component {
                         })
                         console.error('Error when download: ' + error);
                     });
-            }
+            })
         } else if (scene[currentIdx].key === 'criterions') {
-            for (var i = 0; i < selectedData.length; i++) {
-                downloadCriterion(token, selectedData[i].id)
+            selectedData.forEach((selectedItem) => {
+                downloadCriterion(token, selectedItem.id)
                     .then((responseJson) => {
                         let downloadFlow = {
                             sarInfo: currentItem,
-                            criterionInfo: selectedData[i]
+                            criterionInfo: selectedItem
                         }
                         let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'criterion');
                         // console.log('directoryTree: ' + JSON.stringify(directoryTree));
@@ -399,7 +400,7 @@ class SarExplorer extends Component {
                                     refreshing: false,
                                     downloadMode: false
                                 })
-                                console.log('Error when download: ' + error);
+                                console.error('Error when download: ' + error);
                             })
                     })
                     .catch((error) => {
@@ -409,15 +410,15 @@ class SarExplorer extends Component {
                         })
                         console.error('Error when download: ' + error);
                     });
-            }
+            })
         } else if (scene[currentIdx].key === 'subCriterions') {
-            for (var i = 0; i < selectedData.length; i++) {
-                downloadSubCriterion(token, selectedData[i].id)
+            selectedData.forEach((selectedItem) => {
+                downloadSubCriterion(token, selectedItem.id)
                     .then((responseJson) => {
                         let downloadFlow = {
                             sarInfo: previousItem[0],
                             criterionInfo: currentItem,
-                            subCriterionInfo: selectedData[i]
+                            subCriterionInfo: selectedItem
                         }
                         let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'subCriterion');
                         // console.log('directoryTree: ' + JSON.stringify(directoryTree));
@@ -442,7 +443,7 @@ class SarExplorer extends Component {
                                     refreshing: false,
                                     downloadMode: false
                                 })
-                                console.log('Error when download: ' + error);
+                                console.error('Error when download: ' + error);
                             })
                     })
                     .catch((error) => {
@@ -452,13 +453,13 @@ class SarExplorer extends Component {
                         })
                         console.error('Error when download: ' + error);
                     });
-            }
+            })
         } else if (scene[currentIdx].key === 'suggestionTypes') {
-            for (var i = 0; i < selectedData.length; i++) {
-                downloadSubCriterion(token, selectedData[i].id)
+            selectedData.forEach((selectedItem) => {
+                downloadSubCriterion(token, currentItem.id)
                     .then((responseJson) => {
                         // console.log('responseJson: ' + JSON.stringify(responseJson.data));
-                        let index = data.indexOf(selectedData[i]);
+                        let index = data.indexOf(selectedItem);
                         let filterData = responseJson.data;
                         if (index === 0) {
                             filterData.suggestions = {
@@ -477,7 +478,7 @@ class SarExplorer extends Component {
                             sarInfo: previousItem[0],
                             criterionInfo: previousItem[1],
                             subCriterionInfo: currentItem,
-                            suggestionTypeName: selectedData[i].name.toLowerCase()
+                            suggestionTypeName: selectedItem.name.toLowerCase()
                         }
                         let directoryTree = createDirectoryTreeWith(downloadFlow, filterData, 'subCriterion');
                         // console.log('directoryTree: ' + JSON.stringify(directoryTree));
@@ -502,7 +503,7 @@ class SarExplorer extends Component {
                                     refreshing: false,
                                     downloadMode: false
                                 })
-                                console.log('Error when download: ' + error);
+                                console.error('Error when download: ' + error);
                             })
                     })
                     .catch((error) => {
@@ -512,10 +513,10 @@ class SarExplorer extends Component {
                         })
                         console.error('Error when download: ' + error);
                     });
-            }
+            })
         } else if (scene[currentIdx].key === 'suggestions') {
-            for (var i = 0; i < selectedData.length; i++) {
-                downloadSuggestion(token, selectedData[i].id)
+            selectedData.forEach((selectedItem) => {
+                downloadSuggestion(token, selectedItem.id)
                     .then((responseJson) => {
                         // console.log('responseJson: ' + JSON.stringify(responseJson.data));
                         let downloadFlow = {
@@ -523,7 +524,7 @@ class SarExplorer extends Component {
                             criterionInfo: previousItem[1],
                             subCriterionInfo: previousItem[2],
                             suggestionType: currentItem.type,
-                            suggestionInfo: selectedData[i],
+                            suggestionInfo: selectedItem,
                         }
                         let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'suggestion');
                         // console.log('directoryTree: ' + JSON.stringify(directoryTree));
@@ -548,7 +549,7 @@ class SarExplorer extends Component {
                                     refreshing: false,
                                     downloadMode: false
                                 })
-                                console.log('Error when download: ' + error);
+                                console.error('Error when download: ' + error);
                             })
 
                     })
@@ -559,17 +560,19 @@ class SarExplorer extends Component {
                         })
                         console.error('Error when download: ' + error);
                     });
-            }
+            })
         } else if (scene[currentIdx].key === 'evidences') {
-            for (var i = 0; i < selectedData.length; i++) {
+            selectedData.forEach((selectedItem) => {
                 let downloadFlow = {
                     sarInfo: previousItem[0],
                     criterionInfo: previousItem[1],
                     subCriterionInfo: previousItem[2],
                     suggestionInfo: currentItem,
-                    evidenceInfo: selectedData[i]
+                    evidenceInfo: selectedItem
                 }
-                let directoryTree = createDirectoryTreeWith(downloadFlow, selectedData[i], 'evidence');
+                console.log(downloadFlow, 'downloadFlow')
+                let directoryTree = createDirectoryTreeWith(downloadFlow, selectedItem, 'evidence');
+                console.log(directoryTree, 'directoryTree')
                 // console.log('directoryTree: ' + JSON.stringify(directoryTree));
                 downloadAllEvidences(directoryTree, pdfFolderPath)
                     .then(response => {
@@ -584,6 +587,7 @@ class SarExplorer extends Component {
                             downloadItemType: 'evidence',
                             downloadFlow: downloadFlow
                         }
+                        console.log(directoryInfo, 'directoryInfo')
                         // console.log('responseJson evidence: ' + JSON.stringify(directoryInfo));
                         setDirectoryInfo(directoryInfo);
                     }).catch(error => {
@@ -594,7 +598,7 @@ class SarExplorer extends Component {
                         })
                         console.log('Error when download: ' + error);
                     })
-            }
+            })
         } else {
             this.setState({
                 isLoading: false,

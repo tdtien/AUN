@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
-import { Icon } from "native-base";
+import { Icon, CheckBox } from "native-base";
 import { Actions } from "react-native-router-flux";
 import moment from "moment";
 import { AppCommon } from '../../commons/commons';
@@ -17,12 +17,12 @@ export default class SarItem extends Component {
     }
 
     render() {
-        const { item, type } = this.props;
+        const { item, type, downloadMode, onLongPress, toggleChecked } = this.props;
         return (
             <TouchableOpacity
                 activeOpacity={0.5}
-                onPress={() => this.handlePress()}
-                onLongPress={this.props.onLongPress}
+                onPress={() => downloadMode ? null : this.handlePress()}
+                onLongPress={onLongPress}
             >
                 <View style={styles.item}>
                     <View style={styles.leftItem}>
@@ -34,10 +34,11 @@ export default class SarItem extends Component {
                                 {type !== 'FILE' && type !== 'LINK' ? item.content : item.name}
                             </Text>
                             <Text style={styles.time}>
-                                {moment(this.props.item.createdAt).format('DD/MM/YYYY HH:mm')}
+                                {moment(item.createdAt).format('DD/MM/YYYY HH:mm')}
                             </Text>
                         </View>
                     </View>
+                    {downloadMode ? (<CheckBox checked={item.checked} onPress={toggleChecked}/>) : (<View />)}
                 </View>
             </TouchableOpacity>
         )
