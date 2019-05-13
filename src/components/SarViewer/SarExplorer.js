@@ -708,7 +708,7 @@ class SarExplorer extends Component {
                             <ActivityIndicator size="large" animating color={AppCommon.colors} />
                         </View>
                     ) : (
-                            (this.state.data.length === 0) ? (
+                            (typeof this.state.data === 'undefined' || this.state.data.length === 0) ? (
                                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                     <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
                                     <Text style={{ color: '#BDBDBD' }}>Pull to refresh</Text>
