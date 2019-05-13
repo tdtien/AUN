@@ -47,7 +47,9 @@ export function downloadEvidence(url, filePath) {
     return new Promise((resolve, reject) => {
         RNFS.downloadFile({
             fromUrl: url,
-            toFile: filePath
+            toFile: filePath,
+            connectionTimeout: 60 * 1000,
+            background: true,
         }).promise.then(response => {
             resolve(true);
         }).catch(error => {
@@ -81,10 +83,14 @@ export function downloadAllEvidences(directoryTree, pdfFolderPath) {
                         }
                     }
                 }
-                Promise.all(promises).then(() => {
-                    console.log('Download completed');
-                    resolve(directoryTree);
-                })
+                Promise.all(promises)
+                    .then(() => {
+                        console.log('Download completed');
+                        resolve(directoryTree);
+                    }).catch((error) => {
+                        console.log('Download failed');
+                        reject(error);
+                    })
             }).catch(error => {
                 console.log('Error when create folder: ' + error);
                 reject(error);
@@ -129,8 +135,8 @@ export function popToSceneWithUpdate(scene, props) {
 }
 
 export function isEmptyJson(obj) {
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key))
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key))
             return false;
     }
     return true;

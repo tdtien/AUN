@@ -31,8 +31,8 @@ import { deleteItem, popToSceneWithUpdate } from '../../commons/utilitiesFunctio
 class PDFViewer extends React.Component {
     constructor(props) {
         super(props);
-        console.log('evidenceArray: ' + JSON.stringify(this.props.evidenceArray));
-        console.log('currentEvidence: ' + JSON.stringify(this.props.currentEvidence));
+        // console.log('evidenceArray: ' + JSON.stringify(this.props.evidenceArray));
+        // console.log('currentEvidence: ' + JSON.stringify(this.props.currentEvidence));
         this.state = {
             isLoading: false,
             isDialogVisible: false,
@@ -150,13 +150,11 @@ class PDFViewer extends React.Component {
         }
         this.setState({
             currentEvidence: this.props.evidenceArray[newIndex],
-            fileName: this.props.evidenceArray[newIndex].name
+            fileName: this.props.evidenceArray[newIndex].name,
         });
     }
 
     render() {
-        let fileName = this.props.fileName;
-        fileName = fileName.substring(0, fileName.length - 4);
         let uri = (this.props.base64 !== null) ? `data:application/pdf;base64,${this.props.base64}` : this.state.currentEvidence.link;
         let pdfArrayView = (this.props.evidenceArray !== undefined && this.props.evidenceArray.length > 1) ? (
             <View
@@ -231,12 +229,11 @@ class PDFViewer extends React.Component {
                             })
                         }}
                         fitPolicy={0}
-                    // enablePaging
                     />
                 </View>
                 <DialogInput isDialogVisible={this.state.isDialogVisible}
                     title={"Set name for doc to upload"}
-                    hintInput={fileName}
+                    hintInput={this.state.fileName}
                     submitText={"Set"}
                     submitInput={(inputText) => { this.handleUploadPdf(inputText) }}
                     closeDialog={() => { this.setState({ isDialogVisible: false }) }}>

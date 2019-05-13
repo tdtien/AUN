@@ -89,7 +89,7 @@ class SortList extends Component {
                         if (responseJson.hasOwnProperty('dataBase64')) {
                             let props = {
                                 imageFolderPath: this.props.folderPath,
-                                fileName: this.props.folderName + ".pdf",
+                                fileName: this.props.folderName,
                                 base64: responseJson.dataBase64,
                                 flow: this.props.flow
                             };

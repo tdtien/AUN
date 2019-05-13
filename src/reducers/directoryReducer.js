@@ -147,9 +147,9 @@ const directoryReducer = (state = initialState, action) => {
                             }
                             let evidenceIndex = evidenceTypeItem.evidences.findIndex(item => item.id === flow.evidenceInfo.id);
                             if (evidenceIndex !== -1) {
-                                evidenceTypeItem.evidences[evidenceIndex] = evidenceTypeNewArray[0];
+                                evidenceTypeItem.evidences[evidenceIndex] = evidenceTypeNewArray[0].evidences[0];
                             } else {
-                                evidenceTypeItem.evidences.push(evidenceTypeNewArray[0]);
+                                evidenceTypeItem.evidences.push(evidenceTypeNewArray[0].evidences[0]);
                             }
                         } else {
                             subCriterionItem.suggestions.evidences = evidenceTypeNewArray;
