@@ -10,9 +10,7 @@ import PDFViewer from './src/components/PDFViewer/PDFViewer';
 import { connect } from "react-redux";
 import { ToastAndroid, BackHandler, Alert } from "react-native";
 import SortList from './src/components/Merchant/SortList';
-import Folder from './src/components/FolderExplorer/FolderItem';
 import SuggestionViewer from './src/components/FolderExplorer/SuggestionViewer';
-import FolderComponent from './src/components/FolderExplorer/FolderItem';
 import SarViewer from './src/components/FolderExplorer/SarViewer';
 import CriterionViewer from './src/components/FolderExplorer/CriterionViewer';
 import SubCriterionViewer from './src/components/FolderExplorer/SubCriterionViewer';
@@ -55,7 +53,7 @@ class App extends Component {
 
   render() {
     var backLoginScene = false;
-    let exitScene = ["login", "_merchant", "_sarViewer"];
+    let exitScene = ["login", "_merchant", "_sarExplorer"];
     return (
       <Root>
         <Router
@@ -104,13 +102,13 @@ class App extends Component {
             >
               <Scene
                 hideNavBar
-                key="sarViewer"
-                component={SarViewer}
+                key="sarExplorer"
+                component={SarExplorer}
               />
               <Scene
                 hideNavBar
-                key="sarExplorer"
-                component={SarExplorer}
+                key="sarViewer"
+                component={SarViewer}
               />
             </Drawer>
             <Scene

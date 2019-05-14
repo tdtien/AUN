@@ -31,7 +31,7 @@ export default class TextViewer extends Component {
 
     render() {
         let type = this.props.title;
-        let title = type.charAt(0).toUpperCase() + type.slice(1, type.length -1);
+        let title = type.charAt(0).toUpperCase() + type.slice(1, type.length);
         return (
             <Container style={{ backgroundColor: 'white' }}>
                 <Header

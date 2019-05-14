@@ -8,7 +8,8 @@ import {
     ActivityIndicator,
     ScrollView,
     Dimensions,
-    Alert
+    Alert,
+    RefreshControl
 } from "react-native";
 import { connect } from 'react-redux';
 import { AppCommon } from "../../commons/commons";
@@ -54,7 +55,7 @@ class SarExplorer extends Component {
         NetInfo.isConnected.fetch().done((isConnected) => {
             this.setState({
                 isConnected: isConnected
-            }, () => this.handleFetchData(isConnected));
+            }, () => this.handleFetchData(isConnected, false));
         });
     }
 
@@ -62,7 +63,7 @@ class SarExplorer extends Component {
         this.setState({ isConnected: isConnected }, () => this.handleFetchData(isConnected))
     };
 
-    handleFetchData = (isConnected) => {
+    handleFetchData = (isConnected, isAlert = true) => {
         this.setState({ isLoading: true })
         if (isConnected) {
             if (isEmptyJson(this.state.currentItem)) {
@@ -71,24 +72,42 @@ class SarExplorer extends Component {
                 this.makeRemoteRequest(this.state.currentItem.id)
             }
         } else {
-            Alert.alert('Error!', 'Connection has been interupted. Do you want to view offline mode ?',
-                [
-                    {
-                        text: 'No',
-                        style: 'cancel',
-                        onPress: () => { this.setState({ isLoading: false }) }
-                    },
-                    {
-                        text: 'Yes', onPress: () => {
-                            if (isEmptyJson(this.state.currentItem)) {
-                                this.makeLocalRequest()
-                            } else {
-                                this.makeLocalRequest(this.state.currentItem.id)
+            if (isAlert) {
+                Alert.alert('Error!', 'Connection has been interupted. Do you want to view offline mode ?',
+                    [
+                        {
+                            text: 'No',
+                            style: 'cancel',
+                            onPress: () => {
+                                this.setState({
+                                    isLoading: false,
+                                    refreshing: false,
+                                    data: [],
+                                    dataSuggestions: [],
+                                    currentIdx: 0,
+                                    currentItem: {},
+                                    previousItem: []
+                                })
+                            }
+                        },
+                        {
+                            text: 'Yes', onPress: () => {
+                                if (isEmptyJson(this.state.currentItem)) {
+                                    this.makeLocalRequest()
+                                } else {
+                                    this.makeLocalRequest(this.state.currentItem.id)
+                                }
                             }
                         }
-                    }
-                ]
-            );
+                    ]
+                );
+            } else {
+                if (isEmptyJson(this.state.currentItem)) {
+                    this.makeLocalRequest()
+                } else {
+                    this.makeLocalRequest(this.state.currentItem.id)
+                }
+            }
         }
     }
 
@@ -103,6 +122,18 @@ class SarExplorer extends Component {
         const { scene, currentIdx, previousItem } = this.state;
         const { directoryInfo, email } = this.props;
         var localData = []
+        if (typeof directoryInfo === 'undefined' || directoryInfo === null || isEmptyJson(directoryInfo)) {
+            this.setState({
+                isLoading: false,
+                refreshing: false,
+                data: [],
+                dataSuggestions: [],
+                currentIdx: 0,
+                currentItem: {},
+                previousItem: []
+            })
+            return
+        }
         if (scene[currentIdx].key === 'sars') {
             localData = (Object.keys(directoryInfo).length === 0) ? [] : directoryInfo[email];
             this.setState({
@@ -633,7 +664,7 @@ class SarExplorer extends Component {
     }
 
     render() {
-        const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected } = this.state;
+        const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected, isLoading } = this.state;
         let currentScene = scene[currentIdx]
         let title = downloadMode ? 'Download Offline' : currentScene.key === 'suggestions' ? currentScene.title + currentItem.name : currentScene.title
         return (
@@ -702,8 +733,15 @@ class SarExplorer extends Component {
                 <Content
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
+                    refreshControl={(typeof this.state.data === 'undefined' || this.state.data.length === 0) ?
+                        <RefreshControl
+                            style={{ backgroundColor: '#E0FFFF' }}
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.handleRefresh}
+                        /> : null
+                    }
                 >
-                    {this.state.isLoading ? (
+                    {isLoading ? (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <ActivityIndicator size="large" animating color={AppCommon.colors} />
                         </View>
