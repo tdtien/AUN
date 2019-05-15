@@ -29,6 +29,10 @@ export function fileToBase64(uri) {
     })
 }
 
+export function limitText(text, limit = 20) {
+    return ((text).length > 30) ? (((text).substring(0, limit - 3)) + '...') : text
+}
+
 export async function folderToBase64(files) {
     var array = [];
     for (let item of files) {

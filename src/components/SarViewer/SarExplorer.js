@@ -1,25 +1,15 @@
+import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title } from "native-base";
 import React, { Component } from "react";
-import {
-    NetInfo,
-    TouchableOpacity,
-    StyleSheet,
-    FlatList,
-    View,
-    ActivityIndicator,
-    ScrollView,
-    Dimensions,
-    Alert,
-    RefreshControl
-} from "react-native";
-import { connect } from 'react-redux';
-import { AppCommon } from "../../commons/commons";
-import { Header, Container, Content, Icon, Body, Title, Text, Footer, Right } from "native-base";
-import { getAllCriterions, getAllSubCriterions, getAllSuggestions, getAllEvidences, getAllSars, downloadSar, downloadCriterion, downloadSubCriterion, downloadSuggestion } from "../../api/directoryTreeApi";
+import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Actions } from "react-native-router-flux";
+import { connect } from 'react-redux';
+import { setDirectoryInfo } from "../../actions/directoryAction";
+import { downloadCriterion, downloadSar, downloadSubCriterion, downloadSuggestion, getAllCriterions, getAllEvidences, getAllSars, getAllSubCriterions, getAllSuggestions } from "../../api/directoryTreeApi";
+import { AppCommon } from "../../commons/commons";
+import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson, limitText } from "../../commons/utilitiesFunction";
 import SarFolder from "./SarFolder";
 import SarItem from "./SarItem";
-import { isEmptyJson, createDirectoryTreeWith, downloadAllEvidences } from "../../commons/utilitiesFunction";
-import { setDirectoryInfo } from "../../actions/directoryAction";
+import BreadCrumb from "../Breadcrumb/Breadcrumb";
 
 const window = Dimensions.get('window');
 class SarExplorer extends Component {
@@ -27,8 +17,8 @@ class SarExplorer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isConnected: false,
-            isLoading: false,
+            isConnected: true,
+            isLoading: true,
             refreshing: false,
             scene: [
                 { key: 'sars', title: 'All Sars' },
@@ -47,7 +37,7 @@ class SarExplorer extends Component {
         }
     }
 
-    componentDidMount() {
+    componentWillMount() {
         NetInfo.isConnected.addEventListener(
             'connectionChange',
             this.handleConnectivityChange
@@ -693,43 +683,12 @@ class SarExplorer extends Component {
                         <Title style={{ alignSelf: "center", color: 'white' }}>{title}</Title>
                     </Body>
                 </Header>
-                <ScrollView
-                    style={{ maxHeight: 40, backgroundColor: 'white' }}
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    showsVerticalScrollIndicator={false}
-                    ref={ref => this.scrollView = ref}
-                    onContentSizeChange={(contentWidth, contentHeight) => {
-                        if (contentWidth > window.width) {
-                            this.scrollView.scrollToEnd({ animated: true });
-                        } else {
-                            this.scrollView.scrollTo({ x: 0, y: 0, animated: false });
-                        }
-                    }}
-                >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => this.handlePopTo(0, true)}>
-                        <Icon name={AppCommon.icon(isConnected ? "cloud-outline" : "tv")} type="Ionicons" style={{ color: 'gray', fontSize: 20 }} />
-                    </TouchableOpacity>
-                    {previousItem.length == 0 ? <View /> : previousItem.map((item, index) => {
-                        return (
-                            <TouchableOpacity
-                                key={item.id + index}
-                                style={styles.breadCrumbItem}
-                                onPress={() => this.handlePopTo(index)}
-                            >
-                                <Icon name="right" type="AntDesign" style={styles.crumbArrow} />
-                                <Text style={styles.crumbItem}>{item.name}</Text>
-                            </TouchableOpacity>
-                        )
-                    })}
-                    {isEmptyJson(currentItem) ? <View /> :
-                        <TouchableOpacity style={styles.breadCrumbItem} disabled>
-                            <Icon name="right" type="AntDesign" style={styles.crumbArrow} />
-                            <Text style={styles.activeCrumbItem}>
-                                {currentItem.hasOwnProperty('type') && currentItem.type === 'EVIDENCE' ? currentItem.content : currentItem.name}
-                            </Text>
-                        </TouchableOpacity>}
-                </ScrollView>
+                <BreadCrumb
+                    isConnected={this.state.isConnected}
+                    handlePress={this.handlePopTo}
+                    previousItem={this.state.previousItem}
+                    currentItem={this.state.currentItem}
+                />
                 <Content
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
@@ -790,21 +749,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 10,
         paddingRight: 10
-    },
-    breadCrumbItem: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    crumbItem: {
-        color: 'gray'
-    },
-    activeCrumbItem: {
-        color: AppCommon.colors,
-        paddingRight: 10
-    },
-    crumbArrow: {
-        color: 'gray',
-        fontSize: 15
     },
     footerButton: {
         flex: 1,
