@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
+import { TouchableOpacity, StyleSheet, View, Text, Linking, Alert } from "react-native";
 import { Icon, CheckBox } from "native-base";
 import { Actions } from "react-native-router-flux";
 import moment from "moment";
@@ -11,8 +11,24 @@ export default class SarItem extends Component {
         const { item, type, data } = this.props;
         if (type !== 'FILE' && type !== 'LINK') {
             Actions.textViewer({ data: item.content, title: type.toLowerCase().charAt(0).toUpperCase() + type.toLowerCase().slice(1) })
+        } else if (type === 'LINK') {
+            Linking.canOpenURL(item.link)
+                .then(supported => {
+                    if (supported) {
+                        Linking.openURL(item.link);
+                    } else {
+                        let error = 'Invalid url: ' + item.link;
+                        console.log(error);
+                        Alert.alert('Error', error);
+                    }
+                })
+                .catch((err) => {
+                    let error = 'Error when check url: ' + err;
+                    console.error(error);
+                    Alert.alert('Error', error);
+                });
         } else {
-            Actions.pdfViewer({ fileName: item.name, base64: null, currentEvidence: item, flow: null, evidenceArray: data })
+            Actions.pdfViewer({ fileName: item.name, base64: null, currentEvidence: item, flow: null, evidenceArray: data.filter(item => item.type === 'FILE') })
         }
     }
 
@@ -38,7 +54,7 @@ export default class SarItem extends Component {
                             </Text>
                         </View>
                     </View>
-                    {downloadMode ? (<CheckBox checked={item.checked} onPress={toggleChecked}/>) : (<View />)}
+                    {downloadMode ? (<CheckBox checked={item.checked} onPress={toggleChecked} />) : (<View />)}
                 </View>
             </TouchableOpacity>
         )

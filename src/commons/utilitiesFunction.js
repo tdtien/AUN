@@ -79,9 +79,11 @@ export function downloadAllEvidences(directoryTree, pdfFolderPath) {
                             for (let evidenceType of evidenceTypeArray) {
                                 let evidenceArray = evidenceType.evidences;
                                 for (let evidence of evidenceArray) {
-                                    let filePath = pdfFolderPath + '/' + evidence.name + '.pdf';
-                                    promises.push(downloadEvidence(evidence.link, filePath))
-                                    evidence.link = filePath;
+                                    if (evidence.type === 'FILE') {
+                                        let filePath = pdfFolderPath + '/' + evidence.name + '.pdf';
+                                        promises.push(downloadEvidence(evidence.link, filePath))
+                                        evidence.link = filePath;
+                                    }
                                 }
                             }
                         }
@@ -212,5 +214,19 @@ export function createDirectoryTreeWith(flow, data, type) {
         default:
             break;
     }
+    //Delete evidence type = 'LINK'
+    directoryTree.criterions.forEach(criterion => {
+        criterion.subCriterions.forEach(subCriterion => {
+            subCriterion.suggestions.evidences.forEach(evidenceType => {
+                let fileEvidences = [];
+                evidenceType.evidences.forEach(evidence => {
+                    if (evidence.type === 'FILE') {
+                        fileEvidences.push(evidence);
+                    }
+                })
+                evidenceType.evidences = fileEvidences;
+            })
+        })
+    });
     return directoryTree;
 }

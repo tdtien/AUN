@@ -63,7 +63,7 @@ class SarExplorer extends Component {
             }
         } else {
             if (isAlert) {
-                Alert.alert('Error!', 'Connection has been interupted. Do you want to view offline mode ?',
+                Alert.alert('Error!', 'Connection has been interrupted. Do you want to view offline mode ?',
                     [
                         {
                             text: 'No',
