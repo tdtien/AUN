@@ -544,7 +544,7 @@ class SarExplorer extends Component {
                             sarInfo: previousItem[0],
                             criterionInfo: previousItem[1],
                             subCriterionInfo: previousItem[2],
-                            suggestionType: currentItem.type,
+                            suggestionType: currentItem.id,
                             suggestionInfo: selectedItem,
                         }
                         let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'suggestion');
