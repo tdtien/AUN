@@ -44,7 +44,9 @@ export default class SarItem extends Component {
                     <View style={styles.leftItem}>
                         {type !== 'FILE' && type !== 'LINK' ?
                             (<Icon name={AppCommon.icon("document")} style={styles.icon} />) :
-                            (<Icon name='pdffile1' type='AntDesign' style={styles.icon} />)}
+                            type === 'LINK' ?
+                                (<Icon name={AppCommon.icon("link")} style={styles.icon} />) :
+                                (<Icon name='pdffile1' type='AntDesign' style={styles.icon} />)}
                         <View style={styles.content}>
                             <Text style={styles.shortDescription} numberOfLines={2}>
                                 {type !== 'FILE' && type !== 'LINK' ? item.content : item.name}
