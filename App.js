@@ -21,6 +21,7 @@ import { Root } from 'native-base';
 import { checkToken } from './src/api/accountApi';
 import { logoutAccount } from './src/actions/account';
 import SarExplorer from './src/components/SarViewer/SarExplorer';
+import Comment from './src/components/Comment/Comment';
 
 class App extends Component {
 
@@ -147,6 +148,10 @@ class App extends Component {
             <Scene
               key="evidenceViewer"
               component={EvidenceViewer}
+            />
+             <Scene
+              key="comment"
+              component={Comment}
             />
           </Stack>
         </Router>

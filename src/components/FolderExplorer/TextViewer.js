@@ -23,10 +23,6 @@ import { Actions } from 'react-native-router-flux';
 export default class TextViewer extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isLoading: true,
-            refreshing: false,
-        };
     }
 
     render() {
