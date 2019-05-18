@@ -72,7 +72,7 @@ class PDFViewer extends React.Component {
                 {
                     text: 'No',
                     style: 'cancel',
-                    onPress: () => popToSceneWithUpdate('evidenceViewer', this.props.flow),
+                    onPress: () => popToSceneWithUpdate('_sarExplorer', this.props.flow),
                 },
                 {
                     text: 'Yes', onPress: () => {
@@ -83,7 +83,7 @@ class PDFViewer extends React.Component {
                             this.setState({
                                 isLoading: false
                             })
-                            popToSceneWithUpdate('evidenceViewer', this.props.flow)
+                            popToSceneWithUpdate('_sarExplorer', this.props.flow)
                         }).catch(error => {
                             this.setState({
                                 isLoading: false

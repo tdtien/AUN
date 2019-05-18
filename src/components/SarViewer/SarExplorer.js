@@ -1,15 +1,16 @@
 import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title } from "native-base";
 import React, { Component } from "react";
-import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import { setDirectoryInfo } from "../../actions/directoryAction";
-import { downloadCriterion, downloadSar, downloadSubCriterion, downloadSuggestion, getAllCriterions, getAllEvidences, getAllSars, getAllSubCriterions, getAllSuggestions } from "../../api/directoryTreeApi";
+import { downloadCriterion, downloadSar, downloadSubCriterion, downloadSuggestion, getDataSar } from "../../api/directoryTreeApi";
 import { AppCommon } from "../../commons/commons";
-import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson, limitText } from "../../commons/utilitiesFunction";
+import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson } from "../../commons/utilitiesFunction";
 import SarFolder from "./SarFolder";
 import SarItem from "./SarItem";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
+import AddButton from "./AddButton";
 
 const window = Dimensions.get('window');
 class SarExplorer extends Component {
@@ -34,6 +35,7 @@ class SarExplorer extends Component {
             downloadMode: false,
             currentItem: {},
             previousItem: [],
+            dataTree: []
         }
     }
 
@@ -47,6 +49,17 @@ class SarExplorer extends Component {
                 isConnected: isConnected
             }, () => this.handleFetchData(isConnected, false));
         });
+    }
+
+    componentWillReceiveProps(props) {
+        this.handleRefresh();
+    }
+
+    componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener(
+            'connectionChange',
+            this.handleConnectivityChange
+        );
     }
 
     handleConnectivityChange = (isConnected) => {
@@ -101,13 +114,6 @@ class SarExplorer extends Component {
         }
     }
 
-    componentWillUnmount() {
-        NetInfo.isConnected.removeEventListener(
-            'connectionChange',
-            this.handleConnectivityChange
-        );
-    }
-
     makeLocalRequest = (id = 0) => {
         const { scene, currentIdx, previousItem } = this.state;
         const { directoryInfo, email } = this.props;
@@ -132,10 +138,12 @@ class SarExplorer extends Component {
                 data: localData
             })
         } else if (scene[currentIdx].key === 'criterions') {
-            localData = directoryInfo[email].find(item => item.id === id).criterions;
+            localData = (Object.keys(directoryInfo).length === 0) ? [] :
+                directoryInfo[email].find(item => item.id === id).criterions;
         } else if (scene[currentIdx].key === 'subCriterions') {
-            localData = directoryInfo[email].find(item => item.id === previousItem[0].id).criterions
-                .find(item => item.id === id).subCriterions;
+            localData = (Object.keys(directoryInfo).length === 0) ? [] :
+                directoryInfo[email].find(item => item.id === previousItem[0].id).criterions
+                    .find(item => item.id === id).subCriterions;
         } else if (scene[currentIdx].key === 'suggestionTypes') {
             localData = [
                 { id: 'implications', name: 'Implications' },
@@ -143,10 +151,11 @@ class SarExplorer extends Component {
                 { id: 'evidences', name: 'Evidence Types' }
             ]
             this.setState({
-                dataSuggestions: directoryInfo[email]
-                    .find(item => item.id === previousItem[0].id).criterions
-                    .find(item => item.id === previousItem[1].id).subCriterions
-                    .find(item => item.id === id).suggestions
+                dataSuggestions: (Object.keys(directoryInfo).length === 0) ? [] :
+                    directoryInfo[email]
+                        .find(item => item.id === previousItem[0].id).criterions
+                        .find(item => item.id === previousItem[1].id).subCriterions
+                        .find(item => item.id === id).suggestions
             })
         } else if (scene[currentIdx].key === 'suggestions') {
             localData = this.state.dataSuggestions[id]
@@ -163,57 +172,10 @@ class SarExplorer extends Component {
     makeRemoteRequest = (id = 0) => {
         const { scene, currentIdx, dataSuggestions } = this.state;
         const { token } = this.props;
-        if (scene[currentIdx].key === 'sars') {
-            getAllSars(token)
-                .then((responseJson) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                        data: responseJson.data
-                    })
-                })
-                .catch((error) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                    })
-                    console.error('Error: ' + error);
-                });
-        } else if (scene[currentIdx].key === 'criterions') {
-            getAllCriterions(token, id)
-                .then((responseJson) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                        data: responseJson.data
-                    })
-                })
-                .catch((error) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                    })
-                    console.error('Error: ' + error);
-                });
-        } else if (scene[currentIdx].key === 'subCriterions') {
-            getAllSubCriterions(token, id)
-                .then((responseJson) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                        data: responseJson.data
-                    })
-                })
-                .catch((error) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                    })
-                    console.error('Error: ' + error);
-                });
-        } else if (scene[currentIdx].key === 'suggestionTypes') {
-            getAllSuggestions(token, id)
-                .then((responseJson) => {
+        let type = scene[currentIdx].key.substr(0, scene[currentIdx].key.length - 1);
+        getDataSar(token, type, id)
+            .then((responseJson) => {
+                if (type === 'suggestionType') {
                     let data = [
                         { id: 'implications', name: 'Implications' },
                         { id: 'questions', name: 'Questions' },
@@ -225,42 +187,27 @@ class SarExplorer extends Component {
                         data: data,
                         dataSuggestions: responseJson.data
                     })
-                })
-                .catch((error) => {
+                } else if (type === 'suggestion') {
                     this.setState({
                         isLoading: false,
                         refreshing: false,
+                        data: dataSuggestions[id]
                     })
-                    console.error('Error: ' + error);
-                });
-        } else if (scene[currentIdx].key === 'suggestions') {
-            this.setState({
-                isLoading: false,
-                refreshing: false,
-                data: dataSuggestions[id]
+                } else {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        data: isEmptyJson(responseJson) ? [] : responseJson.data
+                    })
+                }
             })
-        } else if (scene[currentIdx].key === 'evidences') {
-            getAllEvidences(token, id)
-                .then((responseJson) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                        data: responseJson.data
-                    })
+            .catch(error => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
                 })
-                .catch((error) => {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                    })
-                    console.error('Error: ' + error);
-                });
-        } else {
-            this.setState({
-                isLoading: false,
-                refreshing: false,
+                console.error(error)
             })
-        }
     }
 
     handleRefresh = () => {
@@ -350,7 +297,6 @@ class SarExplorer extends Component {
             return
         }
         this.setState({ isLoading: true })
-        let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + email;
         if (scene[currentIdx].key === 'sars') {
             selectedData.forEach((selectedItem) => {
                 downloadSar(token, selectedItem.id)
@@ -358,29 +304,7 @@ class SarExplorer extends Component {
                         let downloadFlow = {
                             sarInfo: selectedItem
                         }
-                        let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'sar');
-                        downloadAllEvidences(directoryTree, pdfFolderPath)
-                            .then(response => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    downloadMode: false
-                                })
-                                var directoryInfo = {
-                                    email: email,
-                                    directoryTree: response,
-                                    downloadItemType: 'sar',
-                                    downloadFlow: downloadFlow
-                                }
-                                setDirectoryInfo(directoryInfo);
-                            }).catch(error => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    downloadMode: false
-                                })
-                                console.error('Error when download: ' + error);
-                            })
+                        this.downloadTree(email, 'sar', responseJson.data, downloadFlow);
                     })
                     .catch((error) => {
                         this.setState({
@@ -398,31 +322,7 @@ class SarExplorer extends Component {
                             sarInfo: currentItem,
                             criterionInfo: selectedItem
                         }
-                        let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'criterion');
-                        // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                        downloadAllEvidences(directoryTree, pdfFolderPath)
-                            .then(response => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    downloadMode: false
-                                })
-                                var directoryInfo = {
-                                    email: email,
-                                    directoryTree: response,
-                                    downloadItemType: 'criterion',
-                                    downloadFlow: downloadFlow
-                                }
-                                // console.log('responseJson criterion: ' + JSON.stringify(directoryInfo));
-                                setDirectoryInfo(directoryInfo);
-                            }).catch(error => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    downloadMode: false
-                                })
-                                console.error('Error when download: ' + error);
-                            })
+                        this.downloadTree(email, 'criterion', responseJson.data, downloadFlow);
                     })
                     .catch((error) => {
                         this.setState({
@@ -441,31 +341,7 @@ class SarExplorer extends Component {
                             criterionInfo: currentItem,
                             subCriterionInfo: selectedItem
                         }
-                        let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'subCriterion');
-                        // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                        downloadAllEvidences(directoryTree, pdfFolderPath)
-                            .then(response => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    downloadMode: false
-                                })
-                                var directoryInfo = {
-                                    email: email,
-                                    directoryTree: response,
-                                    downloadItemType: 'subCriterion',
-                                    downloadFlow: downloadFlow
-                                }
-                                // console.log('responseJson subCriterion: ' + JSON.stringify(directoryInfo));
-                                setDirectoryInfo(directoryInfo);
-                            }).catch(error => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    downloadMode: false
-                                })
-                                console.error('Error when download: ' + error);
-                            })
+                        this.downloadTree(email, 'subCriterion', responseJson.data, downloadFlow);
                     })
                     .catch((error) => {
                         this.setState({
@@ -501,6 +377,7 @@ class SarExplorer extends Component {
                             subCriterionInfo: currentItem,
                             suggestionTypeName: selectedItem.name.toLowerCase()
                         }
+                        let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + email;
                         let directoryTree = createDirectoryTreeWith(downloadFlow, filterData, 'subCriterion');
                         // console.log('directoryTree: ' + JSON.stringify(directoryTree));
                         downloadAllEvidences(directoryTree, pdfFolderPath)
@@ -547,32 +424,7 @@ class SarExplorer extends Component {
                             suggestionType: currentItem.id,
                             suggestionInfo: selectedItem,
                         }
-                        let directoryTree = createDirectoryTreeWith(downloadFlow, responseJson.data, 'suggestion');
-                        // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                        downloadAllEvidences(directoryTree, pdfFolderPath)
-                            .then(response => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    downloadMode: false
-                                })
-                                var directoryInfo = {
-                                    email: email,
-                                    directoryTree: response,
-                                    downloadItemType: 'suggestion',
-                                    downloadFlow: downloadFlow
-                                }
-                                // console.log('responseJson suggestion: ' + JSON.stringify(directoryInfo));
-                                setDirectoryInfo(directoryInfo);
-                            }).catch(error => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    downloadMode: false
-                                })
-                                console.error('Error when download: ' + error);
-                            })
-
+                        this.downloadTree(email, 'suggestion', responseJson.data, downloadFlow);
                     })
                     .catch((error) => {
                         this.setState({
@@ -591,34 +443,7 @@ class SarExplorer extends Component {
                     suggestionInfo: currentItem,
                     evidenceInfo: selectedItem
                 }
-                console.log(downloadFlow, 'downloadFlow')
-                let directoryTree = createDirectoryTreeWith(downloadFlow, selectedItem, 'evidence');
-                console.log(directoryTree, 'directoryTree')
-                // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                downloadAllEvidences(directoryTree, pdfFolderPath)
-                    .then(response => {
-                        this.setState({
-                            isLoading: false,
-                            refreshing: false,
-                            downloadMode: false
-                        })
-                        var directoryInfo = {
-                            email: email,
-                            directoryTree: response,
-                            downloadItemType: 'evidence',
-                            downloadFlow: downloadFlow
-                        }
-                        console.log(directoryInfo, 'directoryInfo')
-                        // console.log('responseJson evidence: ' + JSON.stringify(directoryInfo));
-                        setDirectoryInfo(directoryInfo);
-                    }).catch(error => {
-                        this.setState({
-                            isLoading: false,
-                            refreshing: false,
-                            downloadMode: false
-                        })
-                        console.log('Error when download: ' + error);
-                    })
+                this.downloadTree(email, 'evidence', selectedItem, downloadFlow);
             })
         } else {
             this.setState({
@@ -627,6 +452,33 @@ class SarExplorer extends Component {
                 downloadMode: false
             })
         }
+    }
+
+    downloadTree = (email, type, data, downloadFlow) => {
+        let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + email;
+        let directoryTree = createDirectoryTreeWith(downloadFlow, data, type);
+        downloadAllEvidences(directoryTree, pdfFolderPath)
+            .then(response => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                    downloadMode: false
+                })
+                var directoryInfo = {
+                    email: email,
+                    directoryTree: response,
+                    downloadItemType: type,
+                    downloadFlow: downloadFlow
+                }
+                setDirectoryInfo(directoryInfo);
+            }).catch(error => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                    downloadMode: false
+                })
+                console.error('Error when download: ' + error);
+            })
     }
 
     renderItem = ({ item }) => {
@@ -684,10 +536,10 @@ class SarExplorer extends Component {
                     </Body>
                 </Header>
                 <BreadCrumb
-                    isConnected={this.state.isConnected}
+                    isConnected={isConnected}
                     handlePress={this.handlePopTo}
-                    previousItem={this.state.previousItem}
-                    currentItem={this.state.currentItem}
+                    previousItem={previousItem}
+                    currentItem={currentItem}
                 />
                 <Content
                     style={{ flex: 1 }}
@@ -724,7 +576,6 @@ class SarExplorer extends Component {
                                 )
                         )}
                 </Content>
-                {/* <Loader loading={this.state.isLoading} /> */}
                 {downloadMode ? (
                     <Footer
                         style={{ backgroundColor: AppCommon.colors }}
@@ -750,7 +601,16 @@ class SarExplorer extends Component {
                             </View>
                         </Right>
                     </Footer>
-                ) : (<View />))}
+                ) : (currentScene.key === 'evidences' && this.props.role !== 'REVIEWER' ? (
+                    <AddButton
+                        sarInfo={previousItem[0]}
+                        criterionInfo={previousItem[1]}
+                        subCriterionInfo={previousItem[2]}
+                        suggestionInfo={currentItem}
+                        token={this.props.token}
+                        handleRefresh={this.handleRefresh}
+                    />
+                ) : (<View />)))}
             </Container>
         )
     }
@@ -762,6 +622,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 10,
         paddingRight: 10
+    },
+    addButton: {
+        position: 'absolute',
+        width: 60,
+        height: 60,
+        bottom: 20,
+        right: 20,
+        borderRadius: 60,
+        backgroundColor: AppCommon.colors,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     footerButton: {
         flex: 1,
@@ -785,6 +656,7 @@ const mapStateToProps = state => {
     return {
         token: state.account.token,
         email: state.account.email,
+        role: state.account.role,
         directoryInfo: state.directory.directoryInfo
     };
 };

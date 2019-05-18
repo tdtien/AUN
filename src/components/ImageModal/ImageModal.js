@@ -226,7 +226,7 @@ export default class ImageModal extends Component {
                 {/* <Loader loading={this.state.isLoading} /> */}
                 <DialogInput isDialogVisible={this.state.isDialogVisible}
                     title={"Set name for doc"}
-                    hintInput={"New_Doc_<milisecond>"}
+                    hintInput={"New_Doc_"}
                     submitText={"Set"}
                     submitInput={(inputText) => { this.handleSave(inputText, 0) }}
                     closeDialog={() => { this.showDialog(false) }}>

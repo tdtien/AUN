@@ -1,6 +1,18 @@
 // const userAPI = 'https://aun-api.herokuapp.com/user';
 const userAPI = 'https://aun-app.azurewebsites.net/user';
 
+export async function getDataSar(token, type = '', id = 0) {
+    switch (type) {
+        case 'sar': return getAllSars(token)
+        case 'criterion': return getAllCriterions(token, id)
+        case 'subCriterion': return getAllSubCriterions(token, id)
+        case 'suggestionType': 
+        case 'suggestion': return getAllSuggestions(token, id)
+        case 'evidence': return getAllEvidences(token, id)
+        default: return Promise.resolve({});
+    }
+}
+
 export async function getAllSars(token) {
     return new Promise((resolve, reject) => {
         fetch(`${userAPI}/sars`, {
@@ -74,6 +86,16 @@ export async function getAllEvidences(token, suggestionId) {
             .then(responseJson => resolve(responseJson))
             .catch(error => reject(error));
     });
+}
+
+export async function downloadDataSar(token, id = 0, type = '') {
+    switch (type) {
+        case 'sar': return downloadSar(token, id)
+        case 'criterion': return downloadCriterion(token, id)
+        case 'subCriterion': return downloadSubCriterion(token, id)
+        case 'suggestion': return downloadSuggestion(token, id)
+        default: return new Promise();
+    }
 }
 
 export async function downloadSar(token, sarId) {
