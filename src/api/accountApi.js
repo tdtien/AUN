@@ -82,3 +82,48 @@ export async function convert2Pdf(token, data) {
             .catch(error => reject(error));
     });
 }
+
+
+export async function getAllComments(token, subCriterionId) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/comments/subcriterions/${subCriterionId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}
+
+export async function getAllNotes(token, subCriterionId) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/notes/subcriterions/${subCriterionId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}
+
+export async function addComment(token, data) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+            body: JSON.stringify(data)
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    });
+}
+

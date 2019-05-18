@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
     Text,
-    View,
     TouchableOpacity,
     TouchableNativeFeedback,
     StyleSheet,
@@ -11,7 +10,8 @@ import {
     ScrollView,
     Dimensions,
     TextInput,
-    Keyboard
+    Keyboard,
+    RefreshControl
 } from 'react-native';
 import {
     Content,
@@ -23,45 +23,18 @@ import {
     Tabs,
     Tab,
     Footer,
-    Right
+    Right,
+    View
 } from 'native-base';
 import { AppCommon } from '../../commons/commons';
 import { Actions } from 'react-native-router-flux';
 import moment from "moment";
+import { connect } from 'react-redux';
+import { getAllComments, getAllNotes, addComment } from '../../api/accountApi';
 
 let content = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.ontrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source'
 
-let data = [
-    {
-        'id': 1,
-        'title': 'TESTING TITLE',
-        'content': 'Testing content 1',
-        'isNote': 0,
-        'createdAt': '2019-05-06 10:42:23',
-        'updatedAt': '2019-05-06 10:42:23',
-        'UserEmail': '125@gmail.com',
-    },
-    {
-        'id': 2,
-        'title': 'TESTING TITLE',
-        'content': 'Testing content 2',
-        'isNote': 0,
-        'createdAt': '2019-05-06 10:42:23',
-        'updatedAt': '2019-05-06 10:42:23',
-        'UserEmail': '125@gmail.com',
-    },
-    {
-        'id': 3,
-        'title': 'TESTING TITLE',
-        'content': 'Testing content 3',
-        'isNote': 1,
-        'createdAt': '2019-05-06 10:42:23',
-        'updatedAt': '2019-05-06 10:42:23',
-        'UserEmail': '125@gmail.com',
-    },
-]
-
-export default class Comment extends Component {
+class Comment extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -69,8 +42,60 @@ export default class Comment extends Component {
             refreshing: false,
             fullContent: false,
             activeTabIndex: 0,
-            message: ''
+            message: '',
+            comments: [],
+            notes: []
         };
+    }
+
+    componentDidMount() {
+        this.makeRemoteRequest();
+    }
+
+
+    makeRemoteRequest = (scrollToEnd = false) => {
+        const { token, subCriterionItem } = this.props;
+        // console.log('token: ' + token);
+        // console.log('subCriterionItem: ' + JSON.stringify(subCriterionItem));
+        //subCriterionItem.id
+        getAllComments(token, 1)
+            .then((responseJson) => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                    comments: responseJson.data
+                },
+                    () => { scrollToEnd ? this._content._root.scrollToEnd({ animated: true }) : null }
+                )
+                // console.log('comments: ' + JSON.stringify(responseJson.data));
+            })
+            .catch((error) => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                })
+                console.error('Error: ' + error);
+                Alert.alert('Error when get comments: ' + error);
+            });
+        getAllNotes(token, 1)
+            .then((responseJson) => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                    notes: responseJson.data
+                },
+                    () => { scrollToEnd ? this._content._root.scrollToEnd({ animated: true }) : null }
+                )
+                // console.log('notes: ' + JSON.stringify(responseJson.data));
+            })
+            .catch((error) => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                })
+                console.error('Error: ' + error);
+                Alert.alert('Error when get notes: ' + error);
+            });
     }
 
     toggleContent = () => {
@@ -78,9 +103,6 @@ export default class Comment extends Component {
         this.setState({
             fullContent: !this.state.fullContent
         });
-    }
-    makeRemoteRequest = () => {
-
     }
 
     handleRefresh = () => {
@@ -92,7 +114,7 @@ export default class Comment extends Component {
     renderItem = ({ item }) => {
         return (
             <View style={{ backgroundColor: '#f2f2f2', marginTop: 10, marginHorizontal: 10, padding: 10, borderRadius: 5 }}>
-                <Text style={[styles.text, { fontSize: 17, fontWeight: 'bold' }]}>{item.UserEmail}</Text>
+                {item.isNote === 0 ? <Text style={[styles.text, { fontSize: 17, fontWeight: 'bold' }]}>{item.userEmail}</Text> : null}
                 <Text style={[styles.text, { fontSize: 17 }]}>{item.content}</Text>
                 <Text style={[styles.text, { fontSize: 14, marginTop: 3 }]}>{moment(item.updatedAt).format('DD/MM/YYYY HH:mm')}</Text>
             </View>
@@ -100,15 +122,41 @@ export default class Comment extends Component {
     }
 
     handleSendMessage = () => {
-        //
+        const { message, activeTabIndex } = this.state
+        if (message === '') {
+            Alert.alert('Error', activeTabIndex === 0 ? 'Empty comment!' : 'Empty note!');
+            return;
+        }
         Keyboard.dismiss();
+        // this.setState({
+        //     isLoading: true,
+        // })
+        let data = {
+            "content": message,
+            "isNote": activeTabIndex,
+            // "subCriterionId": this.props.subCriterionItem.id,
+            "subCriterionId": 1,
+            "email": this.props.email,
+        }
+        addComment(this.props.token, data)
+            .then((result) => {
+                this.setState({
+                    isLoading: false
+                }, () => {
+                    this.makeRemoteRequest(true);
+                });
+            })
+            .catch((error) => {
+                console.log('Error: ' + error);
+                Alert.alert('Error when add comment: ' + error);
+            })
         this.setState({
             message: ''
         })
     }
 
     render() {
-        const { fullContent, activeTabIndex } = this.state;
+        const { fullContent, activeTabIndex, isLoading, comments, notes } = this.state;
         let marginHorizontal = 10;
         let iconSize = 35;
         let messageWidth = Dimensions.get('window').width - marginHorizontal * 3 - iconSize;
@@ -128,23 +176,35 @@ export default class Comment extends Component {
                 </Header>
                 <Content
                     style={{ flex: 1 }}
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    // scrollEnabled={true}
+                    ref={ref => this._content = ref}
+                    refreshControl={
+                        <RefreshControl
+                            style={{ backgroundColor: '#E0FFFF' }}
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.handleRefresh}
+                        />
+                    }
                 >
                     <TouchableNativeFeedback onPress={() => this.toggleContent()}>
-                        {fullContent ? (
-                            <View style={styles.textView}>
-                                <Text style={styles.text} >{content}</Text>
-                            </View>
-                        ) : (
-                                <View style={styles.textView}>
-                                    <Text style={styles.text}>{content.substring(0, 300)}</Text>
-                                    <Text style={[styles.text, { color: '#8c8c8c' }]}>... Xem thêm</Text>
+                        {
+                            fullContent ? (
+                                <View style={styles.textView} >
+                                    <Text style={styles.text} >{content}</Text>
                                 </View>
-                            )
+                            ) : (
+                                    <View style={styles.textView}>
+                                        <Text style={styles.text}>{content.substring(0, 300)}</Text>
+                                        <Text style={[styles.text, { color: '#8c8c8c' }]}>... Xem thêm</Text>
+                                    </View>
+                                )
                         }
                     </TouchableNativeFeedback>
                     <Tabs
-                        // locked
+                        locked
                         tabBarUnderlineStyle={{ backgroundColor: '#2196F3' }}
+                        page={this.state.activeTabIndex}
                         onChangeTab={({ i }) => {
                             this.setState({
                                 activeTabIndex: i,
@@ -160,16 +220,32 @@ export default class Comment extends Component {
                             activeTextStyle={{ color: '#2196F3', fontSize: 18 }}
                             textStyle={{ color: '#808080' }}
                         >
-                            <FlatList
-                                data={data.filter(item => item.isNote === 0)}
-                                // extraData={this.state}
+                            {isLoading ? (
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                                </View>
+                            ) : (
+                                    <FlatList
+                                        data={comments}
+                                        extraData={this.state.comments}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        renderItem={this.renderItem}
+                                        // onRefresh={this.handleRefresh}
+                                        // refreshing={this.state.refreshing}
+                                        onEndReached={this.handleLoadMore}
+                                        onEndReachedThreshold={50}
+                                    />
+                                )}
+                            {/* <FlatList
+                                data={comments}
+                                extraData={this.state.comments}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={this.renderItem}
-                                onRefresh={this.handleRefresh}
-                                refreshing={this.state.refreshing}
+                                // onRefresh={this.handleRefresh}
+                                // refreshing={this.state.refreshing}
                                 onEndReached={this.handleLoadMore}
                                 onEndReachedThreshold={50}
-                            />
+                            /> */}
                         </Tab>
                         <Tab
                             heading={'Note'}
@@ -178,19 +254,36 @@ export default class Comment extends Component {
                             activeTextStyle={{ color: '#2196F3', fontSize: 18 }}
                             textStyle={{ color: '#808080' }}
                         >
-                            <FlatList
-                                data={data.filter(item => item.isNote === 1)}
-                                // extraData={this.state}
+                            {isLoading ? (
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                                </View>
+                            ) : (
+                                    <FlatList
+                                        data={notes}
+                                        extraData={this.state.notes}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        renderItem={this.renderItem}
+                                        // onRefresh={this.handleRefresh}
+                                        // refreshing={this.state.refreshing}
+                                        onEndReached={this.handleLoadMore}
+                                        onEndReachedThreshold={50}
+                                    />
+                                )}
+                            {/* <FlatList
+                                data={notes}
+                                extraData={this.state.notes}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={this.renderItem}
-                                onRefresh={this.handleRefresh}
-                                refreshing={this.state.refreshing}
+                                // onRefresh={this.handleRefresh}
+                                // refreshing={this.state.refreshing}
                                 onEndReached={this.handleLoadMore}
                                 onEndReachedThreshold={50}
-                            />
+                            /> */}
                         </Tab>
                     </Tabs>
                 </Content>
+
                 <Footer
                     style={{ backgroundColor: 'white', borderTopWidth: 1, borderColor: '#d9d9d9' }}
                 >
@@ -211,6 +304,15 @@ export default class Comment extends Component {
         )
     }
 }
+
+const mapStateToProps = state => {
+    return {
+        token: state.account.token,
+        email: state.account.email,
+    };
+};
+
+export default connect(mapStateToProps, null)(Comment);
 
 const styles = StyleSheet.create({
     menuButton: {
