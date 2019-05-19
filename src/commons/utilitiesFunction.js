@@ -52,7 +52,7 @@ export function downloadEvidence(url, filePath) {
         RNFS.downloadFile({
             fromUrl: url,
             toFile: filePath,
-            connectionTimeout: 60 * 1000,
+            connectionTimeout: 300 * 1000,
             background: true,
         }).promise.then(response => {
             resolve(true);
@@ -217,15 +217,18 @@ export function createDirectoryTreeWith(flow, data, type) {
     //Delete evidence type = 'LINK'
     directoryTree.criterions.forEach(criterion => {
         criterion.subCriterions.forEach(subCriterion => {
-            subCriterion.suggestions.evidences.forEach(evidenceType => {
-                let fileEvidences = [];
-                evidenceType.evidences.forEach(evidence => {
-                    if (evidence.type === 'FILE') {
-                        fileEvidences.push(evidence);
-                    }
+            let suggestions = subCriterion.suggestions;
+            if (suggestions.hasOwnProperty('evidences')) {
+                suggestions.evidences.forEach(evidenceType => {
+                    let fileEvidences = [];
+                    evidenceType.evidences.forEach(evidence => {
+                        if (evidence.type === 'FILE') {
+                            fileEvidences.push(evidence);
+                        }
+                    })
+                    evidenceType.evidences = fileEvidences;
                 })
-                evidenceType.evidences = fileEvidences;
-            })
+            }
         })
     });
     return directoryTree;
