@@ -7,11 +7,10 @@ import {
     ActivityIndicator,
     FlatList,
     Alert,
-    ScrollView,
     Dimensions,
     TextInput,
     Keyboard,
-    RefreshControl
+    RefreshControl,
 } from 'react-native';
 import {
     Content,
@@ -20,10 +19,7 @@ import {
     Header,
     Body,
     Title,
-    Tabs,
-    Tab,
     Footer,
-    Right,
     View
 } from 'native-base';
 import { AppCommon } from '../../commons/commons';
@@ -31,8 +27,6 @@ import { Actions } from 'react-native-router-flux';
 import moment from "moment";
 import { connect } from 'react-redux';
 import { getAllComments, getAllNotes, addComment } from '../../api/accountApi';
-
-let content = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.ontrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source'
 
 class Comment extends Component {
     constructor(props) {
@@ -52,22 +46,18 @@ class Comment extends Component {
         this.makeRemoteRequest();
     }
 
-
-    makeRemoteRequest = (scrollToEnd = false) => {
-        const { token, subCriterionItem } = this.props;
-        // console.log('token: ' + token);
-        // console.log('subCriterionItem: ' + JSON.stringify(subCriterionItem));
-        //subCriterionItem.id
-        getAllComments(token, 1)
+    handleGetComments = (scrollToEnd = false) => {
+        const { token, subCriterionInfo } = this.props;
+        console.log('subCriterionInfo: ' + JSON.stringify(subCriterionInfo));
+        getAllComments(token, subCriterionInfo.id)
             .then((responseJson) => {
                 this.setState({
                     isLoading: false,
                     refreshing: false,
                     comments: responseJson.data
                 },
-                    () => { scrollToEnd ? this._content._root.scrollToEnd({ animated: true }) : null }
+                    () => { scrollToEnd ? setTimeout(() => this._content._root.scrollToEnd({ animated: true }), 200) : null }
                 )
-                // console.log('comments: ' + JSON.stringify(responseJson.data));
             })
             .catch((error) => {
                 this.setState({
@@ -77,16 +67,19 @@ class Comment extends Component {
                 console.error('Error: ' + error);
                 Alert.alert('Error when get comments: ' + error);
             });
-        getAllNotes(token, 1)
+    }
+
+    handleGetNotes = (scrollToEnd = false) => {
+        const { token, subCriterionInfo } = this.props;
+        getAllNotes(token, subCriterionInfo.id)
             .then((responseJson) => {
                 this.setState({
                     isLoading: false,
                     refreshing: false,
                     notes: responseJson.data
                 },
-                    () => { scrollToEnd ? this._content._root.scrollToEnd({ animated: true }) : null }
+                    () => { scrollToEnd ? setTimeout(() => this._content._root.scrollToEnd({ animated: true }), 200) : null }
                 )
-                // console.log('notes: ' + JSON.stringify(responseJson.data));
             })
             .catch((error) => {
                 this.setState({
@@ -96,6 +89,12 @@ class Comment extends Component {
                 console.error('Error: ' + error);
                 Alert.alert('Error when get notes: ' + error);
             });
+    }
+
+    makeRemoteRequest = () => {
+        const { token, subCriterionInfo } = this.props;
+        this.handleGetComments();
+        this.handleGetNotes();
     }
 
     toggleContent = () => {
@@ -113,7 +112,7 @@ class Comment extends Component {
 
     renderItem = ({ item }) => {
         return (
-            <View style={{ backgroundColor: '#f2f2f2', marginTop: 10, marginHorizontal: 10, padding: 10, borderRadius: 5 }}>
+            <View style={{ backgroundColor: '#f2f2f2', marginBottom: 10, marginHorizontal: 10, padding: 10, borderRadius: 5 }}>
                 {item.isNote === 0 ? <Text style={[styles.text, { fontSize: 17, fontWeight: 'bold' }]}>{item.userEmail}</Text> : null}
                 <Text style={[styles.text, { fontSize: 17 }]}>{item.content}</Text>
                 <Text style={[styles.text, { fontSize: 14, marginTop: 3 }]}>{moment(item.updatedAt).format('DD/MM/YYYY HH:mm')}</Text>
@@ -128,14 +127,13 @@ class Comment extends Component {
             return;
         }
         Keyboard.dismiss();
-        // this.setState({
-        //     isLoading: true,
-        // })
+        this.setState({
+            isLoading: true,
+        })
         let data = {
             "content": message,
             "isNote": activeTabIndex,
-            // "subCriterionId": this.props.subCriterionItem.id,
-            "subCriterionId": 1,
+            "subCriterionId": this.props.subCriterionInfo.id,
             "email": this.props.email,
         }
         addComment(this.props.token, data)
@@ -143,7 +141,7 @@ class Comment extends Component {
                 this.setState({
                     isLoading: false
                 }, () => {
-                    this.makeRemoteRequest(true);
+                    activeTabIndex === 0 ? this.handleGetComments(true) : this.handleGetNotes(true)
                 });
             })
             .catch((error) => {
@@ -155,8 +153,18 @@ class Comment extends Component {
         })
     }
 
+    changeActiveTab = (index) => {
+        if (this.state.activeTabIndex !== index) {
+            this.setState({
+                activeTabIndex: index,
+                message: ''
+            })
+        }
+    }
+
     render() {
         const { fullContent, activeTabIndex, isLoading, comments, notes } = this.state;
+        let content = this.props.subCriterionInfo.content;
         let marginHorizontal = 10;
         let iconSize = 35;
         let messageWidth = Dimensions.get('window').width - marginHorizontal * 3 - iconSize;
@@ -176,12 +184,10 @@ class Comment extends Component {
                 </Header>
                 <Content
                     style={{ flex: 1 }}
-                    contentContainerStyle={{ flexGrow: 1 }}
-                    // scrollEnabled={true}
                     ref={ref => this._content = ref}
                     refreshControl={
                         <RefreshControl
-                            style={{ backgroundColor: '#E0FFFF' }}
+                            style={{ backgroundColor: '#E0FFFF', }}
                             refreshing={this.state.refreshing}
                             onRefresh={this.handleRefresh}
                         />
@@ -189,101 +195,41 @@ class Comment extends Component {
                 >
                     <TouchableNativeFeedback onPress={() => this.toggleContent()}>
                         {
-                            fullContent ? (
-                                <View style={styles.textView} >
+                            (fullContent || content.length <= 300) ? (
+                                <View style={styles.content} >
                                     <Text style={styles.text} >{content}</Text>
                                 </View>
                             ) : (
-                                    <View style={styles.textView}>
+                                    <View style={styles.content}>
                                         <Text style={styles.text}>{content.substring(0, 300)}</Text>
                                         <Text style={[styles.text, { color: '#8c8c8c' }]}>... Xem thêm</Text>
                                     </View>
                                 )
                         }
                     </TouchableNativeFeedback>
-                    <Tabs
-                        locked
-                        tabBarUnderlineStyle={{ backgroundColor: '#2196F3' }}
-                        page={this.state.activeTabIndex}
-                        onChangeTab={({ i }) => {
-                            this.setState({
-                                activeTabIndex: i,
-                                message: ''
-                            })
-                        }}
-                        style={{ paddingBottom: 10 }}
+                    <View
+                        style={{ flex: 1, flexDirection: 'row', marginBottom: 10, borderBottomWidth: 1, borderTopWidth: 1, borderColor: '#e6e6e6', height: 50 }}
                     >
-                        <Tab
-                            heading={'Comment'}
-                            tabStyle={{ backgroundColor: 'white' }}
-                            activeTabStyle={{ backgroundColor: 'white' }}
-                            activeTextStyle={{ color: '#2196F3', fontSize: 18 }}
-                            textStyle={{ color: '#808080' }}
-                        >
-                            {isLoading ? (
-                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <ActivityIndicator size="large" animating color={AppCommon.colors} />
-                                </View>
-                            ) : (
-                                    <FlatList
-                                        data={comments}
-                                        extraData={this.state.comments}
-                                        keyExtractor={(item, index) => index.toString()}
-                                        renderItem={this.renderItem}
-                                        // onRefresh={this.handleRefresh}
-                                        // refreshing={this.state.refreshing}
-                                        onEndReached={this.handleLoadMore}
-                                        onEndReachedThreshold={50}
-                                    />
-                                )}
-                            {/* <FlatList
-                                data={comments}
-                                extraData={this.state.comments}
+                        <TouchableOpacity style={activeTabIndex === 0 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(0)}>
+                            <Text style={activeTabIndex === 0 ? styles.activeText : styles.text}>Comment</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={activeTabIndex === 1 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(1)}>
+                            <Text style={activeTabIndex === 1 ? styles.activeText : styles.text}>Note</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {isLoading ? (
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                            <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                        </View>
+                    ) : (
+                            <FlatList
+                                data={activeTabIndex === 0 ? comments : notes}
+                                extraData={activeTabIndex === 0 ? comments : notes}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={this.renderItem}
-                                // onRefresh={this.handleRefresh}
-                                // refreshing={this.state.refreshing}
-                                onEndReached={this.handleLoadMore}
-                                onEndReachedThreshold={50}
-                            /> */}
-                        </Tab>
-                        <Tab
-                            heading={'Note'}
-                            tabStyle={{ backgroundColor: 'white' }}
-                            activeTabStyle={{ backgroundColor: 'white' }}
-                            activeTextStyle={{ color: '#2196F3', fontSize: 18 }}
-                            textStyle={{ color: '#808080' }}
-                        >
-                            {isLoading ? (
-                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <ActivityIndicator size="large" animating color={AppCommon.colors} />
-                                </View>
-                            ) : (
-                                    <FlatList
-                                        data={notes}
-                                        extraData={this.state.notes}
-                                        keyExtractor={(item, index) => index.toString()}
-                                        renderItem={this.renderItem}
-                                        // onRefresh={this.handleRefresh}
-                                        // refreshing={this.state.refreshing}
-                                        onEndReached={this.handleLoadMore}
-                                        onEndReachedThreshold={50}
-                                    />
-                                )}
-                            {/* <FlatList
-                                data={notes}
-                                extraData={this.state.notes}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={this.renderItem}
-                                // onRefresh={this.handleRefresh}
-                                // refreshing={this.state.refreshing}
-                                onEndReached={this.handleLoadMore}
-                                onEndReachedThreshold={50}
-                            /> */}
-                        </Tab>
-                    </Tabs>
+                            />
+                        )}
                 </Content>
-
                 <Footer
                     style={{ backgroundColor: 'white', borderTopWidth: 1, borderColor: '#d9d9d9' }}
                 >
@@ -321,7 +267,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 10
     },
-    textView: {
+    content: {
         marginVertical: 15,
         paddingHorizontal: 15,
     },
@@ -330,4 +276,24 @@ const styles = StyleSheet.create({
         textAlign: 'justify',
         color: '#404040',
     },
+    tab: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    activeTab: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderBottomWidth: 5,
+        borderBottomColor: AppCommon.colors
+    },
+    activeText: {
+        fontSize: 20.5,
+        textAlign: 'justify',
+        fontWeight: 'bold',
+        color: AppCommon.colors,
+    }
 });

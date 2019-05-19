@@ -588,14 +588,14 @@ class SarExplorer extends Component {
                             </View>
                         </Right>
                     </Footer>
-                ) : (currentScene.key === 'subCriterions' ? (
+                ) : (currentScene.key === 'suggestionTypes' ? (
                     <Footer
                         style={{ backgroundColor: AppCommon.colors }}
                     >
                         <Right>
                             <View style={styles.footerButton}>
-                                <TouchableOpacity style={{ marginLeft: 20, flexDirection: 'row' }} onPress={() => Actions.comment()} >
-                                    <Text style={{ fontSize: AppCommon.font_size, color: 'white', paddingRight: 10 }}>View content and comments</Text>
+                                <TouchableOpacity style={{ marginLeft: 20, flexDirection: 'row' }} onPress={() => Actions.comment({ subCriterionInfo: currentItem })} >
+                                    <Text style={{ fontSize: AppCommon.font_size, color: 'white', paddingRight: 10 }}>View content</Text>
                                     <Icon name={AppCommon.icon("arrow-forward")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
                             </View>
