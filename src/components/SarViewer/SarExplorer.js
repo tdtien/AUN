@@ -6,11 +6,12 @@ import { connect } from 'react-redux';
 import { setDirectoryInfo } from "../../actions/directoryAction";
 import { downloadCriterion, downloadSar, downloadSubCriterion, downloadSuggestion, getDataSar } from "../../api/directoryTreeApi";
 import { AppCommon } from "../../commons/commons";
-import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson } from "../../commons/utilitiesFunction";
+import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson, _searchTree, getNextType, limitText } from "../../commons/utilitiesFunction";
 import SarFolder from "./SarFolder";
 import SarItem from "./SarItem";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
 import AddButton from "./AddButton";
+import TreeSelect from 'react-native-tree-select'
 
 const window = Dimensions.get('window');
 class SarExplorer extends Component {
@@ -19,7 +20,7 @@ class SarExplorer extends Component {
         super(props);
         this.state = {
             isConnected: true,
-            isLoading: true,
+            isLoading: false,
             refreshing: false,
             scene: [
                 { key: 'sars', title: 'All Sars' },
@@ -35,11 +36,11 @@ class SarExplorer extends Component {
             downloadMode: false,
             currentItem: {},
             previousItem: [],
-            dataTree: []
+            dataTree: [],
         }
     }
 
-    componentWillMount() {
+    componentDidMount() {
         NetInfo.isConnected.addEventListener(
             'connectionChange',
             this.handleConnectivityChange
@@ -67,51 +68,52 @@ class SarExplorer extends Component {
     };
 
     handleFetchData = (isConnected, isAlert = true) => {
-        this.setState({ isLoading: true })
-        if (isConnected) {
-            if (isEmptyJson(this.state.currentItem)) {
-                this.makeRemoteRequest()
+        this.setState({ isLoading: true }, () => {
+            if (isConnected) {
+                if (isEmptyJson(this.state.currentItem)) {
+                    this.makeRemoteRequest()
+                } else {
+                    this.makeRemoteRequest(this.state.currentItem.id)
+                }
             } else {
-                this.makeRemoteRequest(this.state.currentItem.id)
-            }
-        } else {
-            if (isAlert) {
-                Alert.alert('Error!', 'Connection has been interrupted. Do you want to view offline mode ?',
-                    [
-                        {
-                            text: 'No',
-                            style: 'cancel',
-                            onPress: () => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    data: [],
-                                    dataSuggestions: [],
-                                    currentIdx: 0,
-                                    currentItem: {},
-                                    previousItem: []
-                                })
-                            }
-                        },
-                        {
-                            text: 'Yes', onPress: () => {
-                                if (isEmptyJson(this.state.currentItem)) {
-                                    this.makeLocalRequest()
-                                } else {
-                                    this.makeLocalRequest(this.state.currentItem.id)
+                if (isAlert) {
+                    Alert.alert('Error!', 'Connection has been interrupted. Do you want to view offline mode ?',
+                        [
+                            {
+                                text: 'No',
+                                style: 'cancel',
+                                onPress: () => {
+                                    this.setState({
+                                        isLoading: false,
+                                        refreshing: false,
+                                        data: [],
+                                        dataSuggestions: [],
+                                        currentIdx: 0,
+                                        currentItem: {},
+                                        previousItem: []
+                                    })
+                                }
+                            },
+                            {
+                                text: 'Yes', onPress: () => {
+                                    if (isEmptyJson(this.state.currentItem)) {
+                                        this.makeLocalRequest()
+                                    } else {
+                                        this.makeLocalRequest(this.state.currentItem.id)
+                                    }
                                 }
                             }
-                        }
-                    ]
-                );
-            } else {
-                if (isEmptyJson(this.state.currentItem)) {
-                    this.makeLocalRequest()
+                        ]
+                    );
                 } else {
-                    this.makeLocalRequest(this.state.currentItem.id)
+                    if (isEmptyJson(this.state.currentItem)) {
+                        this.makeLocalRequest()
+                    } else {
+                        this.makeLocalRequest(this.state.currentItem.id)
+                    }
                 }
             }
-        }
+        })
     }
 
     makeLocalRequest = (id = 0) => {
@@ -185,20 +187,34 @@ class SarExplorer extends Component {
                         isLoading: false,
                         refreshing: false,
                         data: data,
-                        dataSuggestions: responseJson.data
+                        dataSuggestions: isEmptyJson(responseJson) ? [] : responseJson.data
                     })
                 } else if (type === 'suggestion') {
                     this.setState({
                         isLoading: false,
                         refreshing: false,
-                        data: dataSuggestions[id]
+                        data: dataSuggestions.length !== 0 ? dataSuggestions[id] : []
                     })
                 } else {
                     this.setState({
                         isLoading: false,
                         refreshing: false,
-                        data: isEmptyJson(responseJson) ? [] : responseJson.data
+                        data: isEmptyJson(responseJson) ? [] : responseJson.data,
                     })
+                    if (type === 'sar') {
+                        var itemList = isEmptyJson(responseJson) ?
+                            [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false  }));
+                        this.setState({
+                            isLoading: false,
+                            refreshing: false,
+                            dataTree: itemList
+                        }, () => {
+                            for (let i = 0; i < itemList.length; i++) {
+                                const item = itemList[i];
+                                this.makeRemoteRequestTree(item)
+                            }
+                        })
+                    }
                 }
             })
             .catch(error => {
@@ -208,6 +224,41 @@ class SarExplorer extends Component {
                 })
                 console.error(error)
             })
+    }
+
+    makeRemoteRequestTree = (item) => {
+        const { token } = this.props;
+        var { dataTree } = this.state;
+        var listItemInTree = _searchTree(dataTree, node => node === item)
+        if (listItemInTree.length !== 0) {
+            var currentItemInTree = listItemInTree[0]
+            let type = getNextType(currentItemInTree.type);
+            var id = currentItemInTree.id
+            if (typeof item.id === 'string') {
+                id = currentItemInTree.id.replace(/[^0-9]/g, '');
+            }
+            if (type === '') {
+                return
+            }
+            getDataSar(token, type, id)
+                .then(responseJson => {
+                    if (type === 'suggestionType') {
+                        let data = [
+                            { id: `implications${id}`, name: 'Implications' },
+                            { id: `questions${id}`, name: 'Questions' },
+                            { id: `evidences${id}`, name: 'Evidence Types' }
+                        ]
+                        currentItemInTree['children'] = data.map(item => ({ ...item, type: type, isLoad: false, dataSuggestions: responseJson.data }))
+                    } else if (type === 'suggestion') {
+                        currentItemInTree['children'] = currentItemInTree.dataSuggestions[currentItemInTree.id.replace(/[^a-z]/g, '')]
+                            .map(item => ({ ...item, type: type, isLoad: false, name: limitText(item.content), id: `${type}${item.id}` }))
+                    } else {
+                        currentItemInTree['children'] = isEmptyJson(responseJson) ?
+                            [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false, id: `${type}${item.id}`, name: limitText(item.name) }))
+                    }
+                    this.setState({ dataTree: dataTree, isLoading: false, refreshing: false })
+                })
+        }
     }
 
     handleRefresh = () => {
@@ -220,6 +271,19 @@ class SarExplorer extends Component {
         } else {
             this.makeLocalRequest(id)
         }
+    }
+
+    handleClick = ({item, routes}) => {
+        let fileType = ['IMPLICATION', 'QUESTION', 'FILE', 'LINK']
+        this.setState({ isLoading: true }, () => {
+            if (item.hasOwnProperty('children') && !item.isLoad) {
+                for (let i = 0; i < item.children.length; i++) {
+                    const itemChild = item.children[i];
+                    this.makeRemoteRequestTree(itemChild)
+                }
+                item.isLoad = true;
+            }
+        });
     }
 
     handlePop = () => {
@@ -552,7 +616,7 @@ class SarExplorer extends Component {
                         /> : null
                     }
                 >
-                    {isLoading ? (
+                    {/* {isLoading ? (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <ActivityIndicator size="large" animating color={AppCommon.colors} />
                         </View>
@@ -574,7 +638,29 @@ class SarExplorer extends Component {
                                         onEndReachedThreshold={50}
                                     />
                                 )
-                        )}
+                        )} */}
+                    {/* <TreeView
+                        data={this.state.dataTree}
+                        onItemPress={this.handleClick}
+                        renderItem={this.renderTreeItem}
+                    /> */}
+                    <TreeSelect
+                        data={this.state.dataTree}
+                        isOpen
+                        isShowTreeId={false}
+                        itemStyle={{
+                            fontSize: AppCommon.font_size,
+                        }}
+                        selectedItemStyle={{
+                            backgroudColor: 'white',
+                            fontSize: AppCommon.font_size,
+                        }}
+                        onClick={this.handleClick}
+                        treeNodeStyle={{
+                            openIcon: <Icon style={{ marginRight: 10, fontSize: AppCommon.icon_size, color: AppCommon.colors }} name="ios-arrow-down" />,
+                            closeIcon: <Icon style={{ marginRight: 10, fontSize: AppCommon.icon_size, color: AppCommon.colors }} name="ios-arrow-forward" />
+                        }}
+                    />
                 </Content>
                 {downloadMode ? (
                     <Footer
