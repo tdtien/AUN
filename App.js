@@ -62,6 +62,13 @@ class App extends Component {
         <Image source={Images.logo} resizeMode="contain" style={styles.splashImage} />
       </View>
     )
+    if (this.state.isSplashScreenVisible) {
+      return (
+        <View style={styles.splashScreenView}>
+          <Image source={Images.logo} resizeMode="contain" style={styles.splashImage} />
+        </View>
+      )
+    }
     return (
       <Root>
         <Router
@@ -162,9 +169,6 @@ class App extends Component {
             />
           </Stack>
         </Router>
-        {
-          (this.state.isSplashScreenVisible === true) ? splashScreen : null
-        }
       </Root>
     );
   }
