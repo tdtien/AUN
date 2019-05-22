@@ -29,7 +29,7 @@ export default class SarFolder extends Component {
                         <View style={styles.commentArea}>
                             <Text style={styles.comment}>{item.commentCount}</Text>
                             <Icon name="comment" type="MaterialIcons" style={{ color: '#cccccc', fontSize: 13 }} />
-                            <Text style={styles.comment}>{', ' + item.noteCount}</Text>
+                            <Text style={styles.comment}>{' ' + item.noteCount}</Text>
                             <Icon name="note" type="SimpleLineIcons" style={{ color: '#cccccc', fontSize: 13 }} />
                         </View>
                     ) : <View />}
