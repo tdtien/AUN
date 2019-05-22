@@ -203,7 +203,7 @@ class SarExplorer extends Component {
                     })
                     if (type === 'sar') {
                         var itemList = isEmptyJson(responseJson) ?
-                            [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false  }));
+                            [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false }));
                         this.setState({
                             isLoading: false,
                             refreshing: false,
@@ -273,7 +273,7 @@ class SarExplorer extends Component {
         }
     }
 
-    handleClick = ({item, routes}) => {
+    handleClick = ({ item, routes }) => {
         let fileType = ['IMPLICATION', 'QUESTION', 'FILE', 'LINK']
         this.setState({ isLoading: true }, () => {
             if (item.hasOwnProperty('children') && !item.isLoad) {
