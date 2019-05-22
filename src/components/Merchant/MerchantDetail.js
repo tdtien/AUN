@@ -39,6 +39,7 @@ import {
     MenuTrigger,
 } from 'react-native-popup-menu';
 import { FlatGrid } from "react-native-super-grid";
+import BreadCrumb from "../Breadcrumb/Breadcrumb";
 
 const screenWidth = Dimensions.get('window').width;
 const columns = 2;
@@ -285,6 +286,16 @@ class MerchantDetail extends Component {
         return dataProp;
     }
 
+    handlePopTo = (index, isRoot = false) => {
+        let sceneKey = '';
+        if (isRoot) {
+            sceneKey = '_sarExplorer';
+        } else {
+            sceneKey = AppCommon.uploadFlow[index].key;
+        }
+        Actions.popTo(sceneKey);
+    }
+
     render() {
         let selectImageTitle = (!this.state.isSelectAll) ? 'Select All' : 'Deselect All'
         let header = (!this.state.isCheckBoxVisible) ? (
@@ -366,6 +377,14 @@ class MerchantDetail extends Component {
         return (
             <Container>
                 {header}
+                <BreadCrumb
+                    isConnected={false}
+                    isUploadFlow={true}
+                    handlePress={this.handlePopTo}
+                    previousItem={AppCommon.uploadFlow.slice(0, 1)}
+                    currentItem={AppCommon.uploadFlow[1]}
+                    nextItem={AppCommon.uploadFlow.slice(2, AppCommon.uploadFlow.length)}
+                />
                 <Content>
                     <FlatGrid
                         style={{ marginTop: 10, flex: 1 }}

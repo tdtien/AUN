@@ -9,6 +9,7 @@ import CameraButton from "./CameraButton";
 import MerchantItem from "./MerchantItem";
 import moment from 'moment'
 import Loader from '../Loader/Loader';
+import BreadCrumb from "../Breadcrumb/Breadcrumb";
 
 export default class Merchant extends Component {
     constructor(props) {
@@ -217,6 +218,16 @@ export default class Merchant extends Component {
         })
     }
 
+    handlePopTo = (index, isRoot = false) => {
+        let sceneKey = '';
+        if (isRoot) {
+            sceneKey = '_sarExplorer';
+        } else {
+            sceneKey = AppCommon.uploadFlow[index].key;
+        }
+        Actions.popTo(sceneKey);
+    }
+
     render() {
         let dataRender = this.state.searchText ? this.state.dataFilter : this.state.data;
         let header = (!this.state.isSearching) ? (
@@ -265,16 +276,16 @@ export default class Merchant extends Component {
             )
         return (
             <Container style={{ backgroundColor: '#F7F5F5' }}>
-                {
-                    header
-                }
+                {header}
+                <BreadCrumb
+                    isConnected={false}
+                    isUploadFlow={true}
+                    handlePress={this.handlePopTo}
+                    previousItem={[]}
+                    currentItem={AppCommon.uploadFlow[0]}
+                    nextItem={AppCommon.uploadFlow.slice(1, AppCommon.uploadFlow.length)}
+                />
                 <Content
-                    // refreshControl={
-                    //     <RefreshControl
-                    //         refreshing={this.state.refreshing}
-                    //         onRefresh={this.handleRefresh}
-                    //     />
-                    // }
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
                 >
@@ -300,9 +311,7 @@ export default class Merchant extends Component {
                 <CameraButton
                     folderPath={null}
                 />
-                {
-                    <Loader loading={this.state.isLoading} />
-                }
+                <Loader loading={this.state.isLoading} />
             </Container>
         );
     }

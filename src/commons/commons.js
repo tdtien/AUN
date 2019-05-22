@@ -14,6 +14,12 @@ export class AppCommon {
         if (name == 'camera' && Platform.OS == 'android') {
             return name;
         }
-        return Platform.OS === 'ios' ? ('ios-' + name ): ('md-' + name);
+        return Platform.OS === 'ios' ? ('ios-' + name) : ('md-' + name);
     }
+    static uploadFlow = [
+        { key: 'merchant', name: 'Import images' },
+        { key: 'merchantDetail', name: 'Choose images' },
+        { key: 'sortList', name: 'Sort images' },
+        { key: 'pdfViewer', name: 'Upload evidence' }
+    ]
 }

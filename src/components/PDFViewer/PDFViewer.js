@@ -27,6 +27,7 @@ import { AppCommon } from '../../commons/commons';
 import DialogInput from "react-native-dialog-input";
 import { validateFileName } from '../../commons/validation';
 import { deleteItem, popToSceneWithUpdate } from '../../commons/utilitiesFunction';
+import BreadCrumb from '../Breadcrumb/Breadcrumb';
 
 class PDFViewer extends React.Component {
     constructor(props) {
@@ -154,12 +155,24 @@ class PDFViewer extends React.Component {
         });
     }
 
+    handlePopTo = (index, isRoot = false) => {
+        let sceneKey = '';
+        if (isRoot) {
+            sceneKey = '_sarExplorer';
+        } else {
+            sceneKey = AppCommon.uploadFlow[index].key;
+        }
+        Actions.popTo(sceneKey);
+    }
+
     render() {
-        let uri = (this.props.base64 !== null) ? `data:application/pdf;base64,${this.props.base64}` : this.state.currentEvidence.link;
-        let pdfArrayView = (this.props.evidenceArray !== undefined && this.props.evidenceArray.length > 1) ? (
+        let { evidenceArray, base64 } = this.props;
+        let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading } = this.state
+        let uri = (base64 !== null) ? `data:application/pdf;base64,${base64}` : currentEvidence.link;
+        let pdfArrayView = (typeof evidenceArray !== 'undefined' && evidenceArray.length > 1) ? (
             <View
                 style={{
-                    width: this.state.screenWidth,
+                    width: screenWidth,
                     height: 40,
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -175,7 +188,7 @@ class PDFViewer extends React.Component {
                 <TouchableOpacity onPress={() => this.handleViewEvidences('next')}>
                     <Text style={{ fontSize: 17, color: 'black' }}>Next</Text>
                 </TouchableOpacity>
-            </View >
+            </View>
         ) : null
         return (
             <Container>
@@ -204,9 +217,16 @@ class PDFViewer extends React.Component {
                     }
 
                 </Header>
-                {
-                    (this.state.isShowPdfView) ? pdfArrayView : null
+                {base64 === null ? <View /> :
+                    <BreadCrumb
+                        isConnected={false}
+                        isUploadFlow={true}
+                        handlePress={this.handlePopTo}
+                        previousItem={AppCommon.uploadFlow.slice(0, 3)}
+                        currentItem={AppCommon.uploadFlow[3]}
+                    />
                 }
+                {(isShowPdfView) ? pdfArrayView : null}
                 <View style={styles.container}>
                     <Pdf
                         onLoadProgress={() => {
@@ -221,19 +241,19 @@ class PDFViewer extends React.Component {
                         }}
                         style={{
                             flex: 1,
-                            width: this.state.screenWidth
+                            width: screenWidth
                         }}
                         onPageSingleTap={() => {
                             this.setState({
-                                isShowPdfView: !this.state.isShowPdfView
+                                isShowPdfView: !isShowPdfView
                             })
                         }}
                         fitPolicy={0}
                     />
                 </View>
-                <DialogInput isDialogVisible={this.state.isDialogVisible}
+                <DialogInput isDialogVisible={isDialogVisible}
                     title={"Set name for doc to upload"}
-                    hintInput={this.state.fileName}
+                    hintInput={fileName}
                     submitText={"Set"}
                     submitInput={(inputText) => { this.handleUploadPdf(inputText) }}
                     closeDialog={() => { this.setState({ isDialogVisible: false }) }}>

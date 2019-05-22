@@ -11,7 +11,7 @@ export default class BreadCrumb extends Component {
     }
 
     render() {
-        const { isConnected, handlePress, previousItem, currentItem } = this.props
+        const { isConnected, handlePress, previousItem, currentItem, isUploadFlow, nextItem } = this.props
         return (
             <ScrollView
                 style={styles.container}
@@ -21,10 +21,12 @@ export default class BreadCrumb extends Component {
                 showsVerticalScrollIndicator={false}
                 ref={ref => this.scrollView = ref}
                 onContentSizeChange={(contentWidth, contentHeight) => {
-                    if (contentWidth > window.width) {
-                        this.scrollView.scrollToEnd({ animated: true });
-                    } else {
-                        this.scrollView.scrollTo({ x: 0, y: 0, animated: false });
+                    if (typeof nextItem === 'undefined') {
+                        if (contentWidth > window.width) {
+                            this.scrollView.scrollToEnd({ animated: true });
+                        } else {
+                            this.scrollView.scrollTo({ x: 0, y: 0, animated: false });
+                        }
                     }
                 }}
             >
@@ -56,7 +58,22 @@ export default class BreadCrumb extends Component {
                             {currentItem.hasOwnProperty('type') && currentItem.type === 'EVIDENCE' ?
                                 limitText(currentItem.content) : limitText(currentItem.name)}
                         </Text>
-                    </TouchableOpacity>}
+                    </TouchableOpacity>
+                }
+                {(isEmptyJson(nextItem) || nextItem.length == 0) ? <View /> : nextItem.map((item, index) => {
+                    return (
+                        <TouchableOpacity
+                            key={item.id + index}
+                            style={styles.breadCrumbItem}
+                            disabled
+                        >
+                            <Icon name="right" type="AntDesign" style={styles.crumbArrow} />
+                            <Text style={[styles.crumbItem, { color: '#b3b3b3' }]}>
+                                {limitText(item.name)}
+                            </Text>
+                        </TouchableOpacity>
+                    )
+                })}
             </ScrollView>
         )
     }

@@ -19,6 +19,7 @@ import { connect } from 'react-redux'
 import { folderToBase64 } from "../../commons/utilitiesFunction";
 import { convert2Pdf } from "../../api/accountApi";
 import RNFS from "react-native-fs";
+import BreadCrumb from "../Breadcrumb/Breadcrumb";
 
 const window = Dimensions.get('window');
 const imageWidth = (window.width - 30 * 2)
@@ -53,6 +54,14 @@ class SortList extends Component {
                         <Icon name="pdffile1" type="AntDesign" style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                 </Header>
+                <BreadCrumb
+                    isConnected={false}
+                    isUploadFlow={true}
+                    handlePress={this.handlePopTo}
+                    previousItem={AppCommon.uploadFlow.slice(0, 2)}
+                    currentItem={AppCommon.uploadFlow[2]}
+                    nextItem={AppCommon.uploadFlow.slice(3,AppCommon.uploadFlow.length)}
+                />
                 <SortableList
                     style={styles.list}
                     contentContainerStyle={styles.contentContainer}
@@ -111,6 +120,16 @@ class SortList extends Component {
 
     _renderRow = ({ data, active }) => {
         return <Row data={data} active={active} />
+    }
+
+    handlePopTo = (index, isRoot = false) => {
+        let sceneKey = '';
+        if (isRoot) {
+            sceneKey = '_sarExplorer';
+        } else {
+            sceneKey = AppCommon.uploadFlow[index].key;
+        }
+        Actions.popTo(sceneKey);
     }
 }
 
