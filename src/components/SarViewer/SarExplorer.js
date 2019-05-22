@@ -1,4 +1,4 @@
-import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title } from "native-base";
+import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title, Grid, Col } from "native-base";
 import React, { Component } from "react";
 import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Actions } from "react-native-router-flux";
@@ -14,6 +14,7 @@ import AddButton from "./AddButton";
 import TreeSelect from 'react-native-tree-select'
 
 const window = Dimensions.get('window');
+const aspectRatio = window.height / window.width;
 class SarExplorer extends Component {
 
     constructor(props) {
@@ -37,6 +38,7 @@ class SarExplorer extends Component {
             currentItem: {},
             previousItem: [],
             dataTree: [],
+            isTablet: aspectRatio < 1.6
         }
     }
 
@@ -572,7 +574,7 @@ class SarExplorer extends Component {
     }
 
     render() {
-        const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected, isLoading } = this.state;
+        const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected, isLoading, isTablet } = this.state;
         let currentScene = scene[currentIdx]
         let title = downloadMode ? 'Download Offline' : currentScene.key === 'suggestions' ? currentScene.title + currentItem.name : currentScene.title
         return (
@@ -607,63 +609,73 @@ class SarExplorer extends Component {
                     previousItem={previousItem}
                     currentItem={currentItem}
                 />
-                <Content
-                    style={{ flex: 1 }}
-                    contentContainerStyle={{ flex: 1 }}
-                    refreshControl={(typeof this.state.data === 'undefined' || this.state.data.length === 0) ?
-                        <RefreshControl
-                            style={{ backgroundColor: '#E0FFFF' }}
-                            refreshing={this.state.refreshing}
-                            onRefresh={this.handleRefresh}
-                        /> : null
-                    }
-                >
-                    {isLoading ? (
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <ActivityIndicator size="large" animating color={AppCommon.colors} />
-                        </View>
-                    ) : (
-                            (typeof this.state.data === 'undefined' || this.state.data.length === 0) ? (
+                {isTablet ? (
+                    <Grid>
+                        <Col style={{ width: window.width * 1 / 3 }}>
+                            <TreeSelect
+                                data={this.state.dataTree}
+                                isOpen
+                                isShowTreeId={false}
+                                itemStyle={{
+                                    fontSize: AppCommon.font_size,
+                                }}
+                                selectedItemStyle={{
+                                    backgroudColor: AppCommon.colors,
+                                    fontSize: AppCommon.font_size,
+                                    color: 'white'
+                                }}
+                                onClick={this.handleClick}
+                                treeNodeStyle={{
+                                    openIcon: <Icon style={{ marginRight: 10, fontSize: 14, color: AppCommon.colors }} name="ios-arrow-down" />,
+                                    closeIcon: <Icon style={{ marginRight: 10, fontSize: 14, color: AppCommon.colors }} name="ios-arrow-forward" />
+                                }}
+                            />
+                        </Col>
+                        <Col style={{ width: window.width * 2 / 3 }}>
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                                <Text style={{ color: '#BDBDBD' }}>Pull to refresh</Text>
+                            </View>
+                        </Col>
+                    </Grid>
+                ) : (
+
+                        <Content
+                            style={{ flex: 1 }}
+                            contentContainerStyle={{ flex: 1 }}
+                            refreshControl={(typeof this.state.data === 'undefined' || this.state.data.length === 0) ?
+                                <RefreshControl
+                                    style={{ backgroundColor: '#E0FFFF' }}
+                                    refreshing={this.state.refreshing}
+                                    onRefresh={this.handleRefresh}
+                                /> : null
+                            }
+                        >
+                            {isLoading ? (
                                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
-                                    <Text style={{ color: '#BDBDBD' }}>Pull to refresh</Text>
+                                    <ActivityIndicator size="large" animating color={AppCommon.colors} />
                                 </View>
                             ) : (
-                                    <FlatList
-                                        data={this.state.data}
-                                        extraData={this.state}
-                                        keyExtractor={(item, index) => index.toString()}
-                                        renderItem={this.renderItem}
-                                        onRefresh={this.handleRefresh}
-                                        refreshing={this.state.refreshing}
-                                        onEndReached={this.handleLoadMore}
-                                        onEndReachedThreshold={50}
-                                    />
-                                )
-                        )}
-                    {/* <TreeView
-                        data={this.state.dataTree}
-                        onItemPress={this.handleClick}
-                        renderItem={this.renderTreeItem}
-                    /> */}
-                    {/* <TreeSelect
-                        data={this.state.dataTree}
-                        isOpen
-                        isShowTreeId={false}
-                        itemStyle={{
-                            fontSize: AppCommon.font_size,
-                        }}
-                        selectedItemStyle={{
-                            backgroudColor: 'white',
-                            fontSize: AppCommon.font_size,
-                        }}
-                        onClick={this.handleClick}
-                        treeNodeStyle={{
-                            openIcon: <Icon style={{ marginRight: 10, fontSize: AppCommon.icon_size, color: AppCommon.colors }} name="ios-arrow-down" />,
-                            closeIcon: <Icon style={{ marginRight: 10, fontSize: AppCommon.icon_size, color: AppCommon.colors }} name="ios-arrow-forward" />
-                        }}
-                    /> */}
-                </Content>
+                                    (typeof this.state.data === 'undefined' || this.state.data.length === 0) ? (
+                                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                                            <Text style={{ color: '#BDBDBD' }}>Pull to refresh</Text>
+                                        </View>
+                                    ) : (
+                                            <FlatList
+                                                data={this.state.data}
+                                                extraData={this.state}
+                                                keyExtractor={(item, index) => index.toString()}
+                                                renderItem={this.renderItem}
+                                                onRefresh={this.handleRefresh}
+                                                refreshing={this.state.refreshing}
+                                                onEndReached={this.handleLoadMore}
+                                                onEndReachedThreshold={50}
+                                            />
+                                        )
+                                )}
+                        </Content>
+                    )}
                 {downloadMode ? (
                     <Footer
                         style={{ backgroundColor: AppCommon.colors }}
