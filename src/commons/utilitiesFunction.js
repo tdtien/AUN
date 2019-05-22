@@ -278,11 +278,11 @@ export function _searchTree(aTree, fCompair, bGreedy = false) {
 
 export function getNextType(type = 'sar') {
     switch(type) {
-        case 'sar': return 'criterion';
-        case 'criterion': return 'subCriterion';
-        case 'subCriterion': return 'suggestionType';
-        case 'suggestionType': return 'suggestion';
-        case 'suggestion': return 'evidence';
+        case 'sars': return 'criterions';
+        case 'criterions': return 'subCriterions';
+        case 'subCriterions': return 'suggestionTypes';
+        case 'suggestionTypes': return 'suggestions';
+        case 'suggestions': return 'evidences';
         default: return '';
     }
 }
