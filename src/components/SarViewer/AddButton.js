@@ -16,15 +16,15 @@ import { validateFileName } from "../../commons/validation";
 const pickerOptions = [
     {
         key: 'images',
-        title: 'Upload images in device...',
+        title: 'Edit from images in device...',
     },
     {
         key: 'link',
-        title: 'Upload link...'
+        title: 'Upload from link...'
     },
     {
         key: 'evidence',
-        title: 'Upload evidence in device...'
+        title: 'Upload from PDF file in device...'
     }
 ]
 

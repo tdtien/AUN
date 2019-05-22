@@ -1,4 +1,4 @@
-// const userAPI = 'https://aun-api.herokuapp.com/user';
+// const userAPI = 'http://172.29.64.131:8080/user';
 const userAPI = 'https://aun-app.azurewebsites.net/user';
 
 export async function requestLogin(email, password) {
