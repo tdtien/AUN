@@ -3,12 +3,12 @@ const userAPI = 'https://aun-app.azurewebsites.net/user';
 
 export async function getDataSar(token, type = '', id = 0) {
     switch (type) {
-        case 'sar': return getAllSars(token)
-        case 'criterion': return getAllCriterions(token, id)
-        case 'subCriterion': return getAllSubCriterions(token, id)
-        case 'suggestionType': 
-        case 'suggestion': return getAllSuggestions(token, id)
-        case 'evidence': return getAllEvidences(token, id)
+        case 'sars': return getAllSars(token)
+        case 'criterions': return getAllCriterions(token, id)
+        case 'subCriterions': return getAllSubCriterions(token, id)
+        case 'suggestionTypes': 
+        case 'suggestions': return getAllSuggestions(token, id)
+        case 'evidences': return getAllEvidences(token, id)
         default: return Promise.resolve({});
     }
 }
