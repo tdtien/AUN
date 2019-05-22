@@ -10,7 +10,8 @@ import { AppCommon } from "../../commons/commons";
 
 export default class SarFolder extends Component {
     render() {
-        const { item, type, downloadMode } = this.props;
+        const { item, type, downloadMode, sceneKey } = this.props;
+        let isCommentVisible = (sceneKey === 'sars' || sceneKey === 'criterions' || sceneKey === 'subCriterions') ? true : false;
         return (
             <TouchableOpacity
                 activeOpacity={0.5}
@@ -18,13 +19,21 @@ export default class SarFolder extends Component {
                 onLongPress={this.props.onLongPress}
             >
                 <View style={styles.item}>
-                    <View style={styles.leftItem}>
+                    <View style={isCommentVisible ? styles.leftItemV2 : styles.leftItem} >
                         <Icon name={AppCommon.icon("folder")} style={styles.icon} />
-                        <Text style={styles.name} numberOfLines={3}>
+                        <Text style={isCommentVisible ? styles.nameV2 : styles.name} numberOfLines={3}>
                             {typeof type === 'string' && type === 'evidences' ? item.content : item.name}
                         </Text>
                     </View>
-                    {downloadMode ? (<CheckBox checked={item.checked} onPress={this.props.toggleChecked}/>) : (<View />)}
+                    {isCommentVisible ? (
+                        <View style={styles.commentArea}>
+                            <Text style={styles.comment}>{item.commentCount}</Text>
+                            <Icon name="comment" type="MaterialIcons" style={{ color: '#cccccc', fontSize: 13 }} />
+                            <Text style={styles.comment}>{', ' + item.noteCount}</Text>
+                            <Icon name="note" type="SimpleLineIcons" style={{ color: '#cccccc', fontSize: 13 }} />
+                        </View>
+                    ) : <View />}
+                    {downloadMode ? (<CheckBox checked={item.checked} onPress={this.props.toggleChecked} />) : (<View />)}
                 </View>
             </TouchableOpacity>
         )
@@ -49,10 +58,32 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         paddingRight: 10
     },
+    leftItemV2: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: 0,
+        flexGrow: 1
+    },
     name: {
         color: 'black',
         paddingHorizontal: 15,
         fontSize: AppCommon.font_size
+    },
+    nameV2: {
+        color: 'black',
+        flexShrink: 1,
+        paddingHorizontal: 15,
+        fontSize: AppCommon.font_size
+    },
+    commentArea: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        right: 0
+    },
+    comment: {
+        color: '#cccccc',
+        paddingRight: 5,
+        fontSize: 17
     },
     icon: {
         color: AppCommon.colors,

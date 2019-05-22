@@ -547,11 +547,12 @@ class SarExplorer extends Component {
 
     renderItem = ({ item }) => {
         let fileType = ['IMPLICATION', 'QUESTION', 'FILE', 'LINK']
+        const { scene, currentIdx, currentItem, data, downloadMode } = this.state;
         if (item.hasOwnProperty('type') && fileType.indexOf(item.type) >= 0) {
             return (<SarItem
                 item={item}
                 type={item.type}
-                data={this.state.data}
+                data={data}
                 onLongPress={() => this.turnOnDownloadMode()}
                 downloadMode={this.state.downloadMode}
                 toggleChecked={() => this.toggleChecked(item)}
@@ -560,7 +561,8 @@ class SarExplorer extends Component {
         return (
             <SarFolder
                 item={item}
-                type={this.state.currentItem.id}
+                type={currentItem.id}
+                sceneKey={scene[currentIdx].key}
                 onPress={() => this.handlePush(item)}
                 onLongPress={() => this.turnOnDownloadMode()}
                 downloadMode={this.state.downloadMode}
@@ -616,7 +618,7 @@ class SarExplorer extends Component {
                         /> : null
                     }
                 >
-                    {/* {isLoading ? (
+                    {isLoading ? (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <ActivityIndicator size="large" animating color={AppCommon.colors} />
                         </View>
@@ -638,13 +640,13 @@ class SarExplorer extends Component {
                                         onEndReachedThreshold={50}
                                     />
                                 )
-                        )} */}
+                        )}
                     {/* <TreeView
                         data={this.state.dataTree}
                         onItemPress={this.handleClick}
                         renderItem={this.renderTreeItem}
                     /> */}
-                    <TreeSelect
+                    {/* <TreeSelect
                         data={this.state.dataTree}
                         isOpen
                         isShowTreeId={false}
@@ -660,7 +662,7 @@ class SarExplorer extends Component {
                             openIcon: <Icon style={{ marginRight: 10, fontSize: AppCommon.icon_size, color: AppCommon.colors }} name="ios-arrow-down" />,
                             closeIcon: <Icon style={{ marginRight: 10, fontSize: AppCommon.icon_size, color: AppCommon.colors }} name="ios-arrow-forward" />
                         }}
-                    />
+                    /> */}
                 </Content>
                 {downloadMode ? (
                     <Footer
