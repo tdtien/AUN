@@ -12,14 +12,11 @@ import {
   Body,
   View,
   Toast,
-  Root,
-  Spinner,
   Header
 } from "native-base";
-import { StyleSheet, Image, StatusBar } from "react-native";
+import { StyleSheet, Image } from "react-native";
 import { Actions } from "react-native-router-flux";
 import Images from "../../assets/images";
-import { validateEmail } from "../../commons/validation";
 import { requestLogin } from "../../api/accountApi";
 import { connect } from "react-redux";
 import { loginAccount } from "../../actions/account";
@@ -32,7 +29,6 @@ class Login extends Component {
       email: "",
       password: "",
       isLoading: false,
-      isSplashScreenVisible: true,
     };
   }
 
@@ -71,30 +67,12 @@ class Login extends Component {
       })
     }
   };
-
-  hideSplashScreen = () => {
-    this.setState({
-      isSplashScreenVisible: false,
-    })
-  };
-
-  componentDidMount() {
-    var that = this;
-    setTimeout(function () {
-      that.hideSplashScreen();
-    }, 2500);
-  }
-
+  
   render() {
-    let splashScreen = (
-      <View style={styles.splashScreenView}>
-        <Image style={styles.splashImage} source={Images.logo} />
-      </View>
-    )
     return (
       <Container>
         <Header noShadow iosBarStyle="dark-content" style={{ backgroundColor: 'white', border: 0, borderBottomWidth: 0 }} androidStatusBarColor="white"/>
-        <Content scrollEnabled={false}>
+        <Content>
           <View style={styles.logoContainer}>
             <Image style={styles.logo} source={Images.logo} />
             <Text style={styles.title}>AUN Inspection System</Text>
@@ -136,9 +114,6 @@ class Login extends Component {
             <Text style={{ fontSize: 13 }}>Register now!</Text>
           </Button>
         </View>
-        {
-          (this.state.isSplashScreenVisible === true) ? splashScreen : null
-        }
         <Loader loading={this.state.isLoading} />
       </Container>
     );
@@ -167,23 +142,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  splashScreenView: {
-    flex: 1,
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    margin: 0,
-    width: '100%',
-    height: '100%'
-  },
-  splashImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
   inputStyle: {
-    width: '90%'
+    marginRight: 15 ,
   }
 });
 

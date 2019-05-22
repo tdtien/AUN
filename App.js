@@ -8,7 +8,7 @@ import MerchantDetail from './src/components/Merchant/MerchantDetail';
 import SideMenu from './src/components/SideMenu/SideMenu';
 import PDFViewer from './src/components/PDFViewer/PDFViewer';
 import { connect } from "react-redux";
-import { ToastAndroid, BackHandler, Alert } from "react-native";
+import { ToastAndroid, BackHandler, Alert, View, StyleSheet, Image } from "react-native";
 import SortList from './src/components/Merchant/SortList';
 import SuggestionViewer from './src/components/FolderExplorer/SuggestionViewer';
 import SarViewer from './src/components/FolderExplorer/SarViewer';
@@ -22,13 +22,14 @@ import { checkToken } from './src/api/accountApi';
 import { logoutAccount } from './src/actions/account';
 import SarExplorer from './src/components/SarViewer/SarExplorer';
 import Comment from './src/components/Comment/Comment';
+import Images from './src/assets/images';
 
 class App extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-
+      isSplashScreenVisible: true
     }
   }
 
@@ -50,11 +51,17 @@ class App extends Component {
         console.log(error);
       })
     }
+    setTimeout(() => this.setState({ isSplashScreenVisible: false }), 2500);
   }
 
   render() {
     var backLoginScene = false;
     let exitScene = ["login", "_merchant", "_sarExplorer"];
+    let splashScreen = (
+      <View style={styles.splashScreenView}>
+        <Image source={Images.logo} resizeMode="contain" style={styles.splashImage} />
+      </View>
+    )
     return (
       <Root>
         <Router
@@ -149,16 +156,36 @@ class App extends Component {
               key="evidenceViewer"
               component={EvidenceViewer}
             />
-             <Scene
+            <Scene
               key="comment"
               component={Comment}
             />
           </Stack>
         </Router>
+        {
+          (this.state.isSplashScreenVisible === true) ? splashScreen : null
+        }
       </Root>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  splashScreenView: {
+    flex: 1,
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    margin: 0,
+    width: '100%',
+    height: '100%'
+  },
+  splashImage: {
+    width: 250,
+    height: 250
+  },
+})
 
 const mapDispatchToProps = dispatch => {
   return {
