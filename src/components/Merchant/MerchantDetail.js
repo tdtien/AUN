@@ -379,7 +379,6 @@ class MerchantDetail extends Component {
                 {header}
                 <BreadCrumb
                     isConnected={false}
-                    isUploadFlow={true}
                     handlePress={this.handlePopTo}
                     previousItem={AppCommon.uploadFlow.slice(0, 1)}
                     currentItem={AppCommon.uploadFlow[1]}

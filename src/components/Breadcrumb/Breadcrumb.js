@@ -11,7 +11,7 @@ export default class BreadCrumb extends Component {
     }
 
     render() {
-        const { isConnected, handlePress, previousItem, currentItem, isUploadFlow, nextItem } = this.props
+        const { isConnected, handlePress, previousItem, currentItem, nextItem } = this.props
         return (
             <ScrollView
                 style={styles.container}

@@ -279,7 +279,6 @@ export default class Merchant extends Component {
                 {header}
                 <BreadCrumb
                     isConnected={false}
-                    isUploadFlow={true}
                     handlePress={this.handlePopTo}
                     previousItem={[]}
                     currentItem={AppCommon.uploadFlow[0]}

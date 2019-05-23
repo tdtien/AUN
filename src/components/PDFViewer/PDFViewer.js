@@ -220,7 +220,6 @@ class PDFViewer extends React.Component {
                 {base64 === null ? <View /> :
                     <BreadCrumb
                         isConnected={false}
-                        isUploadFlow={true}
                         handlePress={this.handlePopTo}
                         previousItem={AppCommon.uploadFlow.slice(0, 3)}
                         currentItem={AppCommon.uploadFlow[3]}

@@ -56,7 +56,6 @@ class SortList extends Component {
                 </Header>
                 <BreadCrumb
                     isConnected={false}
-                    isUploadFlow={true}
                     handlePress={this.handlePopTo}
                     previousItem={AppCommon.uploadFlow.slice(0, 2)}
                     currentItem={AppCommon.uploadFlow[2]}
