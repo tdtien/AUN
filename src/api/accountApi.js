@@ -1,5 +1,5 @@
 // const userAPI = 'http://172.29.64.131:8080/user';
-const userAPI = 'https://aun-app.azurewebsites.net/user';
+const userAPI = 'http://13.76.7.59:8080/user';
 
 export async function requestLogin(email, password) {
     var info = {

@@ -1,5 +1,5 @@
 // const userAPI = 'http://172.29.64.131:8080/user';
-const userAPI = 'https://aun-app.azurewebsites.net/user';
+const userAPI = 'http://13.76.7.59:8080/user';
 
 export async function getDataSar(token, type = '', id = 0) {
     switch (type) {
@@ -60,7 +60,7 @@ export async function getAllSubCriterions(token, criterionId) {
 
 export async function getAllSuggestions(token, subcriterionId) {
     return new Promise((resolve, reject) => {
-        fetch(`${userAPI}/subcriterions/${subcriterionId}/suggestions2`, {
+        fetch(`${userAPI}/criterions/${subcriterionId}/suggestions`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

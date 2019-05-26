@@ -26,7 +26,6 @@ class SarExplorer extends Component {
             scene: [
                 { key: 'sars', title: 'All Sars' },
                 { key: 'criterions', title: 'All Criterions' },
-                { key: 'subCriterions', title: 'All Subcriterions' },
                 { key: 'suggestionTypes', title: 'All Suggestion Types' },
                 { key: 'suggestions', title: 'All ' },
                 { key: 'evidences', title: 'All Evidences' }
@@ -39,7 +38,8 @@ class SarExplorer extends Component {
             previousItem: [],
             dataTree: [],
             isTablet: aspectRatio < 1.6,
-            content: ''
+            content: '',
+            subCriterionView: false,
         }
     }
 
@@ -181,17 +181,21 @@ class SarExplorer extends Component {
         getDataSar(token, type, id)
             .then((responseJson) => {
                 if (type === 'suggestionTypes') {
-                    let data = [
-                        { id: 'implications', name: 'Implications' },
-                        { id: 'questions', name: 'Questions' },
-                        { id: 'evidences', name: 'Evidence Types' }
-                    ]
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                        data: data,
-                        dataSuggestions: isEmptyJson(responseJson) ? [] : responseJson.data
-                    })
+                    getDataSar(token, 'subCriterions', id)
+                        .then((response) => {
+                            var data = [
+                                { id: 'implications', name: 'Implications' },
+                                { id: 'questions', name: 'Questions' },
+                                { id: 'evidences', name: 'Evidence Types' },
+                            ]
+                            data.subCriterions = response.data;
+                            this.setState({
+                                isLoading: false,
+                                refreshing: false,
+                                data: data,
+                                dataSuggestions: isEmptyJson(responseJson) ? [] : responseJson.data
+                            })
+                        })
                 } else if (type === 'suggestions') {
                     this.setState({
                         isLoading: false,
@@ -310,6 +314,10 @@ class SarExplorer extends Component {
     }
 
     handlePop = () => {
+        if (this.state.subCriterionView) {
+            this.setState({ subCriterionView: false })
+            return;
+        }
         if (--this.state.currentIdx > 0) {
             let item = this.state.previousItem.pop();
             this.setState({
@@ -327,6 +335,10 @@ class SarExplorer extends Component {
     }
 
     handlePopTo = (index, isRoot = false) => {
+        if (this.state.subCriterionView) {
+            this.setState({ subCriterionView: false })
+            return;
+        }
         if (!this.state.isLoading) {
             if (isRoot) {
                 this.setState({
@@ -356,6 +368,10 @@ class SarExplorer extends Component {
             isLoading: true,
             currentItem: item
         }, () => this.handleRefresh(item.id));
+    }
+
+    handleComment = (item) => {
+        Actions.comment({ subCriterionInfo: item })
     }
 
     turnOnDownloadMode = () => {
@@ -570,7 +586,7 @@ class SarExplorer extends Component {
             })
     }
 
-    renderItem = ({ item }) => {
+    renderItem = ({ item, index }) => {
         let fileType = ['IMPLICATION', 'QUESTION', 'FILE', 'LINK']
         const { scene, currentIdx, currentItem, data, downloadMode } = this.state;
         if (item.hasOwnProperty('type') && fileType.indexOf(item.type) >= 0) {
@@ -588,7 +604,7 @@ class SarExplorer extends Component {
                 item={item}
                 type={currentItem.id}
                 sceneKey={scene[currentIdx].key}
-                onPress={() => this.handlePush(item)}
+                onPress={() => item.key === 'subCriterion' ? this.handleComment(item) : this.handlePush(item)}
                 onLongPress={() => this.turnOnDownloadMode()}
                 downloadMode={this.state.downloadMode}
                 toggleChecked={() => this.toggleChecked(item)}
@@ -597,7 +613,7 @@ class SarExplorer extends Component {
     }
 
     render() {
-        const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected, isLoading, isTablet } = this.state;
+        const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected, isLoading, isTablet, subCriterionView } = this.state;
         let currentScene = scene[currentIdx]
         let title = downloadMode ? 'Download Offline' : currentScene.key === 'suggestions' ? currentScene.title + currentItem.name : currentScene.title
         return (
@@ -719,7 +735,7 @@ class SarExplorer extends Component {
                                         </View>
                                     ) : (
                                             <FlatList
-                                                data={this.state.data}
+                                                data={subCriterionView ? this.state.data.subCriterions : this.state.data}
                                                 extraData={this.state}
                                                 keyExtractor={(item, index) => index.toString()}
                                                 renderItem={this.renderItem}
@@ -744,14 +760,14 @@ class SarExplorer extends Component {
                             </View>
                         </Right>
                     </Footer>
-                ) : (currentScene.key === 'suggestionTypes' ? (
+                ) : (currentScene.key === 'suggestionTypes' && !subCriterionView ? (
                     <Footer
                         style={{ backgroundColor: AppCommon.colors }}
                     >
                         <Right>
                             <View style={styles.footerButton}>
-                                <TouchableOpacity style={{ marginLeft: 20, flexDirection: 'row' }} onPress={() => Actions.comment({ subCriterionInfo: currentItem })} >
-                                    <Text style={{ fontSize: AppCommon.font_size, color: 'white', paddingRight: 10 }}>View content</Text>
+                                <TouchableOpacity style={{ marginLeft: 20, flexDirection: 'row' }} onPress={() => this.setState({ subCriterionView: true })} >
+                                    <Text style={{ fontSize: AppCommon.font_size, color: 'white', paddingRight: 10 }}>View Subcriterions</Text>
                                     <Icon name={AppCommon.icon("arrow-forward")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
                             </View>
