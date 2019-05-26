@@ -35,7 +35,7 @@ import {
 } from '../../commons/utilitiesFunction';
 import DownloadButton from './DownloadButton';
 import DialogInput from "react-native-dialog-input";
-import { updatePdf } from '../../api/accountApi';
+import { uploadEvidence } from '../../api/accountApi';
 import {
     DocumentPicker,
     DocumentPickerUtil,
@@ -219,7 +219,7 @@ class EvidenceViewer extends Component {
             suggestionId: this.props.suggestionInfo.id,
             name: data.fileNameUpload,
         }
-        updatePdf(this.props.token, data)
+        uploadEvidence(this.props.token, data)
             .then((responseJson) => {
                 this.setState({
                     isLoading: false

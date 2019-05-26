@@ -172,6 +172,17 @@ export function createDirectoryTreeWith(flow, data, type) {
                 }],
             }
             break;
+        case 'suggestionType':
+            directoryTree = {
+                id: flow.sarInfo.id,
+                name: flow.sarInfo.name,
+                criterions: [{
+                    id: flow.criterionInfo.id,
+                    name: flow.criterionInfo.name,
+                    suggestions: data.suggestions
+                }],
+            }
+            break;
         case 'suggestion':
             directoryTree = {
                 id: flow.sarInfo.id,
@@ -179,13 +190,9 @@ export function createDirectoryTreeWith(flow, data, type) {
                 criterions: [{
                     id: flow.criterionInfo.id,
                     name: flow.criterionInfo.name,
-                    subCriterions: [{
-                        id: flow.subCriterionInfo.id,
-                        name: flow.subCriterionInfo.name,
-                        suggestions: {
-                            [flow.suggestionType]: [data]
-                        }
-                    }],
+                    suggestions: {
+                        [flow.suggestionType]: [data]
+                    }
                 }],
             }
             break;
@@ -196,41 +203,38 @@ export function createDirectoryTreeWith(flow, data, type) {
                 criterions: [{
                     id: flow.criterionInfo.id,
                     name: flow.criterionInfo.name,
-                    subCriterions: [{
-                        id: flow.subCriterionInfo.id,
-                        name: flow.subCriterionInfo.name,
-                        suggestions: {
-                            evidences: [{
-                                id: flow.suggestionInfo.id,
-                                content: flow.suggestionInfo.content,
-                                type: flow.suggestionInfo.type,
-                                evidences: [data]
-                            }]
-                        }
-                    }],
+                    suggestions: {
+                        evidences: [{
+                            id: flow.suggestionInfo.id,
+                            content: flow.suggestionInfo.content,
+                            type: flow.suggestionInfo.type,
+                            evidences: [data]
+                        }]
+                    }
                 }],
             }
             break;
         default:
             break;
     }
+
+    console.log('old directory: ' + JSON.stringify(directoryTree))
     //Delete evidence type = 'LINK'
     directoryTree.criterions.forEach(criterion => {
-        criterion.subCriterions.forEach(subCriterion => {
-            let suggestions = subCriterion.suggestions;
-            if (suggestions.hasOwnProperty('evidences')) {
-                suggestions.evidences.forEach(evidenceType => {
-                    let fileEvidences = [];
-                    evidenceType.evidences.forEach(evidence => {
-                        if (evidence.type === 'FILE') {
-                            fileEvidences.push(evidence);
-                        }
-                    })
-                    evidenceType.evidences = fileEvidences;
+        let suggestions = criterion.suggestions;
+        if (suggestions.hasOwnProperty('evidences')) {
+            suggestions.evidences.forEach(evidenceType => {
+                let fileEvidences = [];
+                evidenceType.evidences.forEach(evidence => {
+                    if (evidence.type === 'FILE') {
+                        fileEvidences.push(evidence);
+                    }
                 })
-            }
-        })
+                evidenceType.evidences = fileEvidences;
+            })
+        }
     });
+    console.log('new directory: ' + JSON.stringify(directoryTree))
     return directoryTree;
 }
 
@@ -277,7 +281,7 @@ export function _searchTree(aTree, fCompair, bGreedy = false) {
 }
 
 export function getNextType(type = 'sar') {
-    switch(type) {
+    switch (type) {
         case 'sars': return 'criterions';
         case 'criterions': return 'subCriterions';
         case 'subCriterions': return 'suggestionTypes';

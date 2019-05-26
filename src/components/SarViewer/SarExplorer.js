@@ -458,7 +458,7 @@ class SarExplorer extends Component {
             })
         } else if (scene[currentIdx].key === 'suggestionTypes') {
             selectedData.forEach((selectedItem) => {
-                downloadSubCriterion(token, currentItem.id)
+                downloadCriterion(token, currentItem.id)
                     .then((responseJson) => {
                         // console.log('responseJson: ' + JSON.stringify(responseJson.data));
                         let index = data.indexOf(selectedItem);
@@ -478,12 +478,11 @@ class SarExplorer extends Component {
                         }
                         let downloadFlow = {
                             sarInfo: previousItem[0],
-                            criterionInfo: previousItem[1],
-                            subCriterionInfo: currentItem,
-                            suggestionTypeName: selectedItem.name.toLowerCase()
+                            criterionInfo: currentItem,
+                            suggestionType: selectedItem.name.toLowerCase()
                         }
                         let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + email;
-                        let directoryTree = createDirectoryTreeWith(downloadFlow, filterData, 'subCriterion');
+                        let directoryTree = createDirectoryTreeWith(downloadFlow, filterData, 'suggestionType');
                         // console.log('directoryTree: ' + JSON.stringify(directoryTree));
                         downloadAllEvidences(directoryTree, pdfFolderPath)
                             .then(response => {
