@@ -80,14 +80,8 @@ const directoryReducer = (state = initialState, action) => {
                             sarItem.criterions.push(directoryTree.criterions[0]);
                             break;
                         }
-                        let subCriterionIndex = criterionItem.subCriterions.findIndex(item => item.id === flow.subCriterionInfo.id);
-                        let subCriterionNewItem = directoryTree.criterions[0].subCriterions[0];
-                        if (subCriterionIndex !== -1) {
-                            let subCriterionItem = criterionItem.subCriterions[subCriterionIndex];
-                            subCriterionItem.suggestions[flow.suggestionTypeName] = subCriterionNewItem.suggestions[flow.suggestionTypeName]
-                        } else {
-                            criterionItem.subCriterions.push(subCriterionNewItem);
-                        }
+                        let suggestionTypeNewItem = directoryTree.criterions[0].suggestions[flow.suggestionType];
+                        criterionItem.suggestions[flow.suggestionType] = suggestionTypeNewItem;
                         break;
                     }
                 case 'suggestion':
@@ -102,22 +96,17 @@ const directoryReducer = (state = initialState, action) => {
                             sarItem.criterions.push(directoryTree.criterions[0]);
                             break;
                         }
-                        let subCriterionItem = criterionItem.subCriterions.find(item => item.id === flow.subCriterionInfo.id);
-                        if (subCriterionItem === undefined) {
-                            criterionItem.subCriterions.push(directoryTree.criterions[0].subCriterions[0]);
-                            break;
-                        }
-                        let suggestionArray = subCriterionItem.suggestions;
-                        let suggestionTypeNewItem = directoryTree.criterions[0].subCriterions[0].suggestions[flow.suggestionType];
-                        if (suggestionArray.hasOwnProperty(flow.suggestionType)) {
-                            let suggestionIndex = suggestionArray[flow.suggestionType].findIndex(item => item.id === flow.suggestionInfo.id);
+                        let suggestions = criterionItem.suggestions;
+                        let suggestionTypeNewItem = directoryTree.criterions[0].suggestions[flow.suggestionType];
+                        if (suggestions.hasOwnProperty(flow.suggestionType)) {
+                            let suggestionIndex = suggestions[flow.suggestionType].findIndex(item => item.id === flow.suggestionInfo.id);
                             if (suggestionIndex !== -1) {
-                                suggestionArray[flow.suggestionType][suggestionIndex] = suggestionTypeNewItem[0];
+                                suggestions[flow.suggestionType][suggestionIndex] = suggestionTypeNewItem[0];
                             } else {
-                                suggestionArray[flow.suggestionType].push(suggestionTypeNewItem[0]);
+                                suggestions[flow.suggestionType].push(suggestionTypeNewItem[0]);
                             }
                         } else {
-                            suggestionArray[flow.suggestionType] = suggestionTypeNewItem
+                            suggestions[flow.suggestionType] = suggestionTypeNewItem;
                         }
                         break;
                     }
@@ -133,16 +122,12 @@ const directoryReducer = (state = initialState, action) => {
                             sarItem.criterions.push(directoryTree.criterions[0]);
                             break;
                         }
-                        let subCriterionItem = criterionItem.subCriterions.find(item => item.id === flow.subCriterionInfo.id);
-                        if (subCriterionItem === undefined) {
-                            criterionItem.subCriterions.push(directoryTree.criterions[0].subCriterions[0]);
-                            break;
-                        }
-                        let evidenceTypeNewArray = directoryTree.criterions[0].subCriterions[0].suggestions.evidences;
-                        if (subCriterionItem.suggestions.hasOwnProperty('evidences')) {
-                            let evidenceTypeItem = subCriterionItem.suggestions.evidences.find(item => item.id === flow.suggestionInfo.id);
+                        let suggestions = criterionItem.suggestions;
+                        let evidenceTypeNewArray = directoryTree.criterions[0].suggestions.evidences;
+                        if (suggestions.hasOwnProperty('evidences')) {
+                            let evidenceTypeItem = suggestions.evidences.find(item => item.id === flow.suggestionInfo.id);
                             if (evidenceTypeItem === undefined) {
-                                subCriterionItem.suggestions.evidences.push(evidenceTypeNewArray[0]);
+                                suggestions.evidences.push(evidenceTypeNewArray[0]);
                                 break;
                             }
                             let evidenceIndex = evidenceTypeItem.evidences.findIndex(item => item.id === flow.evidenceInfo.id);
@@ -152,7 +137,7 @@ const directoryReducer = (state = initialState, action) => {
                                 evidenceTypeItem.evidences.push(evidenceTypeNewArray[0].evidences[0]);
                             }
                         } else {
-                            subCriterionItem.suggestions.evidences = evidenceTypeNewArray;
+                            suggestions.evidences = evidenceTypeNewArray;
                         }
                         break;
                     }

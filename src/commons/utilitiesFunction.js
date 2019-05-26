@@ -70,20 +70,18 @@ export function downloadAllEvidences(directoryTree, pdfFolderPath) {
             .then(response => {
                 let criterionArray = directoryTree.criterions;
                 for (let criterion of criterionArray) {
-                    let subCriterionArray = criterion.subCriterions;
-                    for (let subCriterion of subCriterionArray) {
-                        if (!subCriterion.suggestions.hasOwnProperty('evidences')) {
-                            resolve(directoryTree);
-                        } else {
-                            let evidenceTypeArray = subCriterion.suggestions.evidences;
-                            for (let evidenceType of evidenceTypeArray) {
-                                let evidenceArray = evidenceType.evidences;
-                                for (let evidence of evidenceArray) {
-                                    if (evidence.type === 'FILE') {
-                                        let filePath = pdfFolderPath + '/' + evidence.name + '.pdf';
-                                        promises.push(downloadEvidence(evidence.link, filePath))
-                                        evidence.link = filePath;
-                                    }
+                    let suggestions = criterion.suggestions;
+                    if (!suggestions.hasOwnProperty('evidences')) {
+                        resolve(directoryTree);
+                    } else {
+                        let evidenceTypeArray = suggestions.evidences;
+                        for (let evidenceType of evidenceTypeArray) {
+                            let evidenceArray = evidenceType.evidences;
+                            for (let evidence of evidenceArray) {
+                                if (evidence.type === 'FILE') {
+                                    let filePath = pdfFolderPath + '/' + evidence.name + '.pdf';
+                                    promises.push(downloadEvidence(evidence.link, filePath))
+                                    evidence.link = filePath;
                                 }
                             }
                         }
@@ -169,6 +167,7 @@ export function createDirectoryTreeWith(flow, data, type) {
                     id: flow.criterionInfo.id,
                     name: flow.criterionInfo.name,
                     subCriterions: [data],
+                    suggestions: {},
                 }],
             }
             break;
@@ -179,6 +178,7 @@ export function createDirectoryTreeWith(flow, data, type) {
                 criterions: [{
                     id: flow.criterionInfo.id,
                     name: flow.criterionInfo.name,
+                    subCriterions: [],
                     suggestions: data.suggestions
                 }],
             }
@@ -190,6 +190,7 @@ export function createDirectoryTreeWith(flow, data, type) {
                 criterions: [{
                     id: flow.criterionInfo.id,
                     name: flow.criterionInfo.name,
+                    subCriterions: [],
                     suggestions: {
                         [flow.suggestionType]: [data]
                     }
@@ -203,6 +204,7 @@ export function createDirectoryTreeWith(flow, data, type) {
                 criterions: [{
                     id: flow.criterionInfo.id,
                     name: flow.criterionInfo.name,
+                    subCriterions: [],
                     suggestions: {
                         evidences: [{
                             id: flow.suggestionInfo.id,
@@ -218,7 +220,6 @@ export function createDirectoryTreeWith(flow, data, type) {
             break;
     }
 
-    console.log('old directory: ' + JSON.stringify(directoryTree))
     //Delete evidence type = 'LINK'
     directoryTree.criterions.forEach(criterion => {
         let suggestions = criterion.suggestions;
@@ -234,7 +235,6 @@ export function createDirectoryTreeWith(flow, data, type) {
             })
         }
     });
-    console.log('new directory: ' + JSON.stringify(directoryTree))
     return directoryTree;
 }
 

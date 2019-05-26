@@ -485,34 +485,9 @@ class SarExplorer extends Component {
                         let downloadFlow = {
                             sarInfo: previousItem[0],
                             criterionInfo: currentItem,
-                            suggestionType: selectedItem.name.toLowerCase()
+                            suggestionType: selectedItem.name === 'Evidence Types' ? 'evidences' : selectedItem.name.toLowerCase()
                         }
-                        let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + email;
-                        let directoryTree = createDirectoryTreeWith(downloadFlow, filterData, 'suggestionType');
-                        // console.log('directoryTree: ' + JSON.stringify(directoryTree));
-                        downloadAllEvidences(directoryTree, pdfFolderPath)
-                            .then(response => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    downloadMode: false
-                                })
-                                var directoryInfo = {
-                                    email: email,
-                                    directoryTree: response,
-                                    downloadItemType: 'suggestionType',
-                                    downloadFlow: downloadFlow
-                                }
-                                // console.log('responseJson suggestion type: ' + JSON.stringify(directoryInfo));
-                                setDirectoryInfo(directoryInfo);
-                            }).catch(error => {
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    downloadMode: false
-                                })
-                                console.error('Error when download: ' + error);
-                            })
+                        this.downloadTree(email, 'suggestionType', filterData, downloadFlow);
                     })
                     .catch((error) => {
                         this.setState({
@@ -580,7 +555,8 @@ class SarExplorer extends Component {
                     downloadItemType: type,
                     downloadFlow: downloadFlow
                 }
-                setDirectoryInfo(directoryInfo);
+                // console.log('directoryInfo: ' + JSON.stringify(directoryInfo));
+                this.props.setDirectoryInfo(directoryInfo);
             }).catch(error => {
                 this.setState({
                     isLoading: false,
