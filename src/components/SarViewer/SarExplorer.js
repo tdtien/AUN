@@ -455,7 +455,7 @@ class SarExplorer extends Component {
                         console.error('Error when download: ' + error);
                     });
             })
-        } else if (scene[currentIdx].key === 'subCriterions') {
+        } else if (subCriterionView) {
             selectedData.forEach((selectedItem) => {
                 downloadSubCriterion(token, selectedItem.id)
                     .then((responseJson) => {
