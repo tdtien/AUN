@@ -48,7 +48,7 @@ class Comment extends Component {
 
     handleGetComments = (scrollToEnd = false) => {
         const { token, subCriterionInfo } = this.props;
-        console.log('subCriterionInfo: ' + JSON.stringify(subCriterionInfo));
+        // console.log('subCriterionInfo: ' + JSON.stringify(subCriterionInfo));
         getAllComments(token, subCriterionInfo.id)
             .then((responseJson) => {
                 this.setState({
