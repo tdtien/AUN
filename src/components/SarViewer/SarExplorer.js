@@ -263,7 +263,6 @@ class SarExplorer extends Component {
                         currentItemInTree['children'] = isEmptyJson(responseJson) ?
                             [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false, id: `${type}${item.id}`, name: limitText(item.name) }))
                     }
-                    // console.log(responseJson.data)
                     this.setState({ dataTree: dataTree })
                 })
         }
@@ -283,7 +282,6 @@ class SarExplorer extends Component {
 
     handleClick = ({ item, routes }) => {
         var { currentItem, previousItem, content } = this.state;
-        let fileType = ['IMPLICATION', 'QUESTION', 'FILE', 'LINK']
         if (item.hasOwnProperty('children') && !item.isLoad) {
             for (let i = 0; i < item.children.length; i++) {
                 const itemChild = item.children[i];
@@ -374,6 +372,7 @@ class SarExplorer extends Component {
         Actions.comment({ subCriterionInfo: item })
     }
 
+    //--------------------Start Download Offline--------------------//
     turnOnDownloadMode = () => {
         if (!this.state.downloadMode && this.state.isConnected) {
             var dataSource = this.state.subCriterionView ? this.state.data.subCriterions : this.state.data;
@@ -566,18 +565,28 @@ class SarExplorer extends Component {
                 console.error('Error when download: ' + error);
             })
     }
+    //--------------------End Download Offline--------------------//
 
     renderItem = ({ item, index }) => {
         let fileType = ['IMPLICATION', 'QUESTION', 'FILE', 'LINK']
-        const { scene, currentIdx, currentItem, data, downloadMode } = this.state;
+        const { scene, currentIdx, currentItem, data, downloadMode, previousItem } = this.state;
+        item.index = index;
+        var rootIndex = '';
+        previousItem.forEach(item => {
+            rootIndex += `${item.index + 1}.`
+        });
+        if (!isEmptyJson(currentItem)) {
+            rootIndex += `${currentItem.index + 1}.`
+        }
         if (item.hasOwnProperty('type') && fileType.indexOf(item.type) >= 0) {
             return (<SarItem
                 item={item}
                 type={item.type}
                 data={data}
                 onLongPress={() => this.turnOnDownloadMode()}
-                downloadMode={this.state.downloadMode}
+                downloadMode={downloadMode}
                 toggleChecked={() => this.toggleChecked(item)}
+                rootIndex = {rootIndex}
             />)
         }
         return (
@@ -587,8 +596,9 @@ class SarExplorer extends Component {
                 sceneKey={scene[currentIdx].key}
                 onPress={() => item.key === 'subCriterion' ? this.handleComment(item) : this.handlePush(item)}
                 onLongPress={() => this.turnOnDownloadMode()}
-                downloadMode={this.state.downloadMode}
+                downloadMode={downloadMode}
                 toggleChecked={() => this.toggleChecked(item)}
+                rootIndex = {rootIndex}
             />
         )
     }
