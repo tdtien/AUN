@@ -10,7 +10,7 @@ import { AppCommon } from "../../commons/commons";
 
 export default class SarFolder extends Component {
     render() {
-        const { item, type, downloadMode, sceneKey } = this.props;
+        const { item, type, downloadMode, sceneKey, rootIndex } = this.props;
         let isCommentVisible = (sceneKey === 'sars' || sceneKey === 'criterions' || sceneKey === 'subCriterions') ? true : false;
         return (
             <TouchableOpacity
@@ -22,7 +22,7 @@ export default class SarFolder extends Component {
                     <View style={isCommentVisible ? styles.leftItemV2 : styles.leftItem} >
                         <Icon name={AppCommon.icon("folder")} style={styles.icon} />
                         <Text style={isCommentVisible ? styles.nameV2 : styles.name} numberOfLines={3}>
-                            {typeof type === 'string' && type === 'evidences' ? item.content : item.name}
+                            {`${rootIndex}${item.index + 1}. ${typeof type === 'string' && type === 'evidences' ? item.content : item.name}`}
                         </Text>
                     </View>
                     {isCommentVisible ? (
