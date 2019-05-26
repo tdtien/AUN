@@ -376,27 +376,33 @@ class SarExplorer extends Component {
 
     turnOnDownloadMode = () => {
         if (!this.state.downloadMode && this.state.isConnected) {
-            this.setState({ downloadMode: !this.state.downloadMode, data: this.state.data.map(obj => ({ ...obj, checked: false })) })
+            var dataSource = this.state.subCriterionView ? this.state.data.subCriterions : this.state.data;
+            dataSource.map(obj => ({ ...obj, checked: false }));
+            this.setState({ downloadMode: !this.state.downloadMode, data: this.state.data })
         }
     }
 
     turnOffDownloadMode = () => {
-        this.setState({ downloadMode: false, data: this.state.data.map(({ checked, ...obj }) => obj) })
+        var dataSource = this.state.subCriterionView ? this.state.data.subCriterions : this.state.data;
+        dataSource.map(({ checked, ...obj }) => obj);
+        this.setState({ downloadMode: false, data: this.state.data })
     }
 
     toggleChecked = (item) => {
-        let idx = this.state.data.indexOf(item)
+        var dataSource = this.state.subCriterionView ? this.state.data.subCriterions : this.state.data;
+        let idx = dataSource.indexOf(item)
         if (idx > -1) {
-            let checked = this.state.data[idx].checked
-            this.state.data[idx].checked = !checked
+            let checked = dataSource[idx].checked
+            dataSource[idx].checked = !checked
             this.setState({ data: this.state.data })
         }
     }
 
     handleDownloadOffline = () => {
-        let selectedData = this.state.data.filter(item => item.checked)
-        const { scene, currentIdx, previousItem, currentItem, data } = this.state
+        const { scene, currentIdx, previousItem, currentItem, data, subCriterionView } = this.state
         const { token, email, setDirectoryInfo } = this.props
+        var dataSource = subCriterionView ? data.subCriterions : data;
+        let selectedData = dataSource.filter(item => item.checked)
         if (selectedData.length === 0) {
             Alert.alert('Error!', 'No item is selected')
             return
