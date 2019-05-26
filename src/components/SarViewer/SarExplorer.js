@@ -1,6 +1,6 @@
-import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title, Grid, Col } from "native-base";
+import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title, Grid, Col, Row } from "native-base";
 import React, { Component } from "react";
-import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View, ScrollView } from "react-native";
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import { setDirectoryInfo } from "../../actions/directoryAction";
@@ -14,7 +14,6 @@ import AddButton from "./AddButton";
 import TreeSelect from 'react-native-tree-select'
 
 const window = Dimensions.get('window');
-const aspectRatio = window.height / window.width;
 class SarExplorer extends Component {
 
     constructor(props) {
@@ -23,6 +22,12 @@ class SarExplorer extends Component {
             isConnected: true,
             isLoading: false,
             refreshing: false,
+            downloadMode: false,
+            isTablet: window.height / window.width < 1.6,
+            width: window.width,
+            subCriterionView: false,
+            currentIdx: 0,
+            dimensions: undefined,
             scene: [
                 { key: 'sars', title: 'All Sars' },
                 { key: 'criterions', title: 'All Criterions' },
@@ -30,16 +35,12 @@ class SarExplorer extends Component {
                 { key: 'suggestions', title: 'All ' },
                 { key: 'evidences', title: 'All Evidences' }
             ],
-            currentIdx: 0,
             data: [],
             dataSuggestions: {},
-            downloadMode: false,
-            currentItem: {},
-            previousItem: [],
             dataTree: [],
-            isTablet: aspectRatio < 1.6,
+            previousItem: [],
+            currentItem: {},
             content: '',
-            subCriterionView: false,
         }
     }
 
@@ -51,7 +52,7 @@ class SarExplorer extends Component {
         NetInfo.isConnected.fetch().done((isConnected) => {
             this.setState({
                 isConnected: isConnected
-            }, () => this.handleFetchData(isConnected, false));
+            }, () => this.handleFetchData(false));
         });
     }
 
@@ -66,17 +67,32 @@ class SarExplorer extends Component {
         );
     }
 
+    onLayout = event => {
+        let { width, height } = event.nativeEvent.layout
+        this.setState({ isTablet: height / width < 1.6, width: width }, () => this.handleFetchData(false))
+    }
+
     handleConnectivityChange = (isConnected) => {
-        this.setState({ isConnected: isConnected }, () => this.handleFetchData(isConnected))
+        this.setState({ isConnected: isConnected }, () => this.handleFetchData())
     };
 
-    handleFetchData = (isConnected, isAlert = true) => {
-        this.setState({ isLoading: true }, () => {
-            if (isConnected) {
-                if (isEmptyJson(this.state.currentItem)) {
-                    this.makeRemoteRequest()
+    handleFetchData = (isAlert = true) => {
+        this.setState({
+            isLoading: true,
+            data: [],
+            dataSuggestions: [],
+            currentIdx: 0,
+            currentItem: {},
+            previousItem: [],
+            content: '',
+            subCriterionView: false,
+            dataTree: []
+        }, () => {
+            if (this.state.isConnected) {
+                if (this.state.isTablet) {
+                    this.makeRemoteRequestTree()
                 } else {
-                    this.makeRemoteRequest(this.state.currentItem.id)
+                    this.makeRemoteRequest()
                 }
             } else {
                 if (isAlert) {
@@ -89,31 +105,19 @@ class SarExplorer extends Component {
                                     this.setState({
                                         isLoading: false,
                                         refreshing: false,
-                                        data: [],
-                                        dataSuggestions: [],
-                                        currentIdx: 0,
-                                        currentItem: {},
-                                        previousItem: []
                                     })
                                 }
                             },
                             {
-                                text: 'Yes', onPress: () => {
-                                    if (isEmptyJson(this.state.currentItem)) {
-                                        this.makeLocalRequest()
-                                    } else {
-                                        this.makeLocalRequest(this.state.currentItem.id)
-                                    }
+                                text: 'Yes',
+                                onPress: () => {
+                                    this.makeLocalRequest()
                                 }
                             }
                         ]
                     );
                 } else {
-                    if (isEmptyJson(this.state.currentItem)) {
-                        this.makeLocalRequest()
-                    } else {
-                        this.makeLocalRequest(this.state.currentItem.id)
-                    }
+                    this.makeLocalRequest()
                 }
             }
         })
@@ -208,20 +212,6 @@ class SarExplorer extends Component {
                         refreshing: false,
                         data: isEmptyJson(responseJson) ? [] : responseJson.data,
                     })
-                    if (type === 'sars') {
-                        var itemList = isEmptyJson(responseJson) ?
-                            [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false }));
-                        this.setState({
-                            isLoading: false,
-                            refreshing: false,
-                            dataTree: itemList
-                        }, () => {
-                            for (let i = 0; i < itemList.length; i++) {
-                                const item = itemList[i];
-                                this.makeRemoteRequestTree(item)
-                            }
-                        })
-                    }
                 }
             })
             .catch(error => {
@@ -233,9 +223,28 @@ class SarExplorer extends Component {
             })
     }
 
-    makeRemoteRequestTree = (item) => {
+    makeRemoteRequestTree = (item = {}) => {
         const { token } = this.props;
         var { dataTree } = this.state;
+        if (isEmptyJson(item)) {
+            type = 'sars'
+            getDataSar(token, type)
+                .then(responseJson => {
+                    var itemList = isEmptyJson(responseJson) ?
+                        [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false }));
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        dataTree: itemList
+                    }, () => {
+                        for (let i = 0; i < itemList.length; i++) {
+                            const item = itemList[i];
+                            this.makeRemoteRequestTree(item)
+                        }
+                    })
+                })
+            return;
+        }
         var listItemInTree = _searchTree(dataTree, node => node === item)
         if (listItemInTree.length > 0) {
             var currentItemInTree = listItemInTree[0]
@@ -250,15 +259,20 @@ class SarExplorer extends Component {
             getDataSar(token, type, id)
                 .then(responseJson => {
                     if (type === 'suggestionTypes') {
-                        let data = [
-                            { id: `implications${id}`, name: 'Implications' },
-                            { id: `questions${id}`, name: 'Questions' },
-                            { id: `evidences${id}`, name: 'Evidence Types' }
-                        ]
-                        currentItemInTree['children'] = data.map(item => ({ ...item, type: type, isLoad: false, dataSuggestions: responseJson.data }))
+                        getDataSar(token, 'subCriterions', id)
+                            .then(response => {
+                                let data = [
+                                    { id: `implications${id}`, name: 'Implications' },
+                                    { id: `questions${id}`, name: 'Questions' },
+                                    { id: `evidences${id}`, name: 'Evidence Types' },
+                                    { id: `subCriterions${id}`, name: 'Subcriterions' }
+                                ]
+                                responseJson.data.subCriterions = response.data;
+                                currentItemInTree['children'] = data.map(item => ({ ...item, type: type, isLoad: false, dataSuggestions: responseJson.data }))
+                            })
                     } else if (type === 'suggestions') {
-                        currentItemInTree['children'] = currentItemInTree.dataSuggestions[currentItemInTree.id.replace(/[^a-z]/g, '')]
-                            .map(item => ({ ...item, type: type, isLoad: false, name: limitText(item.content), id: `${type}${item.id}` }))
+                        currentItemInTree['children'] = currentItemInTree.dataSuggestions[currentItemInTree.id.replace(/[^a-zA-Z]/g, '')]
+                            .map(item => ({ ...item, type: type, isLoad: false, name: item.hasOwnProperty('name') ? limitText(item.name) : limitText(item.content), id: `${type}${item.id}` }))
                     } else {
                         currentItemInTree['children'] = isEmptyJson(responseJson) ?
                             [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false, id: `${type}${item.id}`, name: limitText(item.name) }))
@@ -269,14 +283,14 @@ class SarExplorer extends Component {
     }
 
     handleRefresh = () => {
-        this.setState({ refreshing: true }, () => this.handleRequest(this.state.currentItem.id));
+        this.setState({ refreshing: true }, () => this.handleRequest(this.state.currentItem));
     };
 
-    handleRequest = (id = 0) => {
+    handleRequest = (item = {}) => {
         if (this.state.isConnected) {
-            this.makeRemoteRequest(id)
+            this.makeRemoteRequest(item.id)
         } else {
-            this.makeLocalRequest(id)
+            this.makeLocalRequest(item.id)
         }
     }
 
@@ -321,7 +335,7 @@ class SarExplorer extends Component {
             this.setState({
                 isLoading: true,
                 currentItem: item
-            }, () => this.handleRequest(item.id));
+            }, () => this.handleRequest(item));
         } else {
             this.setState({
                 isLoading: true,
@@ -352,7 +366,7 @@ class SarExplorer extends Component {
                 this.setState({
                     isLoading: true,
                     currentItem: item
-                }, () => this.handleRequest(item.id));
+                }, () => this.handleRequest(item));
             }
         }
     }
@@ -365,14 +379,13 @@ class SarExplorer extends Component {
         this.setState({
             isLoading: true,
             currentItem: item
-        }, () => this.handleRefresh(item.id));
+        }, () => this.handleRequest(item));
     }
 
     handleComment = (item) => {
         Actions.comment({ subCriterionInfo: item })
     }
 
-    //--------------------Start Download Offline--------------------//
     turnOnDownloadMode = () => {
         if (!this.state.downloadMode && this.state.isConnected) {
             var dataSource = this.state.subCriterionView ? this.state.data.subCriterions : this.state.data;
@@ -565,7 +578,6 @@ class SarExplorer extends Component {
                 console.error('Error when download: ' + error);
             })
     }
-    //--------------------End Download Offline--------------------//
 
     renderItem = ({ item, index }) => {
         let fileType = ['IMPLICATION', 'QUESTION', 'FILE', 'LINK']
@@ -586,7 +598,7 @@ class SarExplorer extends Component {
                 onLongPress={() => this.turnOnDownloadMode()}
                 downloadMode={downloadMode}
                 toggleChecked={() => this.toggleChecked(item)}
-                rootIndex = {rootIndex}
+                rootIndex={rootIndex}
             />)
         }
         return (
@@ -598,17 +610,17 @@ class SarExplorer extends Component {
                 onLongPress={() => this.turnOnDownloadMode()}
                 downloadMode={downloadMode}
                 toggleChecked={() => this.toggleChecked(item)}
-                rootIndex = {rootIndex}
+                rootIndex={rootIndex}
             />
         )
     }
 
     render() {
-        const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected, isLoading, isTablet, subCriterionView } = this.state;
+        const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected, isLoading, isTablet, subCriterionView, width } = this.state;
         let currentScene = scene[currentIdx]
         let title = downloadMode ? 'Download Offline' : currentScene.key === 'suggestions' ? currentScene.title + currentItem.name : currentScene.title
         return (
-            <Container style={{ backgroundColor: AppCommon.background_color }}>
+            <Container style={{ backgroundColor: AppCommon.background_color }} onLayout={this.onLayout}>
                 <Header
                     androidStatusBarColor={AppCommon.colors}
                     iosBarStyle="light-content"
@@ -641,65 +653,61 @@ class SarExplorer extends Component {
                 />
                 {isTablet ? (
                     <Grid>
-                        <Col
-                            style={{
-                                width: window.width * 1 / 3,
-                                backgroundColor: 'white',
-                                borderRightWidth: 1,
-                                borderRightColor: 'gray',
-                                borderTopWidth: 1,
-                                borderTopColor: 'gray',
-                            }}
-                        >
-                            {isLoading ? (
-                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <ActivityIndicator size="large" animating color={AppCommon.colors} />
-                                </View>
-                            ) : (
-                                    <TreeSelect
-                                        data={this.state.dataTree}
-                                        isOpen
-                                        isShowTreeId={false}
-                                        itemStyle={{
-                                            fontSize: 14,
-                                        }}
-                                        selectedItemStyle={{
-                                            backgroudColor: 'white',
-                                            fontSize: 14,
-                                        }}
-                                        onClick={this.handleClick}
-                                        treeNodeStyle={{
-                                            openIcon: <Icon style={{ marginRight: 10, fontSize: 14, color: AppCommon.colors }} name="ios-arrow-down" />,
-                                            closeIcon: <Icon style={{ marginRight: 10, fontSize: 14, color: AppCommon.colors }} name="ios-arrow-forward" />
-                                        }}
-                                    />
-                                )}
-                        </Col>
-                        <Col
-                            style={{
-                                width: window.width * 2 / 3,
-                                borderTopWidth: 1,
-                                backgroundColor: 'white',
-                                borderRightWidth: 1,
-                                borderRightColor: 'gray',
-                                borderTopWidth: 1,
-                                borderTopColor: 'gray',
-                            }}
-                        >
-                            {this.state.content !== '' ? (
-                                <Content
-                                    style={{ flex: 1 }}
-                                    contentContainerStyle={{ flex: 1 }}
-                                >
-                                    <Text style={styles.text}>{this.state.content}</Text>
-                                </Content>
-                            ) : (
-                                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                        <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
-                                        <Text style={{ color: '#BDBDBD' }}>Pull to refresh</Text>
-                                    </View>
-                                )}
-                        </Col>
+                        <Row>
+
+                            <Col
+                                style={{
+                                    width: width * 1 / 3,
+                                    backgroundColor: 'white',
+                                    borderRightWidth: 1,
+                                    borderRightColor: 'gray',
+                                    borderTopWidth: 1,
+                                    borderTopColor: 'gray',
+                                }}
+                            >
+                                {isLoading ? (
+                                    <ActivityIndicator animating color={AppCommon.colors} />
+                                ) : (
+                                        <TreeSelect
+                                            data={this.state.dataTree}
+                                            isShowTreeId={false}
+                                            itemStyle={{
+                                            }}
+                                            selectedItemStyle={{
+                                                backgroudColor: 'white',
+                                            }}
+                                            onClick={this.handleClick}
+                                            treeNodeStyle={{
+                                                openIcon: <Icon style={{ marginRight: 10, fontSize: 16, color: AppCommon.colors }} name="ios-arrow-down" />,
+                                                closeIcon: <Icon style={{ marginRight: 10, fontSize: 16, color: AppCommon.colors }} name="ios-arrow-forward" />
+                                            }}
+                                        />
+                                    )}
+                            </Col>
+                            <Col
+                                style={{
+                                    width: width * 2 / 3,
+                                    borderTopWidth: 1,
+                                    backgroundColor: 'white',
+                                    borderRightWidth: 1,
+                                    borderRightColor: 'gray',
+                                    borderTopWidth: 1,
+                                    borderTopColor: 'gray',
+                                }}
+                            >
+                                {this.state.content !== '' ? (
+                                    <Content
+                                        style={{ flex: 1 }}
+                                    >
+                                        <Text style={styles.text}>{this.state.content}</Text>
+                                    </Content>
+                                ) : (
+                                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                                        </View>
+                                    )}
+                            </Col>
+                        </Row>
                     </Grid>
                 ) : (
 
