@@ -10,7 +10,7 @@ import { Icon } from "native-base";
 import { Actions } from "react-native-router-flux";
 import UploadLinkDialog from "./UploadLinkDialog";
 import { fileToBase64 } from "../../commons/utilitiesFunction";
-import { updatePdf } from "../../api/accountApi";
+import { uploadEvidence } from "../../api/accountApi";
 import { validateFileName } from "../../commons/validation";
 
 const pickerOptions = [
@@ -47,12 +47,11 @@ export default class AddButton extends Component {
                 filetype: [DocumentPickerUtil.pdf()],
             },
             (error, response) => {
-                console.log('response : ' + JSON.stringify(response));
                 if (response !== null) {
                     // console.log('URI : ' + response.uri);
                     fileToBase64(response.uri)
                         .then(database64 => {
-                            console.log('database64 : ' + JSON.stringify(database64));
+                            // console.log('database64 : ' + JSON.stringify(database64));
                             this.setState({
                                 database64Upload: database64,
                                 fileNameUpload: response.fileName,
@@ -112,18 +111,14 @@ export default class AddButton extends Component {
             type: type,
             link: (type === 'LINK') ? data.linkUpload : null,
             file: (type === 'FILE') ? data.base64 : null,
-            sarId: this.props.sarInfo.id,
-            criterionId: this.props.criterionInfo.id,
-            subCriterionId: this.props.subCriterionInfo.id,
             suggestionId: this.props.suggestionInfo.id,
             name: data.fileNameUpload,
         }
-        updatePdf(this.props.token, data)
+        uploadEvidence(this.props.token, data)
             .then((responseJson) => {
                 this.setState({
                     isLoading: false
                 })
-                console.log('responseJson: ' + JSON.stringify(responseJson));
                 if (responseJson.success === false) {
                     Alert.alert('Error', 'Invalid data. Please check your data input.');
                 } else {

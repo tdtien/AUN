@@ -263,7 +263,7 @@ class SarExplorer extends Component {
                         currentItemInTree['children'] = isEmptyJson(responseJson) ?
                             [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false, id: `${type}${item.id}`, name: limitText(item.name) }))
                     }
-                    console.log(responseJson.data)
+                    // console.log(responseJson.data)
                     this.setState({ dataTree: dataTree })
                 })
         }

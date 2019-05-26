@@ -52,7 +52,7 @@ export async function checkToken(token) {
 //     })
 // }
 
-export async function updatePdf(token, data) {
+export async function uploadEvidence(token, data) {
     return new Promise((resolve, reject) => {
         fetch(`${userAPI}/evidences`, {
             method: 'POST',

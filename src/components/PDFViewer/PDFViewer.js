@@ -22,7 +22,7 @@ import Pdf from 'react-native-pdf';
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import Loader from '../Loader/Loader'
-import { updatePdf } from '../../api/accountApi';
+import { uploadEvidence } from '../../api/accountApi';
 import { AppCommon } from '../../commons/commons';
 import DialogInput from "react-native-dialog-input";
 import { validateFileName } from '../../commons/validation';
@@ -109,13 +109,10 @@ class PDFViewer extends React.Component {
         var data = {
             type: 'FILE',
             file: this.props.base64,
-            sarId: this.props.flow.sarInfo.id,
-            criterionId: this.props.flow.criterionInfo.id,
-            subCriterionId: this.props.flow.subCriterionInfo.id,
             suggestionId: this.props.flow.suggestionInfo.id,
             name: fileName
         }
-        updatePdf(this.props.token, data)
+        uploadEvidence(this.props.token, data)
             .then((responseJson) => {
                 this.setState({
                     isLoading: false
@@ -234,6 +231,7 @@ class PDFViewer extends React.Component {
                                 color={AppCommon.colors}
                             />
                         }}
+                        onLoadComplete={(num, path) => console.log('path', path)}
                         source={{ uri: uri }}
                         onError={(error) => {
                             console.log(error);
