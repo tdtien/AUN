@@ -12,6 +12,7 @@ import SarItem from "./SarItem";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
 import AddButton from "./AddButton";
 import TreeSelect from 'react-native-tree-select'
+import TextViewer from "../TextViewer/TextViewer";
 
 const window = Dimensions.get('window');
 class SarExplorer extends Component {
@@ -19,7 +20,7 @@ class SarExplorer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isConnected: true,
+            isConnected: false,
             isLoading: false,
             refreshing: false,
             downloadMode: false,
@@ -27,7 +28,6 @@ class SarExplorer extends Component {
             width: window.width,
             subCriterionView: false,
             currentIdx: 0,
-            dimensions: undefined,
             scene: [
                 { key: 'sars', title: 'All Sars' },
                 { key: 'criterions', title: 'All Criterions' },
@@ -41,6 +41,8 @@ class SarExplorer extends Component {
             previousItem: [],
             currentItem: {},
             content: '',
+            currentEvidence: {},
+            ignoreOnLayout: 1,
         }
     }
 
@@ -68,8 +70,12 @@ class SarExplorer extends Component {
     }
 
     onLayout = event => {
-        let { width, height } = event.nativeEvent.layout
-        this.setState({ isTablet: height / width < 1.6, width: width }, () => this.handleFetchData(false))
+        if (this.state.ignoreOnLayout <= 0) {
+            let { width, height } = event.nativeEvent.layout
+            this.setState({ isTablet: height / width < 1.6, width: width }, () => this.handleFetchData(false))
+        } else {
+            this.state.ignoreOnLayout--;
+        }
     }
 
     handleConnectivityChange = (isConnected) => {
@@ -85,6 +91,8 @@ class SarExplorer extends Component {
             currentItem: {},
             previousItem: [],
             content: '',
+            currentEvidence: {},
+            evidenceArray: {},
             subCriterionView: false,
             dataTree: []
         }, () => {
@@ -149,21 +157,23 @@ class SarExplorer extends Component {
         } else if (scene[currentIdx].key === 'criterions') {
             localData = (Object.keys(directoryInfo).length === 0) ? [] :
                 directoryInfo[email].find(item => item.id === id).criterions;
-        } else if (scene[currentIdx].key === 'subCriterions') {
-            localData = (Object.keys(directoryInfo).length === 0) ? [] :
-                directoryInfo[email].find(item => item.id === previousItem[0].id).criterions
-                    .find(item => item.id === id).subCriterions;
         } else if (scene[currentIdx].key === 'suggestionTypes') {
             localData = [
                 { id: 'implications', name: 'Implications' },
                 { id: 'questions', name: 'Questions' },
                 { id: 'evidences', name: 'Evidence Types' }
             ]
+            localData.subCriterions = (Object.keys(directoryInfo).length === 0) ? [] :
+                directoryInfo[email]
+                    .find(item => item.id === previousItem[0].id).criterions
+                    .find(item => item.id === id).subCriterions
+            localData.subCriterions.forEach((item) => {
+                item.key = 'subCriterion'
+            })
             this.setState({
                 dataSuggestions: (Object.keys(directoryInfo).length === 0) ? [] :
                     directoryInfo[email]
                         .find(item => item.id === previousItem[0].id).criterions
-                        .find(item => item.id === previousItem[1].id).subCriterions
                         .find(item => item.id === id).suggestions
             })
         } else if (scene[currentIdx].key === 'suggestions') {
@@ -243,15 +253,11 @@ class SarExplorer extends Component {
                         }
                     })
                 })
-            return;
-        }
-        var listItemInTree = _searchTree(dataTree, node => node === item)
-        if (listItemInTree.length > 0) {
-            var currentItemInTree = listItemInTree[0]
-            let type = getNextType(currentItemInTree.type);
-            var id = currentItemInTree.id
+        } else {
+            let type = getNextType(item.type);
+            var id = item.id
             if (typeof item.id === 'string') {
-                id = currentItemInTree.id.replace(/[^0-9]/g, '');
+                id = item.id.replace(/[^0-9]/g, '');
             }
             if (type === '') {
                 return
@@ -268,13 +274,13 @@ class SarExplorer extends Component {
                                     { id: `subCriterions${id}`, name: 'Subcriterions' }
                                 ]
                                 responseJson.data.subCriterions = response.data;
-                                currentItemInTree['children'] = data.map(item => ({ ...item, type: type, isLoad: false, dataSuggestions: responseJson.data }))
+                                item.children = data.map(item => ({ ...item, type: type, isLoad: false, dataSuggestions: responseJson.data }))
                             })
                     } else if (type === 'suggestions') {
-                        currentItemInTree['children'] = currentItemInTree.dataSuggestions[currentItemInTree.id.replace(/[^a-zA-Z]/g, '')]
+                        item.children = item.dataSuggestions[item.id.replace(/[^a-zA-Z]/g, '')]
                             .map(item => ({ ...item, type: type, isLoad: false, name: item.hasOwnProperty('name') ? limitText(item.name) : limitText(item.content), id: `${type}${item.id}` }))
                     } else {
-                        currentItemInTree['children'] = isEmptyJson(responseJson) ?
+                        item.children = isEmptyJson(responseJson) ?
                             [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false, id: `${type}${item.id}`, name: limitText(item.name) }))
                     }
                     this.setState({ dataTree: dataTree })
@@ -326,32 +332,32 @@ class SarExplorer extends Component {
     }
 
     handlePop = () => {
-        if (this.state.subCriterionView) {
-            this.setState({ subCriterionView: false })
-            return;
-        }
-        if (--this.state.currentIdx > 0) {
-            let item = this.state.previousItem.pop();
-            this.setState({
-                isLoading: true,
-                currentItem: item
-            }, () => this.handleRequest(item));
-        } else {
-            this.setState({
-                isLoading: true,
-                currentItem: {},
-                previousItem: [],
-                currentIdx: 0
-            }, () => this.handleRequest())
+        if (!this.state.isLoading) {
+            if (this.state.subCriterionView) {
+                this.setState({ subCriterionView: false })
+            }
+            if (--this.state.currentIdx > 0) {
+                let item = this.state.previousItem.pop();
+                this.setState({
+                    isLoading: true,
+                    currentItem: item
+                }, () => this.handleRequest(item));
+            } else {
+                this.setState({
+                    isLoading: true,
+                    currentItem: {},
+                    previousItem: [],
+                    currentIdx: 0
+                }, () => this.handleRequest())
+            }
         }
     }
 
     handlePopTo = (index, isRoot = false) => {
-        if (this.state.subCriterionView) {
-            this.setState({ subCriterionView: false })
-            return;
-        }
         if (!this.state.isLoading) {
+            if (this.state.subCriterionView) {
+                this.setState({ subCriterionView: false })
+            }
             if (isRoot) {
                 this.setState({
                     isLoading: true,
@@ -618,7 +624,9 @@ class SarExplorer extends Component {
     render() {
         const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected, isLoading, isTablet, subCriterionView, width } = this.state;
         let currentScene = scene[currentIdx]
-        let title = downloadMode ? 'Download Offline' : currentScene.key === 'suggestions' ? currentScene.title + currentItem.name : currentScene.title
+        let title = downloadMode ? 'Download Offline' : 
+                    currentScene.key === 'suggestions' ? currentScene.title + currentItem.name : 
+                    subCriterionView ? 'All Subcriterions': currentScene.title
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }} onLayout={this.onLayout}>
                 <Header
@@ -658,7 +666,6 @@ class SarExplorer extends Component {
                             <Col
                                 style={{
                                     width: width * 1 / 3,
-                                    backgroundColor: 'white',
                                     borderRightWidth: 1,
                                     borderRightColor: 'gray',
                                     borderTopWidth: 1,
@@ -666,7 +673,9 @@ class SarExplorer extends Component {
                                 }}
                             >
                                 {isLoading ? (
-                                    <ActivityIndicator animating color={AppCommon.colors} />
+                                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                        <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                                    </View>
                                 ) : (
                                         <TreeSelect
                                             data={this.state.dataTree}
@@ -674,7 +683,8 @@ class SarExplorer extends Component {
                                             itemStyle={{
                                             }}
                                             selectedItemStyle={{
-                                                backgroudColor: 'white',
+                                                backgroudColor: AppCommon.colors,
+                                                color: 'white'
                                             }}
                                             onClick={this.handleClick}
                                             treeNodeStyle={{
@@ -688,19 +698,12 @@ class SarExplorer extends Component {
                                 style={{
                                     width: width * 2 / 3,
                                     borderTopWidth: 1,
-                                    backgroundColor: 'white',
-                                    borderRightWidth: 1,
-                                    borderRightColor: 'gray',
                                     borderTopWidth: 1,
                                     borderTopColor: 'gray',
                                 }}
                             >
-                                {this.state.content !== '' ? (
-                                    <Content
-                                        style={{ flex: 1 }}
-                                    >
-                                        <Text style={styles.text}>{this.state.content}</Text>
-                                    </Content>
+                                {this.state.content && this.state.content !== '' ? (
+                                    <TextViewer data={this.state.content} title='' hasHeader={false} />
                                 ) : (
                                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                             <Text style={{ color: '#BDBDBD' }}>There is no content</Text>

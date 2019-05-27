@@ -15,7 +15,6 @@ import SarViewer from './src/components/FolderExplorer/SarViewer';
 import CriterionViewer from './src/components/FolderExplorer/CriterionViewer';
 import SubCriterionViewer from './src/components/FolderExplorer/SubCriterionViewer';
 import SuggestionTypeViewer from './src/components/FolderExplorer/SuggestionTypeViewer';
-import TextViewer from './src/components/FolderExplorer/TextViewer';
 import EvidenceViewer from './src/components/FolderExplorer/EvidenceViewer';
 import { Root } from 'native-base';
 import { checkToken } from './src/api/accountApi';
@@ -23,6 +22,7 @@ import { logoutAccount } from './src/actions/account';
 import SarExplorer from './src/components/SarViewer/SarExplorer';
 import Comment from './src/components/Comment/Comment';
 import Images from './src/assets/images';
+import TextViewer from './src/components/TextViewer/TextViewer';
 
 class App extends Component {
 

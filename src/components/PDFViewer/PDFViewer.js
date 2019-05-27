@@ -163,7 +163,7 @@ class PDFViewer extends React.Component {
     }
 
     render() {
-        let { evidenceArray, base64 } = this.props;
+        let { evidenceArray, base64, hasHeader } = this.props;
         let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading } = this.state
         let uri = '';
         if (base64 !== null) {
@@ -199,31 +199,33 @@ class PDFViewer extends React.Component {
         ) : null
         return (
             <Container>
-                <Header
-                    androidStatusBarColor={AppCommon.colors}
-                    iosBarStyle="light-content"
-                    style={{ backgroundColor: AppCommon.colors }}
-                    hasTabs
-                >
-                    <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
-                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    </TouchableOpacity>
-                    <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: "white" }}>{this.state.fileName}</Title>
-                    </Body>
-                    {
-                        (this.props.flow !== null) ? (
-                            <TouchableOpacity style={styles.headerButton} onPress={() => this.setState({ isDialogVisible: true })} >
-                                <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                            </TouchableOpacity>
-                        ) : (
-                                <TouchableOpacity style={styles.headerButton} onPress={() => null} >
-                                    <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                {hasHeader ? (
+                    <Header
+                        androidStatusBarColor={AppCommon.colors}
+                        iosBarStyle="light-content"
+                        style={{ backgroundColor: AppCommon.colors }}
+                        hasTabs
+                    >
+                        <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
+                            <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                        </TouchableOpacity>
+                        <Body style={{ flex: 1 }}>
+                            <Title style={{ alignSelf: "center", color: "white" }}>{this.state.fileName}</Title>
+                        </Body>
+                        {
+                            (this.props.flow !== null) ? (
+                                <TouchableOpacity style={styles.headerButton} onPress={() => this.setState({ isDialogVisible: true })} >
+                                    <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
-                            )
-                    }
+                            ) : (
+                                    <TouchableOpacity style={styles.headerButton} onPress={() => null} >
+                                        <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                                    </TouchableOpacity>
+                                )
+                        }
 
-                </Header>
+                    </Header>
+                ): <View />}
                 {base64 === null ? <View /> :
                     <BreadCrumb
                         isConnected={false}
@@ -271,6 +273,10 @@ class PDFViewer extends React.Component {
             </Container>
         )
     }
+}
+
+PDFViewer.defaultProps = {
+    hasHeader: true,
 }
 
 const mapStateToProps = state => {

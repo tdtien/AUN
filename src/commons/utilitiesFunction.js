@@ -281,7 +281,7 @@ export function _searchTree(aTree, fCompair, bGreedy = false) {
     return aReturnNodes; // someone was greedy
 }
 
-export function getNextType(type = 'sar') {
+export function getNextType(type = 'sars') {
     switch (type) {
         case 'sars': return 'criterions';
         case 'criterions': return 'suggestionTypes';
