@@ -26,7 +26,7 @@ import { uploadEvidence } from '../../api/accountApi';
 import { AppCommon } from '../../commons/commons';
 import DialogInput from "react-native-dialog-input";
 import { validateFileName } from '../../commons/validation';
-import { deleteItem, popToSceneWithUpdate } from '../../commons/utilitiesFunction';
+import { deleteItem, popToSceneWithUpdate, cachePdf, findPdfCacheItem } from '../../commons/utilitiesFunction';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 
 class PDFViewer extends React.Component {
@@ -165,7 +165,17 @@ class PDFViewer extends React.Component {
     render() {
         let { evidenceArray, base64 } = this.props;
         let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading } = this.state
-        let uri = (base64 !== null) ? `data:application/pdf;base64,${base64}` : currentEvidence.link;
+        let uri = '';
+        if (base64 !== null) {
+            uri = `data:application/pdf;base64,${base64}`;
+        } else {
+            let item = findPdfCacheItem(currentEvidence.id);
+            if (typeof item !== 'undefined') {
+                uri = item.path;
+            } else {
+                uri = currentEvidence.link;
+            }
+        }
         let pdfArrayView = (typeof evidenceArray !== 'undefined' && evidenceArray.length > 1) ? (
             <View
                 style={{
@@ -231,7 +241,9 @@ class PDFViewer extends React.Component {
                                 color={AppCommon.colors}
                             />
                         }}
-                        onLoadComplete={(num, path) => console.log('path', path)}
+                        onLoadComplete={(num, path) => {
+                            base64 === null ? cachePdf(currentEvidence.id, path) : null
+                        }}
                         source={{ uri: uri }}
                         onError={(error) => {
                             console.log(error);

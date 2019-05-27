@@ -22,4 +22,5 @@ export class AppCommon {
         { key: 'sortList', name: 'Sort images' },
         { key: 'pdfViewer', name: 'Upload evidence' }
     ]
+    static pdf_caches = []
 }

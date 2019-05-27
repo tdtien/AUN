@@ -1,5 +1,6 @@
 import RNFS from 'react-native-fs'
 import { Actions } from 'react-native-router-flux';
+import { AppCommon } from './commons';
 
 export function createFolder(mainPath) {
     return new Promise((resolve, reject) => {
@@ -288,4 +289,19 @@ export function getNextType(type = 'sar') {
         case 'suggestions': return 'evidences';
         default: return '';
     }
+}
+
+export function cachePdf(id, path) {
+    if (typeof (id) === 'string' && typeof (path) === 'string') {
+        let item = {
+            id: id,
+            path: path,
+        }
+        AppCommon.pdf_caches.push(item);
+    }
+}
+
+export function findPdfCacheItem(id) {
+    let item = AppCommon.pdf_caches.find(item => item.id === id);
+    return item;
 }
