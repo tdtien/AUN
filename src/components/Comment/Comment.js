@@ -11,6 +11,7 @@ import {
     TextInput,
     Keyboard,
     RefreshControl,
+    NetInfo
 } from 'react-native';
 import {
     Content,
@@ -32,6 +33,7 @@ class Comment extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isConnected: false,
             isLoading: true,
             refreshing: false,
             fullContent: false,
@@ -41,9 +43,27 @@ class Comment extends Component {
             notes: []
         };
     }
-
     componentDidMount() {
-        this.makeRemoteRequest();
+        NetInfo.isConnected.addEventListener(
+            'connectionChange',
+            this.handleConnectivityChange
+        );
+        NetInfo.isConnected.fetch().done((isConnected) => {
+            this.setState({
+                isConnected: isConnected
+            }, () => this.makeRemoteRequest());
+        });
+    }
+
+    handleConnectivityChange = (isConnected) => {
+        this.setState({ isConnected: isConnected })
+    };
+
+    componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener(
+            'connectionChange',
+            this._handleConnectivityChange
+        );
     }
 
     handleGetComments = (scrollToEnd = false) => {
@@ -92,9 +112,15 @@ class Comment extends Component {
     }
 
     makeRemoteRequest = () => {
-        const { token, subCriterionInfo } = this.props;
-        this.handleGetComments();
-        this.handleGetNotes();
+        if (this.state.isConnected) {
+            const { token, subCriterionInfo } = this.props;
+            this.handleGetComments();
+            this.handleGetNotes();
+        } else {
+            this.setState({
+                isLoading: false
+            })
+        }
     }
 
     toggleContent = () => {
@@ -163,7 +189,7 @@ class Comment extends Component {
     }
 
     render() {
-        const { fullContent, activeTabIndex, isLoading, comments, notes } = this.state;
+        const { isConnected, fullContent, activeTabIndex, isLoading, comments, notes } = this.state;
         let content = this.props.subCriterionInfo.content;
         let marginHorizontal = 10;
         let iconSize = 35;
@@ -207,45 +233,51 @@ class Comment extends Component {
                                 )
                         }
                     </TouchableNativeFeedback>
-                    <View
-                        style={{ flex: 1, flexDirection: 'row', marginBottom: 10, borderBottomWidth: 1, borderTopWidth: 1, borderColor: '#e6e6e6', height: 50 }}
-                    >
-                        <TouchableOpacity style={activeTabIndex === 0 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(0)}>
-                            <Text style={activeTabIndex === 0 ? styles.activeText : styles.text}>Comment</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={activeTabIndex === 1 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(1)}>
-                            <Text style={activeTabIndex === 1 ? styles.activeText : styles.text}>Note</Text>
-                        </TouchableOpacity>
-                    </View>
-                    {isLoading ? (
-                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                    {isConnected ? (
+                        <View>
+                            <View
+                                style={{ flex: 1, flexDirection: 'row', marginBottom: 10, borderBottomWidth: 1, borderTopWidth: 1, borderColor: '#e6e6e6', height: 50 }}
+                            >
+                                <TouchableOpacity style={activeTabIndex === 0 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(0)}>
+                                    <Text style={activeTabIndex === 0 ? styles.activeText : styles.text}>Comment</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={activeTabIndex === 1 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(1)}>
+                                    <Text style={activeTabIndex === 1 ? styles.activeText : styles.text}>Note</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {isLoading ? (
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                                </View>
+                            ) : (
+                                    <FlatList
+                                        data={activeTabIndex === 0 ? comments : notes}
+                                        extraData={activeTabIndex === 0 ? comments : notes}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        renderItem={this.renderItem}
+                                    />
+                                )}
                         </View>
-                    ) : (
-                            <FlatList
-                                data={activeTabIndex === 0 ? comments : notes}
-                                extraData={activeTabIndex === 0 ? comments : notes}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={this.renderItem}
-                            />
-                        )}
+                    ) : <View />}
                 </Content>
-                <Footer
-                    style={{ backgroundColor: 'white', borderTopWidth: 1, borderColor: '#d9d9d9' }}
-                >
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginHorizontal: marginHorizontal, paddingVertical: 6 }}>
-                        <TextInput
-                            style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15, fontSize: 17 }}
-                            placeholder={activeTabIndex === 0 ? 'Add comment...' : 'Add note...'}
-                            onChangeText={(message) => this.setState({ message: message })}
-                            value={this.state.message}
-                            returnKeyType="done"
-                        />
-                        <TouchableOpacity onPress={() => this.handleSendMessage()}>
-                            <Icon name={AppCommon.icon("send")} style={{ color: AppCommon.colors, fontSize: iconSize }} />
-                        </TouchableOpacity>
-                    </View>
-                </Footer>
+                {isConnected ? (
+                    <Footer
+                        style={{ backgroundColor: 'white', borderTopWidth: 1, borderColor: '#d9d9d9' }}
+                    >
+                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginHorizontal: marginHorizontal, paddingVertical: 6 }}>
+                            <TextInput
+                                style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15, fontSize: 17 }}
+                                placeholder={activeTabIndex === 0 ? 'Add comment...' : 'Add note...'}
+                                onChangeText={(message) => this.setState({ message: message })}
+                                value={this.state.message}
+                                returnKeyType="done"
+                            />
+                            <TouchableOpacity onPress={() => this.handleSendMessage()}>
+                                <Icon name={AppCommon.icon("send")} style={{ color: AppCommon.colors, fontSize: iconSize }} />
+                            </TouchableOpacity>
+                        </View>
+                    </Footer>
+                ) : <View />}
             </Container>
         )
     }

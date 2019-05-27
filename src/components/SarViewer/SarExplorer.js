@@ -587,7 +587,7 @@ class SarExplorer extends Component {
 
     renderItem = ({ item, index }) => {
         let fileType = ['IMPLICATION', 'QUESTION', 'FILE', 'LINK']
-        const { scene, currentIdx, currentItem, data, downloadMode, previousItem } = this.state;
+        const { isConnected, scene, currentIdx, currentItem, data, downloadMode, previousItem } = this.state;
         item.index = index;
         var rootIndex = '';
         previousItem.forEach(item => {
@@ -617,6 +617,7 @@ class SarExplorer extends Component {
                 downloadMode={downloadMode}
                 toggleChecked={() => this.toggleChecked(item)}
                 rootIndex={rootIndex}
+                isConnected={isConnected}
             />
         )
     }

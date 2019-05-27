@@ -10,8 +10,8 @@ import { AppCommon } from "../../commons/commons";
 
 export default class SarFolder extends Component {
     render() {
-        const { item, type, downloadMode, sceneKey, rootIndex } = this.props;
-        let isCommentVisible = (sceneKey === 'sars' || sceneKey === 'criterions' || sceneKey === 'subCriterions') ? true : false;
+        const { item, type, downloadMode, sceneKey, rootIndex, isConnected } = this.props;
+        let isCommentVisible = (isConnected && (sceneKey === 'sars' || sceneKey === 'criterions' || item.key === 'subCriterion')) ? true : false;
         return (
             <TouchableOpacity
                 activeOpacity={0.5}
