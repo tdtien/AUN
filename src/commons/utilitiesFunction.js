@@ -285,6 +285,10 @@ export function getNextType(type = 'sars') {
     switch (type) {
         case 'sars': return 'criterions';
         case 'criterions': return 'suggestionTypes';
+        case 'implications':
+        case 'questions':
+        case 'evidences':
+        case 'subCriterions':
         case 'suggestionTypes': return 'suggestions';
         case 'suggestions': return 'evidences';
         default: return '';
@@ -304,4 +308,8 @@ export function cachePdf(id, path) {
 export function findPdfCacheItem(id) {
     let item = AppCommon.pdf_caches.find(item => item.id === id);
     return item;
+}
+
+export function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
 }

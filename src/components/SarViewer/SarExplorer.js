@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { setDirectoryInfo } from "../../actions/directoryAction";
 import { downloadCriterion, downloadSar, downloadSubCriterion, downloadSuggestion, getDataSar } from "../../api/directoryTreeApi";
 import { AppCommon } from "../../commons/commons";
-import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson, _searchTree, getNextType, limitText } from "../../commons/utilitiesFunction";
+import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson, _searchTree, getNextType, limitText, getRandomArbitrary } from "../../commons/utilitiesFunction";
 import SarFolder from "./SarFolder";
 import SarItem from "./SarItem";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
@@ -42,6 +42,7 @@ class SarExplorer extends Component {
             currentItem: {},
             content: '',
             currentEvidence: {},
+            evidenceArray: [],
             ignoreOnLayout: 1,
         }
     }
@@ -235,31 +236,35 @@ class SarExplorer extends Component {
 
     makeRemoteRequestTree = (item = {}) => {
         const { token } = this.props;
-        var { dataTree } = this.state;
+        console.log('Variable: SarExplorer -> makeRemoteRequestTree -> item', item)
+        if (item.name === 'Loading...') {
+            return;
+        }
         if (isEmptyJson(item)) {
             type = 'sars'
             getDataSar(token, type)
                 .then(responseJson => {
                     var itemList = isEmptyJson(responseJson) ?
-                        [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false }));
+                        [] : responseJson.data.map(item => ({ ...item, id: `${type}${item.id}`, isLoad: false, children: [{ id: getRandomArbitrary(1, 99), name: 'Loading...' }] }));
                     this.setState({
                         isLoading: false,
                         refreshing: false,
                         dataTree: itemList
-                    }, () => {
-                        for (let i = 0; i < itemList.length; i++) {
-                            const item = itemList[i];
-                            this.makeRemoteRequestTree(item)
-                        }
                     })
                 })
         } else {
-            let type = getNextType(item.type);
+            let type = getNextType(item.id.replace(/[^a-zA-Z]/g, ''));
             var id = item.id
             if (typeof item.id === 'string') {
                 id = item.id.replace(/[^0-9]/g, '');
             }
             if (type === '') {
+                return
+            }
+            if (type === 'suggestions') {
+                item.children = item.dataSuggestions[item.id.replace(/[^a-zA-Z]/g, '')]
+                    .map(item => ({ ...item, isLoad: false, name: item.hasOwnProperty('name') ? limitText(item.name) : limitText(item.content), id: `${type}${item.id}` }))
+                this.forceUpdate();
                 return
             }
             getDataSar(token, type, id)
@@ -268,22 +273,19 @@ class SarExplorer extends Component {
                         getDataSar(token, 'subCriterions', id)
                             .then(response => {
                                 let data = [
-                                    { id: `implications${id}`, name: 'Implications' },
-                                    { id: `questions${id}`, name: 'Questions' },
-                                    { id: `evidences${id}`, name: 'Evidence Types' },
-                                    { id: `subCriterions${id}`, name: 'Subcriterions' }
+                                    { id: `implications${getRandomArbitrary(1, 99)}`, name: 'Implications' },
+                                    { id: `questions${getRandomArbitrary(1, 99)}`, name: 'Questions' },
+                                    { id: `evidences${getRandomArbitrary(1, 99)}`, name: 'Evidence Types' },
+                                    { id: `subCriterions${getRandomArbitrary(1, 99)}`, name: 'Subcriterions' }
                                 ]
                                 responseJson.data.subCriterions = response.data;
-                                item.children = data.map(item => ({ ...item, type: type, isLoad: false, dataSuggestions: responseJson.data }))
+                                item.children = data.map(item => ({ ...item, isLoad: false, dataSuggestions: responseJson.data, children: [{ id: getRandomArbitrary(1, 99), name: 'Loading...' }] }))
                             })
-                    } else if (type === 'suggestions') {
-                        item.children = item.dataSuggestions[item.id.replace(/[^a-zA-Z]/g, '')]
-                            .map(item => ({ ...item, type: type, isLoad: false, name: item.hasOwnProperty('name') ? limitText(item.name) : limitText(item.content), id: `${type}${item.id}` }))
                     } else {
                         item.children = isEmptyJson(responseJson) ?
-                            [] : responseJson.data.map(item => ({ ...item, type: type, isLoad: false, id: `${type}${item.id}`, name: limitText(item.name) }))
+                            [] : responseJson.data.map(item => ({ ...item, isLoad: false, id: `${type}${item.id}`, name: limitText(item.name), children: [{ id: getRandomArbitrary(1, 99), name: 'Loading...' }] }))
                     }
-                    this.setState({ dataTree: dataTree })
+                    this.forceUpdate();
                 })
         }
     }
@@ -301,17 +303,16 @@ class SarExplorer extends Component {
     }
 
     handleClick = ({ item, routes }) => {
-        var { currentItem, previousItem, content } = this.state;
-        if (item.hasOwnProperty('children') && !item.isLoad) {
-            for (let i = 0; i < item.children.length; i++) {
-                const itemChild = item.children[i];
-                this.makeRemoteRequestTree(itemChild)
-            }
+        var { currentItem, previousItem, content, currentEvidence, evidenceArray } = this.state;
+        if (!item.isLoad) {
+            this.makeRemoteRequestTree(item)
             item.isLoad = true;
         }
         previousItem = []
         currentItem = {}
         content = ''
+        currentEvidence = {}
+        evidenceArray = []
         for (var i = 0; i < routes.length; i++) {
             const route = routes[i];
             var listResult = _searchTree(this.state.dataTree, node => node.id === route.id && node.name === route.name)
@@ -328,6 +329,9 @@ class SarExplorer extends Component {
             this.setState({ content: item.content })
         } else {
             this.setState({ content: item.description })
+        }
+        if (item.key === 'evidence' && previousItem.length > 0) {
+            this.setState({ currentEvidence: item, evidenceArray: previousItem[previousItem.length - 1].children })
         }
     }
 
@@ -625,9 +629,9 @@ class SarExplorer extends Component {
     render() {
         const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected, isLoading, isTablet, subCriterionView, width } = this.state;
         let currentScene = scene[currentIdx]
-        let title = downloadMode ? 'Download Offline' : 
-                    currentScene.key === 'suggestions' ? currentScene.title + currentItem.name : 
-                    subCriterionView ? 'All Subcriterions': currentScene.title
+        let title = downloadMode ? 'Download Offline' :
+            currentScene.key === 'suggestions' ? currentScene.title + currentItem.name :
+                subCriterionView ? 'All Subcriterions' : currentScene.title
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }} onLayout={this.onLayout}>
                 <Header
@@ -703,12 +707,12 @@ class SarExplorer extends Component {
                                     borderTopColor: 'gray',
                                 }}
                             >
-                                {this.state.content && this.state.content !== '' ? (
-                                    <TextViewer data={this.state.content} title='' hasHeader={false} />
+                                {isEmptyJson(this.state.currentEvidence) || !this.state.content || this.state.content === '' ? (
+                                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                        <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                                    </View>
                                 ) : (
-                                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                            <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
-                                        </View>
+                                        <TextViewer data={this.state.content} title='' hasHeader={false} />
                                     )}
                             </Col>
                         </Row>
