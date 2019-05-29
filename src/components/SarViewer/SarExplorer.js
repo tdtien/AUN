@@ -43,7 +43,6 @@ class SarExplorer extends Component {
             content: '',
             currentEvidence: {},
             evidenceArray: [],
-            ignoreOnLayout: 1,
         }
     }
 
@@ -71,11 +70,9 @@ class SarExplorer extends Component {
     }
 
     onLayout = event => {
-        if (this.state.ignoreOnLayout <= 0) {
-            let { width, height } = event.nativeEvent.layout
+        let { width, height } = event.nativeEvent.layout
+        if (Math.floor(width) !== Math.floor(this.state.width)) {
             this.setState({ isTablet: height / width < 1.6, width: width }, () => this.handleFetchData(false))
-        } else {
-            this.state.ignoreOnLayout--;
         }
     }
 
@@ -235,12 +232,13 @@ class SarExplorer extends Component {
     }
 
     makeRemoteRequestTree = (item = {}) => {
-        const { token } = this.props;
-        console.log('Variable: SarExplorer -> makeRemoteRequestTree -> item', item)
         if (item.name === 'Loading...') {
             return;
         }
+        const { token } = this.props;
+        console.log('Variable: SarExplorer -> makeRemoteRequestTree -> item', item)
         if (isEmptyJson(item)) {
+            //Loading first-time
             type = 'sars'
             getDataSar(token, type)
                 .then(responseJson => {

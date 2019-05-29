@@ -288,8 +288,7 @@ export function getNextType(type = 'sars') {
         case 'implications':
         case 'questions':
         case 'evidences':
-        case 'subCriterions':
-        case 'suggestionTypes': return 'suggestions';
+        case 'subCriterions': return 'suggestions';
         case 'suggestions': return 'evidences';
         default: return '';
     }

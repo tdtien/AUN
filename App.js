@@ -34,24 +34,26 @@ class App extends Component {
   }
 
   componentDidMount() {
-    if (Actions.currentScene !== 'login') {
-      checkToken(this.props.token).then(response => {
-        if (response.hasOwnProperty('expire_time')) {
-          if (response.expire_time) {
-            Alert.alert(
-              'Error!',
-              response.msg,
-              [
-                { text: 'OK', onPress: () => this.props.logout() }
-              ]
-            );
+    setTimeout(() => this.setState({ isSplashScreenVisible: false }, () => {
+      console.log('Variable: App -> componentDidMount -> Actions.currentScene', Actions.currentScene)
+      if (Actions.currentScene !== 'login') {
+        checkToken(this.props.token).then(response => {
+          if (response.hasOwnProperty('expire_time')) {
+            if (response.expire_time) {
+              Alert.alert(
+                'Error!',
+                response.msg,
+                [
+                  { text: 'OK', onPress: () => this.props.logout() }
+                ]
+              );
+            }
           }
-        }
-      }).catch(error => {
-        console.log(error);
-      })
-    }
-    setTimeout(() => this.setState({ isSplashScreenVisible: false }), 2500);
+        }).catch(error => {
+          console.log(error);
+        })
+      }
+    }), 2500);
   }
 
   render() {
