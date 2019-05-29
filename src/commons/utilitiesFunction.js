@@ -80,7 +80,7 @@ export function downloadAllEvidences(directoryTree, pdfFolderPath) {
                             let evidenceArray = evidenceType.evidences;
                             for (let evidence of evidenceArray) {
                                 if (evidence.type === 'FILE') {
-                                    let filePath = pdfFolderPath + '/' + evidence.name + '.pdf';
+                                    let filePath = pdfFolderPath + '/' + evidence.name + '_' + evidence.id + '.pdf';
                                     promises.push(downloadEvidence(evidence.link, filePath))
                                     evidence.link = filePath;
                                 }
