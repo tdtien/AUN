@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     Alert,
     View,
-    Modal,
     Text,
 } from 'react-native';
 import {
@@ -15,8 +14,6 @@ import {
     Title,
     Container,
     Icon,
-    Content,
-    Toast
 } from "native-base";
 import Pdf from 'react-native-pdf';
 import { Actions } from "react-native-router-flux";
@@ -40,6 +37,7 @@ class PDFViewer extends React.Component {
             isShowPdfView: false,
             screenWidth: Dimensions.get('window').width,
             currentEvidence: this.props.currentEvidence,
+            evidenceArray: this.props.evidenceArray,
             fileName: this.props.fileName,
         }
     }
@@ -56,6 +54,13 @@ class PDFViewer extends React.Component {
             'change',
             this._handleUpdateScreenSize
         );
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        if (nextState.evidenceArray !== nextProps.evidenceArray) {
+            nextState.currentEvidence = nextProps.currentEvidence;
+            nextState.evidenceArray = nextProps.evidenceArray;
+        }
     }
 
     _handleUpdateScreenSize = (size) => {
@@ -140,15 +145,15 @@ class PDFViewer extends React.Component {
     }
 
     handleViewEvidences = (type) => {
-        let length = this.props.evidenceArray.length;
-        let currentIndex = this.props.evidenceArray.findIndex(item => item.id === this.state.currentEvidence.id);
+        let length = this.state.evidenceArray.length;
+        let currentIndex = this.state.evidenceArray.findIndex(item => item.id === this.state.currentEvidence.id);
         let newIndex = (type === 'next') ? (currentIndex + 1) : (currentIndex - 1);
         if (newIndex === length || newIndex < 0) {
             return;
         }
         this.setState({
-            currentEvidence: this.props.evidenceArray[newIndex],
-            fileName: this.props.evidenceArray[newIndex].name,
+            currentEvidence: this.state.evidenceArray[newIndex],
+            fileName: this.state.evidenceArray[newIndex].name,
         });
     }
 
@@ -163,7 +168,7 @@ class PDFViewer extends React.Component {
     }
 
     render() {
-        let { evidenceArray, base64, hasHeader } = this.props;
+        let { evidenceArray, base64, hasHeader, width } = this.props;
         let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading } = this.state
         let uri = '';
         if (base64 !== null) {
@@ -179,7 +184,7 @@ class PDFViewer extends React.Component {
         let pdfArrayView = (typeof evidenceArray !== 'undefined' && evidenceArray.length > 1) ? (
             <View
                 style={{
-                    width: screenWidth,
+                    width: width == -1 ? screenWidth: width,
                     height: 40,
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -252,7 +257,7 @@ class PDFViewer extends React.Component {
                         }}
                         style={{
                             flex: 1,
-                            width: screenWidth
+                            width: width == -1 ? screenWidth: width
                         }}
                         onPageSingleTap={() => {
                             this.setState({
@@ -277,6 +282,7 @@ class PDFViewer extends React.Component {
 
 PDFViewer.defaultProps = {
     hasHeader: true,
+    width: -1
 }
 
 const mapStateToProps = state => {

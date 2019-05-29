@@ -190,24 +190,27 @@ class Comment extends Component {
 
     render() {
         const { isConnected, fullContent, activeTabIndex, isLoading, comments, notes } = this.state;
+        const { hasHeader, width } = this.props
         let content = this.props.subCriterionInfo.content;
         let marginHorizontal = 10;
         let iconSize = 35;
-        let messageWidth = Dimensions.get('window').width - marginHorizontal * 3 - iconSize;
+        let messageWidth = width == -1 ? Dimensions.get('window').width : width - marginHorizontal * 3 - iconSize;
         return (
             <Container style={{ backgroundColor: 'white' }}>
-                <Header
-                    androidStatusBarColor={AppCommon.colors}
-                    iosBarStyle="light-content"
-                    style={{ backgroundColor: AppCommon.colors }}
-                >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
-                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    </TouchableOpacity>
-                    <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: 'white' }}>Comment</Title>
-                    </Body>
-                </Header>
+                {hasHeader ? (
+                    <Header
+                        androidStatusBarColor={AppCommon.colors}
+                        iosBarStyle="light-content"
+                        style={{ backgroundColor: AppCommon.colors }}
+                    >
+                        <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
+                            <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                        </TouchableOpacity>
+                        <Body style={{ flex: 1 }}>
+                            <Title style={{ alignSelf: "center", color: 'white' }}>Comment</Title>
+                        </Body>
+                    </Header>
+                ) : (<View />)}
                 <Content
                     style={{ flex: 1 }}
                     ref={ref => this._content = ref}
@@ -283,6 +286,11 @@ class Comment extends Component {
     }
 }
 
+Comment.defaultProps = {
+    hasHeader: true,
+    width: -1
+}
+
 const mapStateToProps = state => {
     return {
         token: state.account.token,
@@ -290,7 +298,8 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, null)(Comment);
+
+export default connect(mapStateToProps)(Comment);
 
 const styles = StyleSheet.create({
     menuButton: {

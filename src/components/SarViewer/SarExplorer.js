@@ -1,6 +1,7 @@
 import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title, Grid, Col, Row } from "native-base";
 import React, { Component } from "react";
-import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View, ScrollView } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
+import { WebView } from 'react-native-webview';
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import { setDirectoryInfo } from "../../actions/directoryAction";
@@ -13,6 +14,8 @@ import BreadCrumb from "../Breadcrumb/Breadcrumb";
 import AddButton from "./AddButton";
 import TreeSelect from 'react-native-tree-select'
 import TextViewer from "../TextViewer/TextViewer";
+import PDFViewer from "../PDFViewer/PDFViewer";
+import Comment from "../Comment/Comment";
 
 const window = Dimensions.get('window');
 class SarExplorer extends Component {
@@ -232,11 +235,11 @@ class SarExplorer extends Component {
     }
 
     makeRemoteRequestTree = async (item = {}) => {
-        if (item.name === 'Loading...') {
+        let fileType = ['IMPLICATION', 'QUESTION', 'FILE', 'LINK']
+        if (item.name === 'Loading...' || (item.hasOwnProperty('type') && fileType.indexOf(item.type) >= 0)) {
             return;
         }
         const { token } = this.props;
-        console.log('Variable: SarExplorer -> makeRemoteRequestTree -> item', item)
         if (isEmptyJson(item)) {
             //Loading first-time
             type = 'sars'
@@ -331,6 +334,7 @@ class SarExplorer extends Component {
     handleClick = ({ item, routes }) => {
         var { currentItem, previousItem, content, currentEvidence, evidenceArray } = this.state;
         if (!item.isLoad) {
+            console.log('Variable: handleClick -> item', item)
             this.makeRemoteRequestTree(item)
             item.isLoad = true;
         }
@@ -359,6 +363,10 @@ class SarExplorer extends Component {
         if (item.key === 'evidence' && previousItem.length > 0) {
             this.setState({ currentEvidence: item, evidenceArray: previousItem[previousItem.length - 1].children })
         }
+        if (item.key === 'subCriterion') {
+            item.id = typeof item.id === 'string' ? item.id.replace(/[^0-9]/g, '') : item.id;
+            this.setState({ currentEvidence: item });
+        }
     }
 
     handlePop = () => {
@@ -384,7 +392,7 @@ class SarExplorer extends Component {
     }
 
     handlePopTo = (index, isRoot = false) => {
-        if (!this.state.isLoading) {
+        if (!this.state.isLoading && !this.state.isTablet) {
             if (this.state.subCriterionView) {
                 this.setState({ subCriterionView: false })
             }
@@ -653,7 +661,12 @@ class SarExplorer extends Component {
     }
 
     render() {
-        const { currentItem, scene, currentIdx, previousItem, downloadMode, isConnected, isLoading, isTablet, subCriterionView, width } = this.state;
+        const {
+            currentItem, scene, currentIdx, previousItem,
+            downloadMode, isConnected, isLoading, isTablet,
+            subCriterionView, width, currentEvidence, evidenceArray,
+            content
+        } = this.state;
         let currentScene = scene[currentIdx]
         let title = downloadMode ? 'Download Offline' :
             currentScene.key === 'suggestions' ? currentScene.title + currentItem.name :
@@ -733,13 +746,33 @@ class SarExplorer extends Component {
                                     borderTopColor: 'gray',
                                 }}
                             >
-                                {isEmptyJson(this.state.currentEvidence) || !this.state.content || this.state.content === '' ? (
+                                {isEmptyJson(currentEvidence) && (typeof content === 'undefined' || content === '') ? (
                                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                         <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
                                     </View>
-                                ) : (
-                                        <TextViewer data={this.state.content} title='' hasHeader={false} />
-                                    )}
+                                ) : isEmptyJson(currentEvidence) && content && content !== '' ?
+                                        (
+                                            <TextViewer data={content} title='' hasHeader={false} />
+                                        ) : (currentEvidence.key === 'subCriterion' ? (
+                                            <Comment hasHeader={false} subCriterionInfo={currentEvidence} width={width * 2 / 3} />
+                                        ) : (
+                                                currentEvidence.type === 'FILE' ? (
+                                                    <PDFViewer
+                                                        width={width * 2 / 3}
+                                                        hasHeader={false}
+                                                        fileName={currentEvidence.name}
+                                                        base64={null}
+                                                        currentEvidence={currentEvidence}
+                                                        flow={null}
+                                                        evidenceArray={evidenceArray.filter(item => item.type === 'FILE')}
+                                                    />) : (
+                                                        <WebView
+                                                            source={{ uri: currentEvidence.link }}
+                                                            style={{ width: width * 2 / 3, flex: 1 }}
+                                                        />
+                                                    )
+                                            )
+                                        )}
                             </Col>
                         </Row>
                     </Grid>
