@@ -35,7 +35,6 @@ class App extends Component {
 
   componentDidMount() {
     setTimeout(() => this.setState({ isSplashScreenVisible: false }, () => {
-      console.log('Variable: App -> componentDidMount -> Actions.currentScene', Actions.currentScene)
       if (Actions.currentScene !== 'login') {
         checkToken(this.props.token).then(response => {
           if (response.hasOwnProperty('expire_time')) {

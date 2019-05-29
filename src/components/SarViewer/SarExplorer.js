@@ -231,7 +231,7 @@ class SarExplorer extends Component {
             })
     }
 
-    makeRemoteRequestTree = (item = {}) => {
+    makeRemoteRequestTree = async (item = {}) => {
         if (item.name === 'Loading...') {
             return;
         }
@@ -261,7 +261,18 @@ class SarExplorer extends Component {
             }
             if (type === 'suggestions') {
                 item.children = item.dataSuggestions[item.id.replace(/[^a-zA-Z]/g, '')]
-                    .map(item => ({ ...item, isLoad: false, name: item.hasOwnProperty('name') ? limitText(item.name) : limitText(item.content), id: `${type}${item.id}` }))
+                    .map(element => ({
+                        ...element,
+                        isLoad: false,
+                        name: element.hasOwnProperty('name') ? limitText(element.name) : limitText(element.content),
+                        id: `${type}${element.id}`
+                    }))
+                if (item.id.includes('evidences')) {
+                    item.children = item.children.map(element => ({
+                        ...element,
+                        children: [{ id: getRandomArbitrary(1, 99), name: 'Loading...' }]
+                    }));
+                }
                 this.forceUpdate();
                 return
             }
@@ -277,11 +288,28 @@ class SarExplorer extends Component {
                                     { id: `subCriterions${getRandomArbitrary(1, 99)}`, name: 'Subcriterions' }
                                 ]
                                 responseJson.data.subCriterions = response.data;
-                                item.children = data.map(item => ({ ...item, isLoad: false, dataSuggestions: responseJson.data, children: [{ id: getRandomArbitrary(1, 99), name: 'Loading...' }] }))
+                                item.children = data.map(item => ({
+                                    ...item,
+                                    isLoad: false,
+                                    dataSuggestions: responseJson.data,
+                                    children: [{ id: getRandomArbitrary(1, 99), name: 'Loading...' }]
+                                }))
+                                this.forceUpdate();
                             })
+                    } else if (item.hasOwnProperty('type') && item.type === 'EVIDENCE') {
+                        item.children = isEmptyJson(responseJson) ?
+                            [] : responseJson.data.map(item => ({
+                                ...item,
+                                isLoad: false, id: `${type}${item.id}`, name: limitText(item.name)
+                            }))
                     } else {
                         item.children = isEmptyJson(responseJson) ?
-                            [] : responseJson.data.map(item => ({ ...item, isLoad: false, id: `${type}${item.id}`, name: limitText(item.name), children: [{ id: getRandomArbitrary(1, 99), name: 'Loading...' }] }))
+                            [] : responseJson.data.map(item => ({
+                                ...item,
+                                isLoad: false, id: `${type}${item.id}`,
+                                name: limitText(item.name),
+                                children: [{ id: getRandomArbitrary(1, 99), name: 'Loading...' }]
+                            }))
                     }
                     this.forceUpdate();
                 })
