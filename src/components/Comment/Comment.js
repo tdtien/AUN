@@ -40,7 +40,7 @@ class Comment extends Component {
             activeTabIndex: 0,
             message: '',
             comments: [],
-            notes: []
+            notes: [],
         };
     }
     componentDidMount() {
@@ -66,17 +66,16 @@ class Comment extends Component {
         );
     }
 
-    handleGetComments = (scrollToEnd = false) => {
+    handleGetComments = (scrollToEnd = false, priority = true) => {
         const { token, subCriterionInfo } = this.props;
-        // console.log('subCriterionInfo: ' + JSON.stringify(subCriterionInfo));
         getAllComments(token, subCriterionInfo.id)
             .then((responseJson) => {
                 this.setState({
-                    isLoading: false,
-                    refreshing: false,
+                    isLoading: priority ? false : this.state.isLoading,
+                    refreshing: priority ? false : this.state.refreshing,
                     comments: responseJson.data
                 },
-                    () => { scrollToEnd ? setTimeout(() => this._content._root.scrollToEnd({ animated: true }), 200) : null }
+                    () => { scrollToEnd ? setTimeout(() => this._content._root.scrollToEnd({ animated: true }), 100) : null }
                 )
             })
             .catch((error) => {
@@ -89,16 +88,16 @@ class Comment extends Component {
             });
     }
 
-    handleGetNotes = (scrollToEnd = false) => {
+    handleGetNotes = (scrollToEnd = false, priority = false) => {
         const { token, subCriterionInfo } = this.props;
         getAllNotes(token, subCriterionInfo.id)
             .then((responseJson) => {
                 this.setState({
-                    isLoading: false,
-                    refreshing: false,
+                    isLoading: priority ? false : this.state.isLoading,
+                    refreshing: priority ? false : this.state.refreshing,
                     notes: responseJson.data
                 },
-                    () => { scrollToEnd ? setTimeout(() => this._content._root.scrollToEnd({ animated: true }), 200) : null }
+                    () => { scrollToEnd ? setTimeout(() => this._content._root.scrollToEnd({ animated: true }), 100) : null }
                 )
             })
             .catch((error) => {
@@ -114,8 +113,8 @@ class Comment extends Component {
     makeRemoteRequest = () => {
         if (this.state.isConnected) {
             const { token, subCriterionInfo } = this.props;
-            this.handleGetComments();
-            this.handleGetNotes();
+            this.handleGetComments(false, true);
+            this.handleGetNotes(false, false);
         } else {
             this.setState({
                 isLoading: false
@@ -155,7 +154,9 @@ class Comment extends Component {
         Keyboard.dismiss();
         this.setState({
             isLoading: true,
-        })
+        },
+            () => this._content._root.scrollToEnd({ animated: true })
+        )
         let data = {
             "content": message,
             "isNote": activeTabIndex,
@@ -164,11 +165,7 @@ class Comment extends Component {
         }
         addComment(this.props.token, data)
             .then((result) => {
-                this.setState({
-                    isLoading: false
-                }, () => {
-                    activeTabIndex === 0 ? this.handleGetComments(true) : this.handleGetNotes(true)
-                });
+                activeTabIndex === 0 ? this.handleGetComments(true, true) : this.handleGetNotes(true, true)
             })
             .catch((error) => {
                 console.log('Error: ' + error);
@@ -194,7 +191,8 @@ class Comment extends Component {
         let content = this.props.subCriterionInfo.content;
         let marginHorizontal = 10;
         let iconSize = 35;
-        let messageWidth = width == -1 ? Dimensions.get('window').width : width - marginHorizontal * 3 - iconSize;
+        let contentWidth = width == -1 ? Dimensions.get('window').width : width;
+        let messageWidth = contentWidth - marginHorizontal * 3 - iconSize;
         return (
             <Container style={{ backgroundColor: 'white' }}>
                 {hasHeader ? (
@@ -248,18 +246,17 @@ class Comment extends Component {
                                     <Text style={activeTabIndex === 1 ? styles.activeText : styles.text}>Note</Text>
                                 </TouchableOpacity>
                             </View>
+                            <FlatList
+                                data={activeTabIndex === 0 ? comments : notes}
+                                extraData={activeTabIndex === 0 ? comments : notes}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={this.renderItem}
+                            />
                             {isLoading ? (
-                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingBottom: 10 }}>
                                     <ActivityIndicator size="large" animating color={AppCommon.colors} />
                                 </View>
-                            ) : (
-                                    <FlatList
-                                        data={activeTabIndex === 0 ? comments : notes}
-                                        extraData={activeTabIndex === 0 ? comments : notes}
-                                        keyExtractor={(item, index) => index.toString()}
-                                        renderItem={this.renderItem}
-                                    />
-                                )}
+                            ) : <View />}
                         </View>
                     ) : <View />}
                 </Content>
@@ -313,7 +310,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
     },
     text: {
-        fontSize: 20.5,
+        fontSize: AppCommon.font_size,
         textAlign: 'justify',
         color: '#404040',
     },
@@ -332,7 +329,7 @@ const styles = StyleSheet.create({
         borderBottomColor: AppCommon.colors
     },
     activeText: {
-        fontSize: 20.5,
+        fontSize: AppCommon.font_size,
         textAlign: 'justify',
         fontWeight: 'bold',
         color: AppCommon.colors,
