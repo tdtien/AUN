@@ -29,8 +29,6 @@ import BreadCrumb from '../Breadcrumb/Breadcrumb';
 class PDFViewer extends React.Component {
     constructor(props) {
         super(props);
-        // console.log('evidenceArray: ' + JSON.stringify(this.props.evidenceArray));
-        // console.log('currentEvidence: ' + JSON.stringify(this.props.currentEvidence));
         this.state = {
             isLoading: false,
             isDialogVisible: false,
@@ -70,38 +68,6 @@ class PDFViewer extends React.Component {
         });
     }
 
-    handleDeleteImageFolder = (folderPath) => {
-        Alert.alert(
-            'Delete image folder',
-            'Do you want to delete the image folder ?',
-            [
-                {
-                    text: 'No',
-                    style: 'cancel',
-                    onPress: () => popToSceneWithUpdate('_sarExplorer', this.props.flow),
-                },
-                {
-                    text: 'Yes', onPress: () => {
-                        this.setState({
-                            isLoading: true
-                        })
-                        deleteItem(folderPath).then(result => {
-                            this.setState({
-                                isLoading: false
-                            })
-                            popToSceneWithUpdate('_sarExplorer', this.props.flow)
-                        }).catch(error => {
-                            this.setState({
-                                isLoading: false
-                            })
-                            Alert.alert('Error', error.message);
-                        })
-                    }
-                }
-            ]
-        );
-    }
-
     handleUploadPdf = (fileName) => {
         if (!validateFileName(fileName)) {
             Alert.alert('Error', 'Your file name just use alphabet, numbers and underscore');
@@ -119,18 +85,37 @@ class PDFViewer extends React.Component {
         }
         uploadEvidence(this.props.token, data)
             .then((responseJson) => {
-                this.setState({
-                    isLoading: false
-                })
                 console.log('responseJson: ' + responseJson.msg);
-                if (responseJson.msg === 'Upload file successful')
+                if (responseJson.msg === 'Upload file successful') {
+                    let message = responseJson.msg + '\r\n' + 'Do you want to delete the image folder ?'
                     Alert.alert(
                         'Success',
-                        responseJson.msg,
+                        message,
                         [
-                            { text: 'OK', onPress: () => this.handleDeleteImageFolder(this.props.imageFolderPath) }
+                            {
+                                text: 'No',
+                                style: 'cancel',
+                                onPress: () => popToSceneWithUpdate('_sarExplorer', this.props.flow),
+                            },
+                            {
+                                text: 'Yes', onPress: () => {
+                                    this.setState({
+                                        isLoading: true
+                                    })
+                                    deleteItem(this.props.imageFolderPath).then(result => {
+                                        this.setState({
+                                            isLoading: false
+                                        }, () => popToSceneWithUpdate('_sarExplorer', this.props.flow))
+                                    }).catch(error => {
+                                        this.setState({
+                                            isLoading: false
+                                        }, () => Alert.alert('Error', error.message))
+                                    })
+                                }
+                            }
                         ]
                     );
+                }
                 else {
                     Alert.alert('Error1', responseJson.msg);
                 }
@@ -184,7 +169,7 @@ class PDFViewer extends React.Component {
         let pdfArrayView = (typeof evidenceArray !== 'undefined' && evidenceArray.length > 1) ? (
             <View
                 style={{
-                    width: width == -1 ? screenWidth: width,
+                    width: width == -1 ? screenWidth : width,
                     height: 40,
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -230,7 +215,7 @@ class PDFViewer extends React.Component {
                         }
 
                     </Header>
-                ): <View />}
+                ) : <View />}
                 {base64 === null ? <View /> :
                     <BreadCrumb
                         isConnected={false}
@@ -257,7 +242,7 @@ class PDFViewer extends React.Component {
                         }}
                         style={{
                             flex: 1,
-                            width: width == -1 ? screenWidth: width
+                            width: width == -1 ? screenWidth : width
                         }}
                         onPageSingleTap={() => {
                             this.setState({

@@ -20,7 +20,7 @@ const Loader = props => {
             animationType={'none'}
             visible={loading}
         >
-            <StatusBar backgroundColor={AppCommon.colors} barStyle="dark-content" />
+            <StatusBar backgroundColor={AppCommon.colors} barStyle="light-content" />
             <View style={styles.modalBackground}>
                 <View style={styles.activityIndicatorWrapper}>
                     <ActivityIndicator

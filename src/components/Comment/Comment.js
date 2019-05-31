@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
     Text,
     TouchableOpacity,
-    TouchableNativeFeedback,
+    TouchableWithoutFeedback,
     StyleSheet,
     ActivityIndicator,
     FlatList,
@@ -220,7 +220,7 @@ class Comment extends Component {
                         />
                     }
                 >
-                    <TouchableNativeFeedback onPress={() => this.toggleContent()}>
+                    <TouchableWithoutFeedback onPress={() => this.toggleContent()}>
                         {
                             (fullContent || content.length <= 300) ? (
                                 <View style={styles.content} >
@@ -233,7 +233,7 @@ class Comment extends Component {
                                     </View>
                                 )
                         }
-                    </TouchableNativeFeedback>
+                    </TouchableWithoutFeedback>
                     {isConnected ? (
                         <View>
                             <View
