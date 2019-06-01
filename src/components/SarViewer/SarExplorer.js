@@ -839,7 +839,7 @@ class SarExplorer extends Component {
                             </View>
                         </Right>
                     </Footer>
-                ) : (currentScene.key === 'evidences' && this.props.role !== 'REVIEWER' ? (
+                ) : (currentScene.key === 'evidences' && previousItem[0].role !== 'REVIEWER' ? (
                     <AddButton
                         sarInfo={previousItem[0]}
                         criterionInfo={previousItem[1]}
@@ -902,7 +902,7 @@ const mapStateToProps = state => {
     return {
         token: state.account.token,
         email: state.account.email,
-        role: state.account.role,
+        admin: state.account.admin,
         directoryInfo: state.directory.directoryInfo
     };
 };

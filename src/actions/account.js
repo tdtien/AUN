@@ -6,7 +6,7 @@ export const loginAccount = item => {
         id: item.id,
         token: item.token,
         email: item.email,
-        role: item.role
+        admin: item.admin
     }
 }
 

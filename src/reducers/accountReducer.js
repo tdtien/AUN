@@ -5,13 +5,13 @@ const initialState = {
   token: '',
   isLoggedIn: false,
   email: '',
-  role: ''
+  admin: ''
 };
 
 const accountReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN: {
-      state = Object.assign({}, state, { id: action.id, token: action.token, isLoggedIn: true, email: action.email, role: action.role });
+      state = Object.assign({}, state, { id: action.id, token: action.token, isLoggedIn: true, email: action.email, admin: action.admin });
       return state;
     }
     case LOGOUT: {

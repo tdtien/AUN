@@ -39,7 +39,6 @@ class SideMenu extends Component {
                             </Left>
                             <Body>
                                 <Text>{this.props.email}</Text>
-                                <Text note>{this.props.role}</Text>
                             </Body>
                         </ListItem>
                         {/* <ListItem button onPress={() => Actions.currentScene == '_merchant' ? Actions.drawerClose() : Actions.merchant()} icon noBorder >
@@ -96,7 +95,7 @@ const mapDispatchToProps = dispatch => {
 const mapStateToProps = state => {
     return {
         email: state.account.email,
-        role: state.account.role,
+        admin: state.account.admin,
         token: state.account.token
     };
 };
