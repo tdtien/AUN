@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { TouchableOpacity, StyleSheet, View, ActivityIndicator, Modal, Text, Alert } from "react-native";
+import { TouchableOpacity, StyleSheet, View, ActivityIndicator, Modal, Text, Alert, Platform } from "react-native";
 import {
     DocumentPicker,
     DocumentPickerUtil,
@@ -42,26 +42,30 @@ export default class AddButton extends Component {
     }
 
     handleShowFilePicker = () => {
-        DocumentPicker.show(
-            {
-                filetype: [DocumentPickerUtil.pdf()],
-            },
-            (error, response) => {
-                if (response !== null) {
-                    // console.log('URI : ' + response.uri);
-                    fileToBase64(response.uri)
-                        .then(database64 => {
-                            // console.log('database64 : ' + JSON.stringify(database64));
-                            this.setState({
-                                database64Upload: database64,
-                                fileNameUpload: response.fileName,
-                                isShowFileUploadDialog: true
+        if (Platform.OS === 'ios') {
+            let message = 'Your development team cannot be a Personal team.\r\nPlease use an actual account with the developer program in order to use the iOS document picker.'
+            Alert.alert('Notification', message);
+        } else {
+            DocumentPicker.show(
+                {
+                    filetype: [DocumentPickerUtil.pdf()],
+                },
+                (error, response) => {
+                    if (response !== null) {
+                        // console.log('URI : ' + response.uri);
+                        fileToBase64(response.uri)
+                            .then(database64 => {
+                                // console.log('database64 : ' + JSON.stringify(database64));
+                                this.setState({
+                                    database64Upload: database64,
+                                    fileNameUpload: response.fileName,
+                                    isShowFileUploadDialog: true
+                                })
                             })
-                        })
+                    }
                 }
-            }
-        )
-
+            )
+        }
     }
 
     handlePickerValue = (item) => {
@@ -160,10 +164,10 @@ export default class AddButton extends Component {
             <View>
                 <TouchableOpacity style={styles.addButton} onPress={() => isLoading ? null : this.toggleUploadPicker()}>
                     {isLoading ? (
-                        <ActivityIndicator animating color="#FFF" size="large"/>
-                    ): (
-                        <Icon name = {AppCommon.icon("add")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    )}
+                        <ActivityIndicator animating color="#FFF" size="large" />
+                    ) : (
+                            <Icon name={AppCommon.icon("add")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                        )}
                 </TouchableOpacity>
                 <Modal
                     visible={isShowUploadPicker}
