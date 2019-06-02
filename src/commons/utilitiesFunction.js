@@ -1,6 +1,7 @@
 import RNFS from 'react-native-fs'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from './commons';
+import { validateSimpleURL } from './validation';
 
 export function createFolder(mainPath) {
     return new Promise((resolve, reject) => {
@@ -49,6 +50,9 @@ export async function folderToBase64(files) {
 }
 
 export function downloadEvidence(url, filePath) {
+    if (!validateSimpleURL(url)) {
+        return;
+    }
     return new Promise((resolve, reject) => {
         RNFS.downloadFile({
             fromUrl: url,

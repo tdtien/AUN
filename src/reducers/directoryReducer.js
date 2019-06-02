@@ -124,6 +124,9 @@ const directoryReducer = (state = initialState, action) => {
                         }
                         let suggestions = criterionItem.suggestions;
                         let evidenceTypeNewArray = directoryTree.criterions[0].suggestions.evidences;
+                        if (evidenceTypeNewArray[0].evidences.length === 0) {
+                            break;
+                        }
                         if (suggestions.hasOwnProperty('evidences')) {
                             let evidenceTypeItem = suggestions.evidences.find(item => item.id === flow.suggestionInfo.id);
                             if (evidenceTypeItem === undefined) {
@@ -147,9 +150,8 @@ const directoryReducer = (state = initialState, action) => {
             console.log('-------------------');
             console.log('new state: ' + JSON.stringify(newState.directoryInfo));
             return { ...state, newState };
-            //Detach evidences file
 
-
+            
             //reset directory redux
             // console.log('Reset redux');
             // let newState = {};

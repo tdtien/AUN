@@ -13,3 +13,7 @@ export function validatePassword(text) {
 export function validateFileName(text) {
     return regFileName.test(text);
 }
+
+export function validateSimpleURL(text) {
+    return (text.startsWith('http://') || text.startsWith('https://'));
+}
