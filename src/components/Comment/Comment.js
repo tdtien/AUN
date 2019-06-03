@@ -32,8 +32,6 @@ import moment from "moment";
 import { connect } from 'react-redux';
 import { getAllComments, getAllNotes, addComment } from '../../api/accountApi';
 
-// let content = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s'
-
 class Comment extends Component {
     constructor(props) {
         super(props);
@@ -73,7 +71,6 @@ class Comment extends Component {
 
     handleGetComments = (scrollToEnd = false, priority = true) => {
         const { token, subCriterionInfo } = this.props;
-        // subCriterionInfo.id
         getAllComments(token, subCriterionInfo.id)
             .then((responseJson) => {
                 this.setState({
@@ -96,7 +93,6 @@ class Comment extends Component {
 
     handleGetNotes = (scrollToEnd = false, priority = false) => {
         const { token, subCriterionInfo } = this.props;
-        // subCriterionInfo.id
         getAllNotes(token, subCriterionInfo.id)
             .then((responseJson) => {
                 this.setState({
@@ -145,8 +141,8 @@ class Comment extends Component {
     renderItem = ({ item }) => {
         return (
             <View style={{ backgroundColor: '#f2f2f2', marginBottom: 10, marginHorizontal: 10, padding: 10, borderRadius: 5 }}>
-                {item.isNote === 0 ? <Text style={[styles.text, { fontSize: 17, fontWeight: 'bold' }]}>{item.userEmail}</Text> : null}
-                <Text style={[styles.text, { fontSize: 17 }]}>{item.content}</Text>
+                {item.isNote === 0 ? <Text style={[styles.text, { fontSize: 16, fontWeight: 'bold' }]}>{item.userEmail}</Text> : null}
+                <Text style={[styles.text, { fontSize: 16 }]}>{item.content}</Text>
                 <Text style={[styles.text, { fontSize: 14, marginTop: 3 }]}>{moment(item.updatedAt).format('DD/MM/YYYY HH:mm')}</Text>
             </View>
         )
@@ -162,14 +158,12 @@ class Comment extends Component {
         this.setState({
             isLoading: true,
         },
-            // () => this._content._root.scrollToEnd({ animated: true })
             () => this.refs.scrollView.scrollToEnd({ animated: true })
         )
         let data = {
             "content": message,
             "isNote": activeTabIndex,
             "subCriterionId": this.props.subCriterionInfo.id,
-            // "subCriterionId": 1,
             "email": this.props.email,
         }
         addComment(this.props.token, data)
@@ -202,10 +196,9 @@ class Comment extends Component {
         let iconSize = 35;
         let contentWidth = width == -1 ? Dimensions.get('window').width : width;
         let messageWidth = contentWidth - marginHorizontal * 3 - iconSize;
-        const keyboardVerticalOffset = Platform.OS === 'ios' ? 0 : 0;
         return (
             <Container style={{ backgroundColor: 'white' }}>
-                <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled keyboardVerticalOffset={keyboardVerticalOffset}>
+                <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled={Platform.OS === 'ios'} keyboardVerticalOffset={0}>
                     {hasHeader ? (
                         <Header
                             androidStatusBarColor={AppCommon.colors}
@@ -222,7 +215,6 @@ class Comment extends Component {
                     ) : (<View />)}
                     <ScrollView
                         style={{ flex: 1 }}
-                        // ref={ref => this._content = ref}
                         ref="scrollView"
                         refreshControl={
                             <RefreshControl
@@ -252,10 +244,10 @@ class Comment extends Component {
                                     style={{ flex: 1, flexDirection: 'row', marginBottom: 10, borderBottomWidth: 1, borderTopWidth: 1, borderColor: '#e6e6e6', height: 50 }}
                                 >
                                     <TouchableOpacity style={activeTabIndex === 0 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(0)}>
-                                        <Text style={activeTabIndex === 0 ? styles.activeText : styles.text}>Comment</Text>
+                                        <Text style={activeTabIndex === 0 ? styles.activeText : [styles.text, { fontSize: 17 }]}>Comment</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={activeTabIndex === 1 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(1)}>
-                                        <Text style={activeTabIndex === 1 ? styles.activeText : styles.text}>Note</Text>
+                                        <Text style={activeTabIndex === 1 ? styles.activeText : [styles.text, { fontSize: 17 }]}>Note</Text>
                                     </TouchableOpacity>
                                 </View>
                                 <FlatList
@@ -278,7 +270,7 @@ class Comment extends Component {
                         >
                             <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginHorizontal: marginHorizontal, paddingVertical: 6 }}>
                                 <TextInput
-                                    style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, height: 30, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15, fontSize: 17 }}
+                                    style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, height: 40, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15, fontSize: 17 }}
                                     placeholder={activeTabIndex === 0 ? 'Add comment...' : 'Add note...'}
                                     onChangeText={(message) => this.setState({ message: message })}
                                     value={this.state.message}
@@ -346,5 +338,6 @@ const styles = StyleSheet.create({
         textAlign: 'justify',
         fontWeight: 'bold',
         color: AppCommon.colors,
+        fontSize: 17.5
     }
 });
