@@ -11,7 +11,10 @@ import {
     TextInput,
     Keyboard,
     RefreshControl,
-    NetInfo
+    NetInfo,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView
 } from 'react-native';
 import {
     Content,
@@ -28,6 +31,8 @@ import { Actions } from 'react-native-router-flux';
 import moment from "moment";
 import { connect } from 'react-redux';
 import { getAllComments, getAllNotes, addComment } from '../../api/accountApi';
+
+// let content = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s'
 
 class Comment extends Component {
     constructor(props) {
@@ -68,6 +73,7 @@ class Comment extends Component {
 
     handleGetComments = (scrollToEnd = false, priority = true) => {
         const { token, subCriterionInfo } = this.props;
+        // subCriterionInfo.id
         getAllComments(token, subCriterionInfo.id)
             .then((responseJson) => {
                 this.setState({
@@ -75,7 +81,7 @@ class Comment extends Component {
                     refreshing: priority ? false : this.state.refreshing,
                     comments: responseJson.data
                 },
-                    () => { scrollToEnd ? setTimeout(() => this._content._root.scrollToEnd({ animated: true }), 100) : null }
+                    () => { scrollToEnd ? setTimeout(() => this.refs.scrollView.scrollToEnd({ animated: true }), 100) : null }
                 )
             })
             .catch((error) => {
@@ -90,6 +96,7 @@ class Comment extends Component {
 
     handleGetNotes = (scrollToEnd = false, priority = false) => {
         const { token, subCriterionInfo } = this.props;
+        // subCriterionInfo.id
         getAllNotes(token, subCriterionInfo.id)
             .then((responseJson) => {
                 this.setState({
@@ -97,7 +104,7 @@ class Comment extends Component {
                     refreshing: priority ? false : this.state.refreshing,
                     notes: responseJson.data
                 },
-                    () => { scrollToEnd ? setTimeout(() => this._content._root.scrollToEnd({ animated: true }), 100) : null }
+                    () => { scrollToEnd ? setTimeout(() => this.refs.scrollView.scrollToEnd({ animated: true }), 100) : null }
                 )
             })
             .catch((error) => {
@@ -155,12 +162,14 @@ class Comment extends Component {
         this.setState({
             isLoading: true,
         },
-            () => this._content._root.scrollToEnd({ animated: true })
+            // () => this._content._root.scrollToEnd({ animated: true })
+            () => this.refs.scrollView.scrollToEnd({ animated: true })
         )
         let data = {
             "content": message,
             "isNote": activeTabIndex,
             "subCriterionId": this.props.subCriterionInfo.id,
+            // "subCriterionId": 1,
             "email": this.props.email,
         }
         addComment(this.props.token, data)
@@ -193,91 +202,95 @@ class Comment extends Component {
         let iconSize = 35;
         let contentWidth = width == -1 ? Dimensions.get('window').width : width;
         let messageWidth = contentWidth - marginHorizontal * 3 - iconSize;
+        const keyboardVerticalOffset = Platform.OS === 'ios' ? 0 : 0;
         return (
             <Container style={{ backgroundColor: 'white' }}>
-                {hasHeader ? (
-                    <Header
-                        androidStatusBarColor={AppCommon.colors}
-                        iosBarStyle="light-content"
-                        style={{ backgroundColor: AppCommon.colors }}
-                    >
-                        <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
-                            <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                        </TouchableOpacity>
-                        <Body style={{ flex: 1 }}>
-                            <Title style={{ alignSelf: "center", color: 'white' }}>Comment</Title>
-                        </Body>
-                    </Header>
-                ) : (<View />)}
-                <Content
-                    style={{ flex: 1 }}
-                    ref={ref => this._content = ref}
-                    refreshControl={
-                        <RefreshControl
-                            style={{ backgroundColor: '#E0FFFF', }}
-                            refreshing={this.state.refreshing}
-                            onRefresh={this.handleRefresh}
-                        />
-                    }
-                >
-                    <TouchableWithoutFeedback onPress={() => this.toggleContent()}>
-                        {
-                            (fullContent || content.length <= 300) ? (
-                                <View style={styles.content} >
-                                    <Text style={styles.text} >{content}</Text>
-                                </View>
-                            ) : (
-                                    <View style={styles.content}>
-                                        <Text style={styles.text}>{content.substring(0, 300)}</Text>
-                                        <Text style={[styles.text, { color: '#8c8c8c' }]}>... Xem thêm</Text>
-                                    </View>
-                                )
+                <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled keyboardVerticalOffset={keyboardVerticalOffset}>
+                    {hasHeader ? (
+                        <Header
+                            androidStatusBarColor={AppCommon.colors}
+                            iosBarStyle="light-content"
+                            style={{ backgroundColor: AppCommon.colors }}
+                        >
+                            <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
+                                <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            </TouchableOpacity>
+                            <Body style={{ flex: 1 }}>
+                                <Title style={{ alignSelf: "center", color: 'white' }}>Content</Title>
+                            </Body>
+                        </Header>
+                    ) : (<View />)}
+                    <ScrollView
+                        style={{ flex: 1 }}
+                        // ref={ref => this._content = ref}
+                        ref="scrollView"
+                        refreshControl={
+                            <RefreshControl
+                                style={{ backgroundColor: '#E0FFFF', }}
+                                refreshing={this.state.refreshing}
+                                onRefresh={this.handleRefresh}
+                            />
                         }
-                    </TouchableWithoutFeedback>
+                    >
+                        <TouchableWithoutFeedback onPress={() => this.toggleContent()}>
+                            {
+                                (fullContent || content.length <= 300) ? (
+                                    <View style={styles.content} >
+                                        <Text style={styles.text} >{content}</Text>
+                                    </View>
+                                ) : (
+                                        <View style={styles.content}>
+                                            <Text style={styles.text}>{content.substring(0, 300)}</Text>
+                                            <Text style={[styles.text, { color: '#8c8c8c' }]}>... Xem thêm</Text>
+                                        </View>
+                                    )
+                            }
+                        </TouchableWithoutFeedback>
+                        {isConnected ? (
+                            <View>
+                                <View
+                                    style={{ flex: 1, flexDirection: 'row', marginBottom: 10, borderBottomWidth: 1, borderTopWidth: 1, borderColor: '#e6e6e6', height: 50 }}
+                                >
+                                    <TouchableOpacity style={activeTabIndex === 0 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(0)}>
+                                        <Text style={activeTabIndex === 0 ? styles.activeText : styles.text}>Comment</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={activeTabIndex === 1 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(1)}>
+                                        <Text style={activeTabIndex === 1 ? styles.activeText : styles.text}>Note</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <FlatList
+                                    data={activeTabIndex === 0 ? comments : notes}
+                                    extraData={activeTabIndex === 0 ? comments : notes}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={this.renderItem}
+                                />
+                                {isLoading ? (
+                                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingBottom: 10 }}>
+                                        <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                                    </View>
+                                ) : <View />}
+                            </View>
+                        ) : <View />}
+                    </ScrollView>
                     {isConnected ? (
-                        <View>
-                            <View
-                                style={{ flex: 1, flexDirection: 'row', marginBottom: 10, borderBottomWidth: 1, borderTopWidth: 1, borderColor: '#e6e6e6', height: 50 }}
-                            >
-                                <TouchableOpacity style={activeTabIndex === 0 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(0)}>
-                                    <Text style={activeTabIndex === 0 ? styles.activeText : styles.text}>Comment</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={activeTabIndex === 1 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(1)}>
-                                    <Text style={activeTabIndex === 1 ? styles.activeText : styles.text}>Note</Text>
+                        <Footer
+                            style={{ backgroundColor: 'white', borderTopWidth: 1, borderColor: '#d9d9d9' }}
+                        >
+                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginHorizontal: marginHorizontal, paddingVertical: 6 }}>
+                                <TextInput
+                                    style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, height: 30, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15, fontSize: 17 }}
+                                    placeholder={activeTabIndex === 0 ? 'Add comment...' : 'Add note...'}
+                                    onChangeText={(message) => this.setState({ message: message })}
+                                    value={this.state.message}
+                                    returnKeyType="done"
+                                />
+                                <TouchableOpacity onPress={() => this.handleSendMessage()}>
+                                    <Icon name={AppCommon.icon("send")} style={{ color: AppCommon.colors, fontSize: iconSize }} />
                                 </TouchableOpacity>
                             </View>
-                            <FlatList
-                                data={activeTabIndex === 0 ? comments : notes}
-                                extraData={activeTabIndex === 0 ? comments : notes}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={this.renderItem}
-                            />
-                            {isLoading ? (
-                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingBottom: 10 }}>
-                                    <ActivityIndicator size="large" animating color={AppCommon.colors} />
-                                </View>
-                            ) : <View />}
-                        </View>
+                        </Footer>
                     ) : <View />}
-                </Content>
-                {isConnected ? (
-                    <Footer
-                        style={{ backgroundColor: 'white', borderTopWidth: 1, borderColor: '#d9d9d9' }}
-                    >
-                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginHorizontal: marginHorizontal, paddingVertical: 6 }}>
-                            <TextInput
-                                style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15, fontSize: 17 }}
-                                placeholder={activeTabIndex === 0 ? 'Add comment...' : 'Add note...'}
-                                onChangeText={(message) => this.setState({ message: message })}
-                                value={this.state.message}
-                                returnKeyType="done"
-                            />
-                            <TouchableOpacity onPress={() => this.handleSendMessage()}>
-                                <Icon name={AppCommon.icon("send")} style={{ color: AppCommon.colors, fontSize: iconSize }} />
-                            </TouchableOpacity>
-                        </View>
-                    </Footer>
-                ) : <View />}
+                </KeyboardAvoidingView>
             </Container>
         )
     }
