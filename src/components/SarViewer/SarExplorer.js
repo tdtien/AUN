@@ -1,7 +1,6 @@
 import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title, Grid, Col, Row } from "native-base";
 import React, { Component } from "react";
-import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
-import { WebView } from 'react-native-webview';
+import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View, Linking } from "react-native";
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import { setDirectoryInfo } from "../../actions/directoryAction";
@@ -361,7 +360,25 @@ class SarExplorer extends Component {
             this.setState({ content: item.description })
         }
         if (item.key === 'evidence' && previousItem.length > 0) {
-            this.setState({ currentEvidence: item, evidenceArray: previousItem[previousItem.length - 1].children })
+            if (item.hasOwnProperty('type') && item.type === 'LINK') {
+                Linking.canOpenURL(item.link)
+                    .then(supported => {
+                        if (supported) {
+                            Linking.openURL(item.link);
+                        } else {
+                            let error = 'Invalid url: ' + item.link;
+                            console.log(error);
+                            Alert.alert('Error', error);
+                        }
+                    })
+                    .catch((err) => {
+                        let error = 'Error when check url: ' + err;
+                        console.error(error);
+                        Alert.alert('Error', error);
+                    });
+            } else {
+                this.setState({ currentEvidence: item, evidenceArray: previousItem[previousItem.length - 1].children })
+            }
         }
         if (item.key === 'subCriterion') {
             item.id = typeof item.id === 'string' ? item.id.replace(/[^0-9]/g, '') : item.id;
@@ -756,21 +773,15 @@ class SarExplorer extends Component {
                                         ) : (currentEvidence.key === 'subCriterion' ? (
                                             <Comment hasHeader={false} subCriterionInfo={currentEvidence} width={width * 2 / 3} />
                                         ) : (
-                                                currentEvidence.type === 'FILE' ? (
-                                                    <PDFViewer
-                                                        width={width * 2 / 3}
-                                                        hasHeader={false}
-                                                        fileName={currentEvidence.name}
-                                                        base64={null}
-                                                        currentEvidence={currentEvidence}
-                                                        flow={null}
-                                                        evidenceArray={evidenceArray.filter(item => item.type === 'FILE')}
-                                                    />) : (
-                                                        <WebView
-                                                            source={{ uri: currentEvidence.link }}
-                                                            style={{ width: width * 2 / 3, flex: 1 }}
-                                                        />
-                                                    )
+                                                <PDFViewer
+                                                    width={width * 2 / 3}
+                                                    hasHeader={false}
+                                                    fileName={currentEvidence.name}
+                                                    base64={null}
+                                                    currentEvidence={currentEvidence}
+                                                    flow={null}
+                                                    evidenceArray={evidenceArray.filter(item => item.type === 'FILE')}
+                                                />
                                             )
                                         )}
                             </Col>

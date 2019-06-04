@@ -87,6 +87,9 @@ class PDFViewer extends React.Component {
             .then((responseJson) => {
                 console.log('responseJson: ' + responseJson.msg);
                 if (responseJson.msg === 'Upload file successful') {
+                    this.setState({
+                        isLoading: false,
+                    })
                     let message = responseJson.msg + '\r\n' + 'Do you want to delete the image folder ?'
                     Alert.alert(
                         'Success',
