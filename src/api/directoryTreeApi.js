@@ -28,6 +28,21 @@ export async function getAllSars(token) {
     });
 }
 
+export async function getAllContentSar(token) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/sars/content`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    })
+}
+
 export async function getAllCriterions(token, sarId) {
     return new Promise((resolve, reject) => {
         fetch(`${userAPI}/sars/${sarId}/criterions`, {

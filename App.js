@@ -10,12 +10,6 @@ import PDFViewer from './src/components/PDFViewer/PDFViewer';
 import { connect } from "react-redux";
 import { ToastAndroid, BackHandler, Alert, View, StyleSheet, Image } from "react-native";
 import SortList from './src/components/Merchant/SortList';
-import SuggestionViewer from './src/components/FolderExplorer/SuggestionViewer';
-import SarViewer from './src/components/FolderExplorer/SarViewer';
-import CriterionViewer from './src/components/FolderExplorer/CriterionViewer';
-import SubCriterionViewer from './src/components/FolderExplorer/SubCriterionViewer';
-import SuggestionTypeViewer from './src/components/FolderExplorer/SuggestionTypeViewer';
-import EvidenceViewer from './src/components/FolderExplorer/EvidenceViewer';
 import { Root } from 'native-base';
 import { checkToken } from './src/api/accountApi';
 import { logoutAccount } from './src/actions/account';
@@ -23,6 +17,7 @@ import SarExplorer from './src/components/SarViewer/SarExplorer';
 import Comment from './src/components/Comment/Comment';
 import Images from './src/assets/images';
 import TextViewer from './src/components/TextViewer/TextViewer';
+import SarViewer from './src/components/SarViewer/SarViewer';
 
 class App extends Component {
 
@@ -113,13 +108,13 @@ class App extends Component {
             >
               <Scene
                 hideNavBar
-                key="sarExplorer"
-                component={SarExplorer}
+                key="sarViewer"
+                component={SarViewer}
               />
               <Scene
                 hideNavBar
-                key="sarViewer"
-                component={SarViewer}
+                key="sarExplorer"
+                component={SarExplorer}
               />
             </Drawer>
             <Scene
@@ -136,28 +131,8 @@ class App extends Component {
               component={PDFViewer}
             />
             <Scene
-              key="suggestionViewer"
-              component={SuggestionViewer}
-            />
-            <Scene
-              key="criterionViewer"
-              component={CriterionViewer}
-            />
-            <Scene
-              key="subCriterionViewer"
-              component={SubCriterionViewer}
-            />
-            <Scene
-              key="suggestionTypeViewer"
-              component={SuggestionTypeViewer}
-            />
-            <Scene
               key="textViewer"
               component={TextViewer}
-            />
-            <Scene
-              key="evidenceViewer"
-              component={EvidenceViewer}
             />
             <Scene
               key="comment"

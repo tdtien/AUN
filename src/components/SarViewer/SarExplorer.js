@@ -689,7 +689,7 @@ class SarExplorer extends Component {
             currentScene.key === 'suggestions' ? currentScene.title + currentItem.name :
                 subCriterionView ? 'All Subcriterions' : currentScene.title
         return (
-            <Container style={{ backgroundColor: AppCommon.background_color }} onLayout={this.onLayout}>
+            <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
                     androidStatusBarColor={AppCommon.colors}
                     iosBarStyle="light-content"
