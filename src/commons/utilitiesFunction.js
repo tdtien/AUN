@@ -32,7 +32,6 @@ export function fileToBase64(uri) {
 }
 
 export function limitText(text, limit = 20) {
-    console.log('limitText', (text).length * 3, limit)
     return ((text).length > limit) ? (((text).substring(0, limit - 3)) + '...') : text
 }
 

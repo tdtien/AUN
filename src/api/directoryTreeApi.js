@@ -28,9 +28,9 @@ export async function getAllSars(token) {
     });
 }
 
-export async function getAllContentSar(token) {
+export async function getContentSar(token, id) {
     return new Promise((resolve, reject) => {
-        fetch(`${userAPI}/sars/content`, {
+        fetch(`${userAPI}/sars/${id}/content`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

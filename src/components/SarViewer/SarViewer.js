@@ -3,11 +3,12 @@ import React, { Component } from "react";
 import { ActivityIndicator, Alert, Dimensions, ScrollView, NetInfo, StyleSheet, TouchableOpacity, View, Linking } from "react-native";
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
-import { downloadCriterion, downloadSar, downloadSubCriterion, downloadSuggestion, getDataSar, getAllContentSar } from "../../api/directoryTreeApi";
+import { downloadCriterion, downloadSar, downloadSubCriterion, downloadSuggestion, getDataSar, getContentSar } from "../../api/directoryTreeApi";
 import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson, _searchTree, getNextType, limitText, getRandomArbitrary } from "../../commons/utilitiesFunction";
 import { AppCommon } from "../../commons/commons";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
 import TreeSelect from 'react-native-tree-select'
+import WebView from "react-native-webview";
 
 
 const window = Dimensions.get('window');
@@ -17,12 +18,12 @@ class SarViewer extends Component {
         super(props)
         this.state = {
             dataTree: [],
-            width: window.width,
-            treeWidth: window.width * 1/3,
-            contentWidth: window.width * 2/3,
+            treeWidth: window.width * 1 / 3,
+            contentWidth: window.width * 2 / 3,
             isLoading: false,
+            isLoadingContent: false,
             isConnected: true,
-            data: [],
+            data: {},
             currentItem: {},
             previousItem: []
         }
@@ -47,16 +48,22 @@ class SarViewer extends Component {
         );
     }
 
-    makeRemoteRequest = () => {
-        getAllContentSar(token)
+    makeRemoteRequest = async (id) => {
+        const { token } = this.props
+        getContentSar(token, id)
             .then(response => {
+                this.setState({ isLoadingContent: false })
                 if (response.success) {
-                    
+                    this.setState({ data: response.data })
+                    console.log(response.data)
                 } else {
 
                 }
             })
-            .catch(error => console.error(error))
+            .catch(error => {
+                this.setState({ isLoadingContent: false })
+                console.error(error)
+            })
     }
 
     makeRemoteRequestTree = async (item = {}) => {
@@ -65,19 +72,22 @@ class SarViewer extends Component {
             return;
         }
         const { token } = this.props;
+        let maxWidth = Math.floor(this.state.treeWidth / 8)
         if (isEmptyJson(item)) {
             //Loading first-time
             type = 'sars'
             getDataSar(token, type)
                 .then(responseJson => {
                     var itemList = isEmptyJson(responseJson) ?
-                        [] : responseJson.data.map(item => ({ ...item, 
-                            id: `${type}${item.id}`, 
-                            isLoad: false, 
-                            children: [{ 
-                                id: getRandomArbitrary(1, 99), 
-                                name: 'Loading...' 
-                            }] 
+                        [] : responseJson.data.map(item => ({
+                            ...item,
+                            id: `${type}${item.id}`,
+                            itemId: item.id,
+                            isLoad: false,
+                            children: [{
+                                id: getRandomArbitrary(1, 99),
+                                name: 'Loading...'
+                            }]
                         }));
                     this.setState({
                         isLoading: false,
@@ -98,11 +108,12 @@ class SarViewer extends Component {
                 item.children = item.dataSuggestions[item.id.replace(/[^a-zA-Z]/g, '')]
                     .map(element => ({
                         ...element,
+                        id: `${type}${element.id}`,
+                        itemId: element.id,
                         isLoad: false,
-                        name: element.hasOwnProperty('name') ? 
-                        limitText(element.name) : 
-                        limitText(element.content),
-                        id: `${type}${element.id}`
+                        name: element.hasOwnProperty('name') ?
+                            limitText(element.name, maxWidth) :
+                            limitText(element.content, maxWidth)
                     }))
                 if (item.id.includes('evidences')) {
                     item.children = item.children.map(element => ({
@@ -137,14 +148,19 @@ class SarViewer extends Component {
                         item.children = isEmptyJson(responseJson) ?
                             [] : responseJson.data.map(item => ({
                                 ...item,
-                                isLoad: false, id: `${type}${item.id}`, name: limitText(item.name)
+                                id: `${type}${item.id}`,
+                                itemId: item.id,
+                                isLoad: false,
+                                name: limitText(item.name, maxWidth)
                             }))
                     } else {
                         item.children = isEmptyJson(responseJson) ?
                             [] : responseJson.data.map(item => ({
                                 ...item,
-                                isLoad: false, id: `${type}${item.id}`,
-                                name: limitText(item.name),
+                                id: `${type}${item.id}`,
+                                itemId: item.id,
+                                isLoad: false,
+                                name: limitText(item.name, maxWidth),
                                 children: [{ id: getRandomArbitrary(1, 99), name: 'Loading...' }]
                             }))
                     }
@@ -201,9 +217,11 @@ class SarViewer extends Component {
     handleClick = ({ item, routes }) => {
         var { currentItem, previousItem } = this.state;
         if (!item.isLoad) {
-            console.log('Variable: handleClick -> item', item)
             this.makeRemoteRequestTree(item)
             item.isLoad = true;
+            if (item.key === 'sar') {
+                this.setState({ isLoadingContent: true }, () => this.makeRemoteRequest(item.itemId))
+            }
         }
         previousItem = []
         currentItem = {}
@@ -221,12 +239,38 @@ class SarViewer extends Component {
         }
     }
 
+    renderContent = (item) => {
+        return (
+            <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 20, alignSelf: 'center' }}>{item.name}</Text>
+                {item.children.map((item, index) => {
+                    <View key={getRandomArbitrary(1, 999)}>
+                        <Text style={{ fontSize: 20, paddingLeft: 10 }}>{`${index + 1}. ${item.name}`}</Text>
+                        {/* {item.hasOwnProperty('children') ? this.renderChildren(item.children, fontSize) : null} */}
+                    </View>
+                })}
+            </View>
+        )
+    }
+
+    renderChildren = (items, fontSize) => {
+        items.map((item, index) => {
+            return (
+                <View key={getRandomArbitrary(1, 999)}>
+                    <Text style={{ fontSize: 20, paddingLeft: 10 }}>{`${index + 1}. ${item.name}`}</Text>
+                    {/* {item.hasOwnProperty('children') ? this.renderChildren(item.children, fontSize) : null} */}
+                </View>
+            )
+        })
+    }
+
     render() {
-        const { 
-            dataTree, 
-            isLoading, 
-            isConnected, 
-            currentItem, 
+        const {
+            dataTree,
+            isLoading,
+            isLoadingContent,
+            isConnected,
+            currentItem,
             previousItem,
             treeWidth,
             contentWidth
@@ -292,11 +336,23 @@ class SarViewer extends Component {
                                 borderTopColor: 'gray',
                             }}
                         >
-                            <ScrollView 
+                            <ScrollView
                                 style={styles.container}
                                 contentContainerStyle={styles.contentContainer}
                             >
-
+                                {isEmptyJson(this.state.data) ? (
+                                    isLoadingContent ? (
+                                        <View style={styles.centerView}>
+                                            <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                                        </View>
+                                    ) : (
+                                            <View style={styles.centerView}>
+                                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                                            </View>
+                                        )
+                                ) : (
+                                        this.renderContent(this.state.data)
+                                    )}
                             </ScrollView>
                         </Col>
                     </Row>
@@ -312,9 +368,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    header: { 
-        alignSelf: 'center', 
-        color: 'white' 
+    header: {
+        alignSelf: 'center',
+        color: 'white'
     },
     container: {
         flex: 1,
