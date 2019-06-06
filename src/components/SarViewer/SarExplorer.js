@@ -15,10 +15,11 @@ import TreeSelect from 'react-native-tree-select'
 import TextViewer from "../TextViewer/TextViewer";
 import PDFViewer from "../PDFViewer/PDFViewer";
 import Comment from "../Comment/Comment";
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 const window = Dimensions.get('window');
 class SarExplorer extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -31,11 +32,11 @@ class SarExplorer extends Component {
             subCriterionView: false,
             currentIdx: 0,
             scene: [
-                { key: 'sars', title: 'All Sars' },
-                { key: 'criterions', title: 'All Criterions' },
-                { key: 'suggestionTypes', title: 'All Suggestion Types' },
-                { key: 'suggestions', title: 'All ' },
-                { key: 'evidences', title: 'All Evidences' }
+                { key: 'sars', title: I18n.t(keys.SarExplorer.Scene.sar) },
+                { key: 'criterions', title: I18n.t(keys.SarExplorer.Scene.criterion) },
+                { key: 'suggestionTypes', title: I18n.t(keys.SarExplorer.Scene.suggestionType) },
+                { key: 'suggestions', title: I18n.t(keys.SarExplorer.Scene.suggestion) },
+                { key: 'evidences', title: I18n.t(keys.SarExplorer.Scene.evidence) }
             ],
             data: [],
             dataSuggestions: {},
