@@ -13,6 +13,8 @@ import BreadCrumb from "../Breadcrumb/Breadcrumb";
 import AddButton from "./AddButton";
 import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-menu";
 import PDFViewer from "../PDFViewer/PDFViewer";
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 const window = Dimensions.get('window');
 class SarExplorer extends Component {
