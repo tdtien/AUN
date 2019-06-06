@@ -256,7 +256,6 @@ class MerchantDetail extends Component {
                         style={{ margin: 0, padding: 0, marginTop: 10 }}
                         checked={checked}
                         onPress={() => this.handleCheckBoxPressed(item)}
-                        color="green"
                     />
                 </ImageBackground>
             </TouchableOpacity>
@@ -318,10 +317,10 @@ class MerchantDetail extends Component {
                         <MenuTrigger customStyles={triggerStyles}>
                             <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                         </MenuTrigger>
-                        <MenuOptions optionsContainerStyle={{ marginTop: 50 }}>
+                        <MenuOptions>
                             <MenuOption onSelect={() => this.handleSelectMultipleImages()}>
                                 <View style={styles.popupItem}>
-                                    <Icon name={AppCommon.icon("checkbox")} style={{ color: 'green', fontSize: AppCommon.icon_size }} />
+                                    <Icon name={AppCommon.icon("checkbox")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
                                     <Text style={styles.popupItemText}>Select</Text>
                                 </View>
                             </MenuOption>

@@ -14,7 +14,8 @@ import {
     NetInfo,
     KeyboardAvoidingView,
     Platform,
-    ScrollView
+    ScrollView,
+    Linking
 } from 'react-native';
 import {
     Content,
@@ -31,6 +32,7 @@ import { Actions } from 'react-native-router-flux';
 import moment from "moment";
 import { connect } from 'react-redux';
 import { getAllComments, getAllNotes, addComment } from '../../api/accountApi';
+import HTML from 'react-native-render-html';
 
 class Comment extends Component {
     constructor(props) {
@@ -228,11 +230,11 @@ class Comment extends Component {
                             {
                                 (fullContent || content.length <= 300) ? (
                                     <View style={styles.content} >
-                                        <Text style={styles.text} >{content}</Text>
+                                        <HTML html={content} baseFontStyle={{ fontSize: AppCommon.font_size }} onLinkPress={(evt, href) => Linking.openURL(href)}/>
                                     </View>
                                 ) : (
                                         <View style={styles.content}>
-                                            <Text style={styles.text}>{content.substring(0, 300)}</Text>
+                                            <HTML html={content.substring(0, 300)} baseFontStyle={{ fontSize: AppCommon.font_size }} onLinkPress={(evt, href) => Linking.openURL(href)}/>
                                             <Text style={[styles.text, { color: '#8c8c8c' }]}>... Xem thêm</Text>
                                         </View>
                                     )
@@ -258,7 +260,7 @@ class Comment extends Component {
                                 />
                                 {isLoading ? (
                                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingBottom: 10 }}>
-                                        <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                                        <ActivityIndicator animating color={AppCommon.colors} />
                                     </View>
                                 ) : <View />}
                             </View>
@@ -270,7 +272,7 @@ class Comment extends Component {
                         >
                             <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginHorizontal: marginHorizontal, paddingVertical: 6 }}>
                                 <TextInput
-                                    style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, height: 40, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15, fontSize: 17 }}
+                                    style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, height: 40, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15 }}
                                     placeholder={activeTabIndex === 0 ? 'Add comment...' : 'Add note...'}
                                     onChangeText={(message) => this.setState({ message: message })}
                                     value={this.state.message}
