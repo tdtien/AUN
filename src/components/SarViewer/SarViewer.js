@@ -1,15 +1,15 @@
-import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title, Grid, Col, Row } from "native-base";
+import { Body, Container, Header, Icon, Text, Title, Grid, Col, Row } from "native-base";
 import React, { Component } from "react";
-import { ActivityIndicator, Alert, Dimensions, ScrollView, NetInfo, StyleSheet, TouchableOpacity, View, Linking } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, ScrollView, NetInfo, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
-import { downloadCriterion, downloadSar, downloadSubCriterion, downloadSuggestion, getDataSar, getContentSar } from "../../api/directoryTreeApi";
-import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson, _searchTree, getNextType, limitText, getRandomArbitrary } from "../../commons/utilitiesFunction";
+import { getDataSar, getContentSar } from "../../api/directoryTreeApi";
+import { isEmptyJson, _searchTree, getNextType, limitText, getRandomArbitrary } from "../../commons/utilitiesFunction";
 import { AppCommon } from "../../commons/commons";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
 import TreeSelect from 'react-native-tree-select'
 import WebView from "react-native-webview";
-
+import HTML from 'react-native-render-html';
 
 const window = Dimensions.get('window');
 
@@ -239,29 +239,31 @@ class SarViewer extends Component {
         }
     }
 
-    renderContent = (item) => {
+    renderContent = (data) => {
         return (
             <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 20, alignSelf: 'center' }}>{item.name}</Text>
-                {item.children.map((item, index) => {
-                    <View key={getRandomArbitrary(1, 999)}>
-                        <Text style={{ fontSize: 20, paddingLeft: 10 }}>{`${index + 1}. ${item.name}`}</Text>
-                        {/* {item.hasOwnProperty('children') ? this.renderChildren(item.children, fontSize) : null} */}
-                    </View>
+                <Text style={{ fontSize: 20, alignSelf: 'center', fontWeight: 'bold' }}>{data.name}</Text>
+                {data.children.map((item, index) => {
+                    return (
+                        <View key={getRandomArbitrary(1, 999)}>
+                            {item.name && <Text style={{ fontSize: 16, paddingLeft: 10 }}>{`${data.id}.${index + 1}. ${item.name}`}</Text>}
+                            {item.children && this.renderChildren(item.children, `${data.id}.${index + 1}`)}
+                        </View>
+                    )
                 })}
             </View>
         )
     }
 
-    renderChildren = (items, fontSize) => {
-        items.map((item, index) => {
-            return (
-                <View key={getRandomArbitrary(1, 999)}>
-                    <Text style={{ fontSize: 20, paddingLeft: 10 }}>{`${index + 1}. ${item.name}`}</Text>
-                    {/* {item.hasOwnProperty('children') ? this.renderChildren(item.children, fontSize) : null} */}
-                </View>
-            )
-        })
+    renderChildren(items, rootIndex) {
+        console.log('items', items)
+        return items.map((item, index) => (
+            <View key={getRandomArbitrary(999, 1999)}>
+                {item.name && <Text style={{ fontSize: 16, paddingLeft: 10 }}>{`${rootIndex}.${index + 1}. ${item.name}`}</Text>}
+                {item.content && <HTML html={item.content} imagesMaxWidth={Dimensions.get('window').width} />}
+                {item.children && this.renderChildren(item.children, `${rootIndex}.${index + 1}`)}
+            </View>
+        ))
     }
 
     render() {
@@ -308,7 +310,7 @@ class SarViewer extends Component {
                         >
                             {isLoading ? (
                                 <View style={styles.centerView}>
-                                    <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                                    <ActivityIndicator animating color={AppCommon.colors} />
                                 </View>
                             ) : (
                                     <TreeSelect
@@ -336,14 +338,11 @@ class SarViewer extends Component {
                                 borderTopColor: 'gray',
                             }}
                         >
-                            <ScrollView
-                                style={styles.container}
-                                contentContainerStyle={styles.contentContainer}
-                            >
+                            
                                 {isEmptyJson(this.state.data) ? (
                                     isLoadingContent ? (
                                         <View style={styles.centerView}>
-                                            <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                                            <ActivityIndicator animating color={AppCommon.colors} />
                                         </View>
                                     ) : (
                                             <View style={styles.centerView}>
@@ -351,9 +350,13 @@ class SarViewer extends Component {
                                             </View>
                                         )
                                 ) : (
-                                        this.renderContent(this.state.data)
-                                    )}
-                            </ScrollView>
+                                    <ScrollView
+                                        style={styles.container}
+                                        contentContainerStyle={styles.contentContainer}
+                                    >
+                                        {this.renderContent(this.state.data)}
+                                    </ScrollView>
+                                )}
                         </Col>
                     </Row>
                 </Grid>
@@ -377,8 +380,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     contentContainer: {
-        paddingLeft: 10,
-        paddingRight: 10
+        paddingVertical: 10,
+        paddingHorizontal: 10
     },
 })
 

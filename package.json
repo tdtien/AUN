@@ -20,6 +20,7 @@
     "react-native-pdf": "^5.0.11",
     "react-native-permissions": "^1.1.1",
     "react-native-popup-menu": "^0.15.5",
+    "react-native-render-html": "^4.1.2",
     "react-native-router-flux": "^4.0.6",
     "react-native-sortable-list": "0.0.22",
     "react-native-super-grid": "^3.0.3",
