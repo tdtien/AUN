@@ -33,7 +33,7 @@ export default class SarItem extends Component {
     }
 
     render() {
-        const { item, type, downloadMode, onLongPress, toggleChecked } = this.props;
+        const { item, type, downloadMode, onLongPress, toggleChecked, rootIndex } = this.props;
         return (
             <TouchableOpacity
                 activeOpacity={0.5}
@@ -49,7 +49,7 @@ export default class SarItem extends Component {
                                 (<Icon name='pdffile1' type='AntDesign' style={styles.icon} />)}
                         <View style={styles.content}>
                             <Text style={styles.shortDescription} numberOfLines={2}>
-                                {type !== 'FILE' && type !== 'LINK' ? item.content : item.name}
+                                {`${rootIndex}${item.index + 1}. ${type !== 'FILE' && type !== 'LINK' ? item.content : item.name}`}
                             </Text>
                             <Text style={styles.time}>
                                 {moment(item.createdAt).format('DD/MM/YYYY HH:mm')}

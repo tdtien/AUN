@@ -1,6 +1,6 @@
 import { Body, Container, Header, Icon, Text, Title, Grid, Col, Row } from "native-base";
 import React, { Component } from "react";
-import { ActivityIndicator, Alert, Dimensions, ScrollView, NetInfo, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, ScrollView, NetInfo, StyleSheet, TouchableOpacity, View, Linking } from "react-native";
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import { getDataSar, getContentSar } from "../../api/directoryTreeApi";
@@ -260,7 +260,12 @@ class SarViewer extends Component {
         return items.map((item, index) => (
             <View key={getRandomArbitrary(999, 1999)}>
                 {item.name && <Text style={{ fontSize: 16, paddingLeft: 10 }}>{`${rootIndex}.${index + 1}. ${item.name}`}</Text>}
-                {item.content && <HTML html={item.content} imagesMaxWidth={Dimensions.get('window').width} />}
+                {item.content && <HTML
+                    html={item.content}
+                    baseFontStyle={{ fontSize: AppCommon.font_size }}
+                    imagesMaxWidth={Dimensions.get('window').width}
+                    onLinkPress={(evt, href) => Linking.openURL(href)}
+                />}
                 {item.children && this.renderChildren(item.children, `${rootIndex}.${index + 1}`)}
             </View>
         ))
@@ -338,18 +343,18 @@ class SarViewer extends Component {
                                 borderTopColor: 'gray',
                             }}
                         >
-                            
-                                {isEmptyJson(this.state.data) ? (
-                                    isLoadingContent ? (
-                                        <View style={styles.centerView}>
-                                            <ActivityIndicator animating color={AppCommon.colors} />
-                                        </View>
-                                    ) : (
-                                            <View style={styles.centerView}>
-                                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
-                                            </View>
-                                        )
+
+                            {isEmptyJson(this.state.data) ? (
+                                isLoadingContent ? (
+                                    <View style={styles.centerView}>
+                                        <ActivityIndicator animating color={AppCommon.colors} />
+                                    </View>
                                 ) : (
+                                        <View style={styles.centerView}>
+                                            <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                                        </View>
+                                    )
+                            ) : (
                                     <ScrollView
                                         style={styles.container}
                                         contentContainerStyle={styles.contentContainer}
@@ -382,6 +387,12 @@ const styles = StyleSheet.create({
     contentContainer: {
         paddingVertical: 10,
         paddingHorizontal: 10
+    },
+    menuButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingLeft: 10,
+        paddingRight: 10
     },
 })
 
