@@ -21,11 +21,6 @@ export default {
     },
     SarExplorer: {
         SarScenes: {
-            sar: 'SarScenes_sar',
-            criterion: 'SarScenes_criterion',
-            suggestionType: 'SarScenes_suggestionType',
-            suggestion: 'SarScenes_suggestion',
-            evidence: 'SarScenes_evidence',
             Title: {
                 editor: 'Title_editor',
                 download: 'Titile_download'

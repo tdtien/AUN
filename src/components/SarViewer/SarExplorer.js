@@ -29,11 +29,11 @@ class SarExplorer extends Component {
             subCriterionView: false,
             currentIdx: 0,
             scene: [
-                { key: 'sars', title: I18n.t(keys.SarExplorer.SarScenes.sar) },
-                { key: 'criterions', title: I18n.t(keys.SarExplorer.SarScenes.criterion) },
-                { key: 'suggestionTypes', title: I18n.t(keys.SarExplorer.SarScenes.suggestionType) },
-                { key: 'suggestions', title: I18n.t(keys.SarExplorer.SarScenes.suggestion) },
-                { key: 'evidences', title: I18n.t(keys.SarExplorer.SarScenes.evidence) }
+                { key: 'sars' },
+                { key: 'criterions' },
+                { key: 'suggestionTypes' },
+                { key: 'suggestions' },
+                { key: 'evidences' }
             ],
             data: [],
             previousItem: [],
@@ -369,7 +369,7 @@ class SarExplorer extends Component {
     }
 
     handleDownloadOffline = () => {
-        const { scene, currentIdx, previousItem, currentItem, data } = this.state
+        const { scene, currentIdx, previousItem, currentItem, data, subCriterionView } = this.state
         const { token, email } = this.props
         let selectedData = this.state.data.filter(item => item.checked)
         if (selectedData.length === 0) {

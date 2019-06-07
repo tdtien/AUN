@@ -49,23 +49,47 @@ export async function folderToBase64(files) {
     return array;
 }
 
-export function downloadEvidence(url, filePath) {
-    if (!validateSimpleURL(url)) {
-        return;
-    }
+export function checkEvidenceExistence(filePath) {
     return new Promise((resolve, reject) => {
-        RNFS.downloadFile({
-            fromUrl: url,
-            toFile: filePath,
-            connectionTimeout: 300 * 1000,
-            background: true,
-        }).promise.then(response => {
-            resolve(true);
+        RNFS.exists(filePath)
+            .then((response) => {
+                if (response) {
+                    resolve('existed');
+                } else {
+                    resolve('non-existence');
+                }
+            }).catch(error => {
+                console.log('Error when checking file existence: ' + error);
+                reject(false);
+            })
+    })
+}
+
+export function downloadEvidence(url, filePath) {
+    checkEvidenceExistence(filePath)
+        .then(response => {
+            console.log('response: ' + JSON.stringify(response));
+            if (response === 'non-existence') {
+                return new Promise((resolve, reject) => {
+                    RNFS.downloadFile({
+                        fromUrl: url,
+                        toFile: filePath,
+                        connectionTimeout: 300 * 1000,
+                        background: true,
+                    }).promise.then(response => {
+                        console.log('123');
+                        resolve(true);
+                    }).catch(error => {
+                        console.log('Error when download evidence:' + error);
+                        reject(error);
+                    })
+                })
+            }
         }).catch(error => {
             console.log('Error when download evidence:' + error);
             reject(error);
         })
-    })
+
 }
 
 export function downloadAllEvidences(directoryTree, pdfFolderPath) {
