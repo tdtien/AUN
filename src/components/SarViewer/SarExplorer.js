@@ -12,7 +12,7 @@ import SarItem from "./SarItem";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
 import AddButton from "./AddButton";
 import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-menu";
-import PDFViewer from "../PDFViewer/PDFViewer";
+import { Cache } from "react-native-cache";
 import I18n from '../../i18n/i18n';
 import keys from '../../i18n/keys';
 
@@ -36,11 +36,21 @@ class SarExplorer extends Component {
                 { key: 'evidences', title: I18n.t(keys.SarExplorer.SarScenes.evidence) }
             ],
             data: [],
-            dataSuggestions: {},
             previousItem: [],
-            previousArray: [],
-            currentItem: {},
+            currentItem: {}
         }
+        this.sarCache = new Cache({
+            namespace: "sarCache",
+            policy: {
+                maxEntries: 50000
+            },
+            backend: AsyncStorage
+        });
+        this.sarCache.clearAll(function (err) {
+            if (err) {
+                console.error(err)
+            }
+        });
     }
 
     componentDidMount() {
@@ -81,7 +91,6 @@ class SarExplorer extends Component {
         this.setState({
             isLoading: true,
             data: [],
-            dataSuggestions: [],
             currentIdx: 0,
             currentItem: {},
             previousItem: [],
@@ -91,7 +100,7 @@ class SarExplorer extends Component {
                 this.makeRemoteRequest()
             } else {
                 if (isAlert) {
-                    Alert.alert('Error!', 'Connection has been interrupted. Do you want to view offline mode ?',
+                    Alert.alert('Error!', 'Connection has been interrupted. Do you want to view offline mode?',
                         [
                             {
                                 text: 'No',
@@ -118,16 +127,16 @@ class SarExplorer extends Component {
         })
     }
 
-    makeLocalRequest = (id = 0) => {
+    makeLocalRequest = (item = {}) => {
         const { scene, currentIdx, previousItem } = this.state;
         const { directoryInfo, email } = this.props;
         var localData = []
+        let id = item.id || 0
         if (typeof directoryInfo === 'undefined' || directoryInfo === null || isEmptyJson(directoryInfo)) {
             this.setState({
                 isLoading: false,
                 refreshing: false,
                 data: [],
-                dataSuggestions: [],
                 currentIdx: 0,
                 currentItem: {},
                 previousItem: []
@@ -157,14 +166,14 @@ class SarExplorer extends Component {
             localData.subCriterions.forEach((item) => {
                 item.key = 'subCriterion'
             })
-            this.setState({
-                dataSuggestions: (Object.keys(directoryInfo).length === 0) ? [] :
+            localData.forEach(element => {
+                element.dataSuggestions = (Object.keys(directoryInfo).length === 0) ? [] :
                     directoryInfo[email]
                         .find(item => item.id === previousItem[0].id).criterions
                         .find(item => item.id === id).suggestions
-            })
+            });
         } else if (scene[currentIdx].key === 'suggestions') {
-            localData = this.state.dataSuggestions[id]
+            localData = item.dataSuggestions ? item.dataSuggestions[id] : []
         } else if (scene[currentIdx].key === 'evidences') {
             localData = this.state.dataSuggestions['evidences'].find(item => item.id === id).evidences;
         }
@@ -175,10 +184,20 @@ class SarExplorer extends Component {
         })
     }
 
-    makeRemoteRequest = (id = 0) => {
-        const { scene, currentIdx, dataSuggestions } = this.state;
+    makeRemoteRequest = (item = {}) => {
+        const { scene, currentIdx } = this.state;
         const { token } = this.props;
         let type = scene[currentIdx].key;
+        var id = item.id || 0
+        if (type === 'suggestions') {
+            console.log('item', item)
+            this.setState({
+                isLoading: false,
+                refreshing: false,
+                data: item.dataSuggestions ? item.dataSuggestions[id] || [] : []
+            })
+            return
+        }
         getDataSar(token, type, id)
             .then((responseJson) => {
                 if (responseJson && responseJson.success) {
@@ -188,27 +207,35 @@ class SarExplorer extends Component {
                                 var data = [
                                     { id: 'implications', name: 'Implications' },
                                     { id: 'questions', name: 'Questions' },
-                                    { id: 'evidences', name: 'Evidence Types' },
+                                    { id: 'evidences', name: 'Evidence Types' }
                                 ]
                                 data.subCriterions = response.data;
+                                data.forEach(element => {
+                                    element.dataSuggestions = responseJson.data || []
+                                });
                                 this.setState({
                                     isLoading: false,
                                     refreshing: false,
                                     data: data,
-                                    dataSuggestions: isEmptyJson(responseJson) ? [] : responseJson.data
+                                }, () => {
+                                    this.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
+                                        if (error) {
+                                            console.error(error)
+                                        }
+                                    })
                                 })
                             })
-                    } else if (type === 'suggestions') {
-                        this.setState({
-                            isLoading: false,
-                            refreshing: false,
-                            data: dataSuggestions.length !== 0 ? dataSuggestions[id] : []
-                        })
                     } else {
                         this.setState({
                             isLoading: false,
                             refreshing: false,
-                            data: isEmptyJson(responseJson) ? [] : responseJson.data,
+                            data: responseJson.data || []
+                        }, () => {
+                            this.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
+                                if (error) {
+                                    console.error(error)
+                                }
+                            })
                         })
                     }
                 } else {
@@ -227,15 +254,34 @@ class SarExplorer extends Component {
             })
     }
 
+    generateCacheKey = (item) => {
+        let type = this.state.scene[this.state.currentIdx].key;
+        return type === 'sars' ? 'root' : `${item.key}${item.id}`
+    }
+
     handleRefresh = () => {
-        this.setState({ refreshing: true }, () => this.handleRequest(this.state.currentItem));
+        this.setState({ refreshing: true }, () => this.handleRequest(this.state.currentItem, true));
     };
 
-    handleRequest = (item = {}) => {
+    handleRequest = (item = {}, isRefresh = false) => {
         if (this.state.isConnected) {
-            this.makeRemoteRequest(item.id)
+            if (isRefresh) {
+                this.makeRemoteRequest(item)
+            } else {
+                this.sarCache.getItem(this.generateCacheKey(item), (error, value) => {
+                    if (error) {
+                        console.error(error)
+                    }
+                    if (value) {
+                        console.log('Get from Cache: ', this.generateCacheKey(item), value)
+                        this.setState({ isLoading: false, refreshing: false, data: value })
+                    } else {
+                        this.makeRemoteRequest(item)
+                    }
+                })
+            }
         } else {
-            this.makeLocalRequest(item.id)
+            this.makeLocalRequest(item)
         }
     }
 
@@ -248,15 +294,15 @@ class SarExplorer extends Component {
                 let item = this.state.previousItem.pop();
                 this.setState({
                     currentItem: item,
-                    data: this.state.previousArray.pop()
-                });
+                    isLoading: true,
+                }, () => this.handleRequest(item));
             } else {
                 this.setState({
                     currentItem: {},
                     previousItem: [],
                     currentIdx: 0,
-                    data: this.state.previousArray.pop()
-                })
+                    isLoading: true
+                }, () => this.handleRequest())
             }
         }
     }
@@ -289,7 +335,6 @@ class SarExplorer extends Component {
         if (this.state.currentIdx !== 0) {
             this.state.previousItem.push(this.state.currentItem);
         }
-        this.state.previousArray.push(this.state.data)
         this.state.currentIdx++;
         this.setState({
             isLoading: true,
@@ -327,7 +372,7 @@ class SarExplorer extends Component {
 
     handleDownloadOffline = () => {
         const { scene, currentIdx, previousItem, currentItem, data, subCriterionView } = this.state
-        const { token, email, setDirectoryInfo } = this.props
+        const { token, email } = this.props
         var dataSource = subCriterionView ? data.subCriterions : data;
         let selectedData = dataSource.filter(item => item.checked)
         if (selectedData.length === 0) {

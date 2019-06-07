@@ -256,7 +256,6 @@ class SarViewer extends Component {
     }
 
     renderChildren(items, rootIndex) {
-        console.log('items', items)
         return items.map((item, index) => (
             <View key={getRandomArbitrary(999, 1999)}>
                 {item.name && <Text style={{ fontSize: 16, paddingLeft: 10 }}>{`${rootIndex}.${index + 1}. ${item.name}`}</Text>}
