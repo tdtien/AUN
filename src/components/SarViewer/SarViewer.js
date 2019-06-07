@@ -10,12 +10,15 @@ import BreadCrumb from "../Breadcrumb/Breadcrumb";
 import TreeSelect from 'react-native-tree-select'
 import WebView from "react-native-webview";
 import HTML from 'react-native-render-html';
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 const window = Dimensions.get('window');
 
 class SarViewer extends Component {
     constructor(props) {
         super(props)
+        console.log('language: ' + this.props.language);
         this.state = {
             dataTree: [],
             treeWidth: window.width * 1 / 3,
@@ -187,10 +190,10 @@ class SarViewer extends Component {
                 this.makeRemoteRequestTree()
             } else {
                 if (isAlert) {
-                    Alert.alert('Error!', 'Connection has been interrupted. Do you want to view offline mode ?',
+                    Alert.alert(I18n.t(keys.Common.alertError), I18n.t(keys.Common.alertNetworkRequestFail),
                         [
                             {
-                                text: 'No',
+                                text: I18n.t(keys.Common.lblNo),
                                 style: 'cancel',
                                 onPress: () => {
                                     this.setState({
@@ -200,7 +203,7 @@ class SarViewer extends Component {
                                 }
                             },
                             {
-                                text: 'Yes',
+                                text: I18n.t(keys.Common.lblYes),
                                 onPress: () => {
                                     this.makeLocalRequest()
                                 }

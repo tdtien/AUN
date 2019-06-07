@@ -96,10 +96,10 @@ class SarExplorer extends Component {
                 this.makeRemoteRequest()
             } else {
                 if (isAlert) {
-                    Alert.alert('Error!', 'Connection has been interrupted. Do you want to view offline mode?',
+                    Alert.alert(I18n.t(keys.Common.alertError), I18n.t(keys.Common.alertNetworkRequestFail),
                         [
                             {
-                                text: 'No',
+                                text: I18n.t(keys.Common.lblNo),
                                 style: 'cancel',
                                 onPress: () => {
                                     this.setState({
@@ -109,7 +109,7 @@ class SarExplorer extends Component {
                                 }
                             },
                             {
-                                text: 'Yes',
+                                text: I18n.t(keys.Common.lblYes),
                                 onPress: () => {
                                     this.makeLocalRequest()
                                 }
@@ -151,10 +151,10 @@ class SarExplorer extends Component {
                 directoryInfo[email].find(item => item.id === id).criterions;
         } else if (scene[currentIdx].key === 'suggestionTypes') {
             localData = [
-                { id: 'implications', name: 'Implications' },
-                { id: 'questions', name: 'Questions' },
-                { id: 'evidences', name: 'Evidence Types' },
-                { id: 'subCriterions', name: 'Subcriterions', disable: true }
+                { id: 'implications', name: I18n.t(keys.SarExplorer.SarScenes.lblImplication) },
+                { id: 'questions', name: I18n.t(keys.SarExplorer.SarScenes.lblQuestion) },
+                { id: 'evidences', name: I18n.t(keys.SarExplorer.SarScenes.lblEvidenceType) },
+                { id: 'subCriterions', name: I18n.t(keys.SarExplorer.SarScenes.lblSubcriterion), disable: true }
             ]
             var dataSuggestions = (Object.keys(directoryInfo).length === 0) ? [] :
                 directoryInfo[email]
@@ -203,10 +203,10 @@ class SarExplorer extends Component {
                         getDataSar(token, 'subCriterions', id)
                             .then((response) => {
                                 var data = [
-                                    { id: 'implications', name: 'Implications' },
-                                    { id: 'questions', name: 'Questions' },
-                                    { id: 'evidences', name: 'Evidence Types' },
-                                    { id: 'subCriterions', name: 'Subcriterions', disable: true }
+                                    { id: 'implications', name: I18n.t(keys.SarExplorer.SarScenes.lblImplication) },
+                                    { id: 'questions', name: I18n.t(keys.SarExplorer.SarScenes.lblQuestion) },
+                                    { id: 'evidences', name: I18n.t(keys.SarExplorer.SarScenes.lblEvidenceType) },
+                                    { id: 'subCriterions', name: I18n.t(keys.SarExplorer.SarScenes.lblSubcriterion), disable: true }
                                 ]
                                 responseJson.data.subCriterions = response.data;
                                 data.forEach(element => {
@@ -373,7 +373,7 @@ class SarExplorer extends Component {
         const { token, email } = this.props
         let selectedData = this.state.data.filter(item => item.checked)
         if (selectedData.length === 0) {
-            Alert.alert('Error!', 'No item is selected')
+            Alert.alert('Error!', I18n.t(keys.SarExplorer.alertNoItemDownload))
             return
         }
         this.setState({ isLoading: true })
@@ -621,7 +621,7 @@ class SarExplorer extends Component {
                                 <MenuOption onSelect={() => this.state.downloadMode ? this.turnOffDownloadMode() : this.turnOnDownloadMode()}>
                                     <View style={styles.popupItem}>
                                         <Icon name={AppCommon.icon("download")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
-                                        <Text style={styles.popupItemText}>Download offline</Text>
+                                        <Text style={styles.popupItemText}>{I18n.t(keys.SarExplorer.lblDownloadOption)}</Text>
                                     </View>
                                 </MenuOption>
                             </MenuOptions>
@@ -652,8 +652,8 @@ class SarExplorer extends Component {
                     ) : (
                             (typeof data === 'undefined' || data.length === 0) ? (
                                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
-                                    <Text style={{ color: '#BDBDBD' }}>Pull to refresh</Text>
+                                    <Text style={{ color: '#BDBDBD' }}>{I18n.t(keys.Common.lblNoContent)}</Text>
+                                    <Text style={{ color: '#BDBDBD' }}>{I18n.t(keys.Common.lblReloadRequest)}</Text>
                                 </View>
                             ) : (
                                     <FlatList
@@ -688,7 +688,7 @@ class SarExplorer extends Component {
                         <Right>
                             <View style={styles.footerButton}>
                                 <TouchableOpacity style={{ marginLeft: 20, flexDirection: 'row' }} onPress={() => this.handlePush(data[data.length - 1])} >
-                                    <Text style={{ fontSize: AppCommon.font_size, color: 'white', paddingRight: 10 }}>View Subcriterions</Text>
+                                    <Text style={{ fontSize: AppCommon.font_size, color: 'white', paddingRight: 10 }}>{I18n.t(keys.SarExplorer.SarScenes.lblSubcriterion)}</Text>
                                     <Icon name={AppCommon.icon("arrow-forward")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
                             </View>
