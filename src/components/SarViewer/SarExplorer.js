@@ -1,12 +1,12 @@
 import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title } from "native-base";
 import React, { Component } from "react";
-import { ActivityIndicator, Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View, AsyncStorage } from "react-native";
+import { Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View, AsyncStorage } from "react-native";
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import { setDirectoryInfo } from "../../actions/directoryAction";
 import { downloadCriterion, downloadSar, downloadSubCriterion, downloadSuggestion, getDataSar } from "../../api/directoryTreeApi";
 import { AppCommon } from "../../commons/commons";
-import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson } from "../../commons/utilitiesFunction";
+import { createDirectoryTreeWith, downloadAllEvidences, isEmptyJson, getRandomArbitrary } from "../../commons/utilitiesFunction";
 import SarFolder from "./SarFolder";
 import SarItem from "./SarItem";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
@@ -15,6 +15,7 @@ import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-m
 import { Cache } from "react-native-cache";
 import I18n from '../../i18n/i18n';
 import keys from '../../i18n/keys';
+import Placeholder, { Line, Media } from "rn-placeholder";
 
 const window = Dimensions.get('window');
 class SarExplorer extends Component {
@@ -46,8 +47,8 @@ class SarExplorer extends Component {
             },
             backend: AsyncStorage
         });
-        this.sarCache.clearAll(function (err) {
-        });
+        // this.sarCache.clearAll(function (err) {
+        // });
     }
 
     componentDidMount() {
@@ -93,7 +94,7 @@ class SarExplorer extends Component {
             previousItem: []
         }, () => {
             if (this.state.isConnected) {
-                this.makeRemoteRequest()
+                this.handleRequest()
             } else {
                 if (isAlert) {
                     Alert.alert(I18n.t(keys.Common.alertError), I18n.t(keys.Common.alertNetworkRequestFail),
@@ -111,13 +112,13 @@ class SarExplorer extends Component {
                             {
                                 text: I18n.t(keys.Common.lblYes),
                                 onPress: () => {
-                                    this.makeLocalRequest()
+                                    this.handleRequest()
                                 }
                             }
                         ]
                     );
                 } else {
-                    this.makeLocalRequest()
+                    this.handleRequest()
                 }
             }
         })
@@ -196,61 +197,69 @@ class SarExplorer extends Component {
             })
             return
         }
-        getDataSar(token, type, id)
-            .then((responseJson) => {
-                if (responseJson && responseJson.success) {
-                    if (type === 'suggestionTypes') {
-                        getDataSar(token, 'subCriterions', id)
-                            .then((response) => {
-                                var data = [
-                                    { id: 'implications', name: I18n.t(keys.SarExplorer.SarScenes.lblImplication) },
-                                    { id: 'questions', name: I18n.t(keys.SarExplorer.SarScenes.lblQuestion) },
-                                    { id: 'evidences', name: I18n.t(keys.SarExplorer.SarScenes.lblEvidenceType) },
-                                    { id: 'subCriterions', name: I18n.t(keys.SarExplorer.SarScenes.lblSubcriterion), disable: true }
-                                ]
-                                responseJson.data.subCriterions = response.data;
-                                data.forEach(element => {
-                                    element.dataSuggestions = responseJson.data || []
-                                });
-                                this.setState({
-                                    isLoading: false,
-                                    refreshing: false,
-                                    data: data,
-                                }, () => {
-                                    this.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
-                                        if (error) {
-                                            console.error(error)
-                                        }
+        var dataLoading = []
+        for (var i = 0; i < getRandomArbitrary(3, 10); i++) {
+            dataLoading.push({
+                id: getRandomArbitrary(1, 999),
+            })
+        }
+        this.setState({ data: dataLoading, isLoading: true }, () => {
+            getDataSar(token, type, id)
+                .then((responseJson) => {
+                    if (responseJson && responseJson.success) {
+                        if (type === 'suggestionTypes') {
+                            getDataSar(token, 'subCriterions', id)
+                                .then((response) => {
+                                    var data = [
+                                        { id: 'implications', name: I18n.t(keys.SarExplorer.SarScenes.lblImplication) },
+                                        { id: 'questions', name: I18n.t(keys.SarExplorer.SarScenes.lblQuestion) },
+                                        { id: 'evidences', name: I18n.t(keys.SarExplorer.SarScenes.lblEvidenceType) },
+                                        { id: 'subCriterions', name: I18n.t(keys.SarExplorer.SarScenes.lblSubcriterion), disable: true }
+                                    ]
+                                    responseJson.data.subCriterions = response.data;
+                                    data.forEach(element => {
+                                        element.dataSuggestions = responseJson.data || []
+                                    });
+                                    this.setState({
+                                        isLoading: false,
+                                        refreshing: false,
+                                        data: data,
+                                    }, () => {
+                                        this.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
+                                            if (error) {
+                                                console.error(error)
+                                            }
+                                        })
                                     })
                                 })
+                        } else {
+                            this.setState({
+                                isLoading: false,
+                                refreshing: false,
+                                data: responseJson.data || []
+                            }, () => {
+                                this.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
+                                    if (error) {
+                                        console.error(error)
+                                    }
+                                })
                             })
+                        }
                     } else {
                         this.setState({
                             isLoading: false,
                             refreshing: false,
-                            data: responseJson.data || []
-                        }, () => {
-                            this.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
-                                if (error) {
-                                    console.error(error)
-                                }
-                            })
                         })
                     }
-                } else {
+                })
+                .catch(error => {
                     this.setState({
                         isLoading: false,
                         refreshing: false,
                     })
-                }
-            })
-            .catch(error => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
+                    console.error(error)
                 })
-                console.error(error)
-            })
+        })
     }
 
     generateCacheKey = (item) => {
@@ -392,6 +401,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
+                        Alert.alert('Download Offline', 'Download failed!')
                     });
             })
         } else if (scene[currentIdx].key === 'criterions') {
@@ -410,6 +420,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
+                        Alert.alert('Download Offline', 'Download failed!')
                     });
             })
         } else if (subCriterionView) {
@@ -429,6 +440,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
+                        Alert.alert('Download Offline', 'Download failed!')
                     });
             })
         } else if (scene[currentIdx].key === 'suggestionTypes') {
@@ -464,6 +476,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
+                        Alert.alert('Download Offline', 'Download failed!')
                     });
             })
         } else if (scene[currentIdx].key === 'suggestions') {
@@ -486,6 +499,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
+                        Alert.alert('Download Offline', 'Download failed!')
                     });
             })
         } else if (scene[currentIdx].key === 'evidences') {
@@ -526,19 +540,21 @@ class SarExplorer extends Component {
                 }
                 // console.log('directoryInfo: ' + JSON.stringify(directoryInfo));
                 this.props.setDirectoryInfo(directoryInfo);
+                Alert.alert('Download Offline', 'Download successful!')
             }).catch(error => {
                 this.setState({
                     isLoading: false,
                     refreshing: false,
                     downloadMode: false
                 })
+                Alert.alert('Download Offline', 'Download failed!')
                 console.error('Error when download: ' + error);
             })
     }
 
     renderItem = ({ item, index }) => {
         let fileType = ['IMPLICATION', 'QUESTION', 'FILE', 'LINK']
-        const { isConnected, scene, currentIdx, currentItem, data, downloadMode, previousItem } = this.state;
+        const { isConnected, scene, currentIdx, currentItem, data, downloadMode, previousItem, isLoading, refreshing } = this.state;
 
         // Create index for each item
         item.index = index;
@@ -550,28 +566,52 @@ class SarExplorer extends Component {
             rootIndex += `${currentItem.index + 1}.`
         }
         if (item.type && fileType.indexOf(item.type) >= 0) {
-            return (<SarItem
-                item={item}
-                type={item.type}
-                data={data}
-                onLongPress={() => this.turnOnDownloadMode()}
-                downloadMode={downloadMode}
-                toggleChecked={() => this.toggleChecked(item)}
-                rootIndex={rootIndex}
-            />)
+            return (
+                <Placeholder
+                    style={{ paddingVertical: 10, paddingHorizontal: 20, flexDirection: 'row', flex: 1 }}
+                    isReady={refreshing ? !refreshing : !isLoading}
+                    animation="shine"
+                    whenReadyRender={() => (
+                        <SarItem
+                            item={item}
+                            type={item.type}
+                            data={data}
+                            onLongPress={() => this.turnOnDownloadMode()}
+                            downloadMode={downloadMode}
+                            toggleChecked={() => this.toggleChecked(item)}
+                            rootIndex={rootIndex}
+                        />
+                    )}
+                    renderLeft={() => <Media />}
+                >
+                    <Line width="85%" />
+                    <Line width="75%" />
+                </Placeholder>
+            )
         }
         return (
-            <SarFolder
-                item={item}
-                type={currentItem.id}
-                sceneKey={scene[currentIdx].key}
-                onPress={() => item.key === 'subCriterion' ? this.handleComment(item) : this.handlePush(item)}
-                onLongPress={() => this.turnOnDownloadMode()}
-                downloadMode={downloadMode}
-                toggleChecked={() => this.toggleChecked(item)}
-                rootIndex={rootIndex}
-                isConnected={isConnected}
-            />
+            <Placeholder
+                style={{ paddingVertical: 10, paddingHorizontal: 20, flexDirection: 'row', flex: 1 }}
+                isReady={refreshing ? !refreshing : !isLoading}
+                animation="shine"
+                whenReadyRender={() => (
+                    <SarFolder
+                        item={item}
+                        type={currentItem.id}
+                        sceneKey={scene[currentIdx].key}
+                        onPress={() => item.key === 'subCriterion' ? this.handleComment(item) : this.handlePush(item)}
+                        onLongPress={() => this.turnOnDownloadMode()}
+                        downloadMode={downloadMode}
+                        toggleChecked={() => this.toggleChecked(item)}
+                        rootIndex={rootIndex}
+                        isConnected={isConnected}
+                    />
+                )}
+                renderLeft={() => <Media />}
+            >
+                <Line width="85%" />
+                <Line width="75%" />
+            </Placeholder>
         )
     }
 
@@ -636,7 +676,7 @@ class SarExplorer extends Component {
                 />
                 <Content
                     style={{ flex: 1 }}
-                    contentContainerStyle={{ flex: 1 }}
+                    contentContainerStyle={{ flex: 1, backgroundColor: 'white' }}
                     refreshControl={(typeof data === 'undefined' || data.length === 0) ?
                         <RefreshControl
                             style={{ backgroundColor: '#E0FFFF' }}
@@ -645,28 +685,22 @@ class SarExplorer extends Component {
                         /> : null
                     }
                 >
-                    {isLoading ? (
+                    {(typeof data === 'undefined' || data.length === 0) ? (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <ActivityIndicator animating color={AppCommon.colors} />
+                            <Text style={{ color: '#BDBDBD' }}>{I18n.t(keys.Common.lblNoContent)}</Text>
+                            <Text style={{ color: '#BDBDBD' }}>{I18n.t(keys.Common.lblReloadRequest)}</Text>
                         </View>
                     ) : (
-                            (typeof data === 'undefined' || data.length === 0) ? (
-                                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text style={{ color: '#BDBDBD' }}>{I18n.t(keys.Common.lblNoContent)}</Text>
-                                    <Text style={{ color: '#BDBDBD' }}>{I18n.t(keys.Common.lblReloadRequest)}</Text>
-                                </View>
-                            ) : (
-                                    <FlatList
-                                        data={data}
-                                        extraData={this.state}
-                                        keyExtractor={(item, index) => index.toString()}
-                                        renderItem={this.renderItem}
-                                        onRefresh={this.handleRefresh}
-                                        refreshing={this.state.refreshing}
-                                        onEndReached={this.handleLoadMore}
-                                        onEndReachedThreshold={50}
-                                    />
-                                )
+                            <FlatList
+                                data={data}
+                                extraData={this.state}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={this.renderItem}
+                                onRefresh={this.handleRefresh}
+                                refreshing={this.state.refreshing}
+                                onEndReached={this.handleLoadMore}
+                                onEndReachedThreshold={50}
+                            />
                         )}
                 </Content>
                 {downloadMode ? (
