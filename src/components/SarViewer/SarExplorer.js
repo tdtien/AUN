@@ -47,9 +47,6 @@ class SarExplorer extends Component {
             backend: AsyncStorage
         });
         this.sarCache.clearAll(function (err) {
-            if (err) {
-                console.error(err)
-            }
         });
     }
 
@@ -93,8 +90,7 @@ class SarExplorer extends Component {
             data: [],
             currentIdx: 0,
             currentItem: {},
-            previousItem: [],
-            subCriterionView: false,
+            previousItem: []
         }, () => {
             if (this.state.isConnected) {
                 this.makeRemoteRequest()
@@ -157,25 +153,28 @@ class SarExplorer extends Component {
             localData = [
                 { id: 'implications', name: 'Implications' },
                 { id: 'questions', name: 'Questions' },
-                { id: 'evidences', name: 'Evidence Types' }
+                { id: 'evidences', name: 'Evidence Types' },
+                { id: 'subCriterions', name: 'Subcriterions', disable: true }
             ]
-            localData.subCriterions = (Object.keys(directoryInfo).length === 0) ? [] :
+            var dataSuggestions = (Object.keys(directoryInfo).length === 0) ? [] :
+                directoryInfo[email]
+                    .find(item => item.id === previousItem[0].id).criterions
+                    .find(item => item.id === id).suggestions
+            var dataSubCriterions = (Object.keys(directoryInfo).length === 0) ? [] :
                 directoryInfo[email]
                     .find(item => item.id === previousItem[0].id).criterions
                     .find(item => item.id === id).subCriterions
-            localData.subCriterions.forEach((item) => {
+            dataSubCriterions.forEach((item) => {
                 item.key = 'subCriterion'
             })
+            dataSuggestions.subCriterions = dataSubCriterions
             localData.forEach(element => {
-                element.dataSuggestions = (Object.keys(directoryInfo).length === 0) ? [] :
-                    directoryInfo[email]
-                        .find(item => item.id === previousItem[0].id).criterions
-                        .find(item => item.id === id).suggestions
+                element.dataSuggestions = dataSuggestions
             });
         } else if (scene[currentIdx].key === 'suggestions') {
             localData = item.dataSuggestions ? item.dataSuggestions[id] : []
         } else if (scene[currentIdx].key === 'evidences') {
-            localData = this.state.dataSuggestions['evidences'].find(item => item.id === id).evidences;
+            localData = item.evidences;
         }
         this.setState({
             isLoading: false,
@@ -190,7 +189,6 @@ class SarExplorer extends Component {
         let type = scene[currentIdx].key;
         var id = item.id || 0
         if (type === 'suggestions') {
-            console.log('item', item)
             this.setState({
                 isLoading: false,
                 refreshing: false,
@@ -207,9 +205,10 @@ class SarExplorer extends Component {
                                 var data = [
                                     { id: 'implications', name: 'Implications' },
                                     { id: 'questions', name: 'Questions' },
-                                    { id: 'evidences', name: 'Evidence Types' }
+                                    { id: 'evidences', name: 'Evidence Types' },
+                                    { id: 'subCriterions', name: 'Subcriterions', disable: true }
                                 ]
-                                data.subCriterions = response.data;
+                                responseJson.data.subCriterions = response.data;
                                 data.forEach(element => {
                                     element.dataSuggestions = responseJson.data || []
                                 });
@@ -273,7 +272,6 @@ class SarExplorer extends Component {
                         console.error(error)
                     }
                     if (value) {
-                        console.log('Get from Cache: ', this.generateCacheKey(item), value)
                         this.setState({ isLoading: false, refreshing: false, data: value })
                     } else {
                         this.makeRemoteRequest(item)
@@ -335,6 +333,9 @@ class SarExplorer extends Component {
         if (this.state.currentIdx !== 0) {
             this.state.previousItem.push(this.state.currentItem);
         }
+        if (item.id === 'subCriterions') {
+            this.setState({ subCriterionView: true })
+        }
         this.state.currentIdx++;
         this.setState({
             isLoading: true,
@@ -348,33 +349,29 @@ class SarExplorer extends Component {
 
     turnOnDownloadMode = () => {
         if (!this.state.downloadMode && this.state.isConnected) {
-            var dataSource = this.state.subCriterionView ? this.state.data.subCriterions : this.state.data;
-            dataSource.map(obj => ({ ...obj, checked: false }));
+            this.state.data.map(obj => ({ ...obj, checked: false }));
             this.setState({ downloadMode: !this.state.downloadMode, data: this.state.data })
         }
     }
 
     turnOffDownloadMode = () => {
-        var dataSource = this.state.subCriterionView ? this.state.data.subCriterions : this.state.data;
-        dataSource.map(({ checked, ...obj }) => obj);
+        this.state.data.map(({ checked, ...obj }) => obj);
         this.setState({ downloadMode: false, data: this.state.data })
     }
 
     toggleChecked = (item) => {
-        var dataSource = this.state.subCriterionView ? this.state.data.subCriterions : this.state.data;
-        let idx = dataSource.indexOf(item)
+        let idx = this.state.data.indexOf(item)
         if (idx > -1) {
-            let checked = dataSource[idx].checked
-            dataSource[idx].checked = !checked
+            let checked = this.state.data[idx].checked
+            this.state.data[idx].checked = !checked
             this.setState({ data: this.state.data })
         }
     }
 
     handleDownloadOffline = () => {
-        const { scene, currentIdx, previousItem, currentItem, data, subCriterionView } = this.state
+        const { scene, currentIdx, previousItem, currentItem, data } = this.state
         const { token, email } = this.props
-        var dataSource = subCriterionView ? data.subCriterions : data;
-        let selectedData = dataSource.filter(item => item.checked)
+        let selectedData = this.state.data.filter(item => item.checked)
         if (selectedData.length === 0) {
             Alert.alert('Error!', 'No item is selected')
             return
@@ -552,7 +549,7 @@ class SarExplorer extends Component {
         if (!isEmptyJson(currentItem)) {
             rootIndex += `${currentItem.index + 1}.`
         }
-        if (item.hasOwnProperty('type') && fileType.indexOf(item.type) >= 0) {
+        if (item.type && fileType.indexOf(item.type) >= 0) {
             return (<SarItem
                 item={item}
                 type={item.type}
@@ -581,7 +578,7 @@ class SarExplorer extends Component {
     render() {
         const {
             currentItem, scene, currentIdx, previousItem,
-            downloadMode, isConnected, isLoading,
+            downloadMode, isConnected, isLoading, data,
             subCriterionView
         } = this.state;
         let currentScene = scene[currentIdx]
@@ -594,19 +591,23 @@ class SarExplorer extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                 >
                     {downloadMode ? (
-                        <TouchableOpacity style={styles.menuButton} onPress={() => this.turnOffDownloadMode()}>
-                            <Icon name={AppCommon.icon("close")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                        <TouchableOpacity
+                            style={styles.menuButton}
+                            onPress={() => this.turnOffDownloadMode()}
+                        >
+                            <Icon name={AppCommon.icon("close")}
+                                style={{ color: 'white', fontSize: AppCommon.icon_size }}
+                            />
                         </TouchableOpacity>
                     ) : (
-                            currentIdx !== 0 ? (
-                                <TouchableOpacity style={styles.menuButton} onPress={() => this.handlePop()}>
-                                    <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                                </TouchableOpacity>
-                            ) : (
-                                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()}>
-                                        <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                                    </TouchableOpacity>
-                                )
+                            <TouchableOpacity
+                                style={styles.menuButton}
+                                onPress={() => currentIdx !== 0 ? this.handlePop() : Actions.drawerOpen()}
+                            >
+                                <Icon name={AppCommon.icon(currentIdx !== 0 ? "arrow-back" : "menu")}
+                                    style={{ color: 'white', fontSize: AppCommon.icon_size }}
+                                />
+                            </TouchableOpacity>
                         )}
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: 'white' }}>{title}</Title>
@@ -636,7 +637,7 @@ class SarExplorer extends Component {
                 <Content
                     style={{ flex: 1 }}
                     contentContainerStyle={{ flex: 1 }}
-                    refreshControl={(typeof this.state.data === 'undefined' || this.state.data.length === 0) ?
+                    refreshControl={(typeof data === 'undefined' || data.length === 0) ?
                         <RefreshControl
                             style={{ backgroundColor: '#E0FFFF' }}
                             refreshing={this.state.refreshing}
@@ -646,17 +647,17 @@ class SarExplorer extends Component {
                 >
                     {isLoading ? (
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            <ActivityIndicator size="large" animating color={AppCommon.colors} />
+                            <ActivityIndicator animating color={AppCommon.colors} />
                         </View>
                     ) : (
-                            (typeof this.state.data === 'undefined' || this.state.data.length === 0) ? (
+                            (typeof data === 'undefined' || data.length === 0) ? (
                                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                                     <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
                                     <Text style={{ color: '#BDBDBD' }}>Pull to refresh</Text>
                                 </View>
                             ) : (
                                     <FlatList
-                                        data={subCriterionView ? this.state.data.subCriterions : this.state.data}
+                                        data={data}
                                         extraData={this.state}
                                         keyExtractor={(item, index) => index.toString()}
                                         renderItem={this.renderItem}
@@ -686,7 +687,7 @@ class SarExplorer extends Component {
                     >
                         <Right>
                             <View style={styles.footerButton}>
-                                <TouchableOpacity style={{ marginLeft: 20, flexDirection: 'row' }} onPress={() => this.setState({ subCriterionView: true })} >
+                                <TouchableOpacity style={{ marginLeft: 20, flexDirection: 'row' }} onPress={() => this.handlePush(data[data.length - 1])} >
                                     <Text style={{ fontSize: AppCommon.font_size, color: 'white', paddingRight: 10 }}>View Subcriterions</Text>
                                     <Icon name={AppCommon.icon("arrow-forward")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
