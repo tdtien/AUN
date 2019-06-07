@@ -19,6 +19,7 @@ import Images from './src/assets/images';
 import TextViewer from './src/components/TextViewer/TextViewer';
 import SarViewer from './src/components/SarViewer/SarViewer';
 import I18n from './src/i18n/i18n';
+import Setting from './src/components/Setting/Setting';
 
 class App extends Component {
 
@@ -139,6 +140,10 @@ class App extends Component {
             <Scene
               key="comment"
               component={Comment}
+            />
+            <Scene
+              key="setting"
+              component={Setting}
             />
           </Stack>
         </Router>
