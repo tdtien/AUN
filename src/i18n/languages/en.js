@@ -6,4 +6,7 @@ export default {
     [keys.SarExplorer.Scene.suggestionType]: 'All Suggestion Types',
     [keys.SarExplorer.Scene.suggestion]: 'All ',
     [keys.SarExplorer.Scene.evidence]: 'All Evidences',
+
+    [keys.SideMenu.Setting.title]: 'Setting',
+
 }

@@ -6,7 +6,9 @@ import { AppCommon } from "../../commons/commons";
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux'
 import { logoutAccount } from "../../actions/account";
-
+import { changeLanguage } from "../../actions/settingAction";
+import I18n from "../../i18n/i18n";
+import keys from "../../i18n/keys";
 
 class SideMenu extends Component {
     constructor(props) {
@@ -30,6 +32,8 @@ class SideMenu extends Component {
     toggleSegment = (index) => {
         this.setState({
             segmentIndex: index
+        }, () => {
+            this.props.changeLanguage({ language: index === 0 ? 'en' : 'vi' })
         })
     }
 
@@ -93,7 +97,7 @@ class SideMenu extends Component {
                             >
                                 <Icon name={AppCommon.icon("arrow-back")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
                             </Button>
-                            <Text style={{ textAlign: 'center', fontSize: 23, fontWeight: 'bold', marginBottom: 5 }}>AUN settings</Text>
+                            <Text style={{ textAlign: 'center', fontSize: 23, fontWeight: 'bold', marginBottom: 5 }}>{I18n.t(keys.SideMenu.Setting.title)}</Text>
                             <View style={{ marginHorizontal: 10, paddingVertical: 10, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#e6e6e6', marginTop: 10 }}>
                                 <Text style={{ fontSize: AppCommon.font_size, fontWeight: 'bold' }}>Language</Text>
                                 <Segment style={{ backgroundColor: 'white', borderRadius: 10 }} >
@@ -148,6 +152,9 @@ const mapDispatchToProps = dispatch => {
     return {
         logout: () => {
             dispatch(logoutAccount());
+        },
+        changeLanguage: item => {
+            dispatch(changeLanguage(item));
         }
     };
 };
@@ -156,7 +163,8 @@ const mapStateToProps = state => {
     return {
         email: state.account.email,
         admin: state.account.admin,
-        token: state.account.token
+        token: state.account.token,
+        language: state.setting.language,
     };
 };
 

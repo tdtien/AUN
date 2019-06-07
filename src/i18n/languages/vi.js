@@ -6,4 +6,6 @@ export default {
     [keys.SarExplorer.Scene.suggestionType]: 'Các gợi ý',
     [keys.SarExplorer.Scene.suggestion]: 'Các ',
     [keys.SarExplorer.Scene.evidence]: 'Các minh chứng',
+
+    [keys.SideMenu.Setting.title]: 'Cấu hình',
 }

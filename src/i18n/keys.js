@@ -7,5 +7,10 @@ export default {
             suggestion: 'Scene_suggestion',
             evidence: 'Scene_evidence'
         }
+    },
+    SideMenu: {
+        Setting: {
+            title: 'Setting_title'
+        }
     }
 }
