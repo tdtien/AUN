@@ -29,11 +29,11 @@ class SarExplorer extends Component {
             subCriterionView: false,
             currentIdx: 0,
             scene: [
-                { key: 'sars', title: I18n.t(keys.SarExplorer.Scene.sar) },
-                { key: 'criterions', title: I18n.t(keys.SarExplorer.Scene.criterion) },
-                { key: 'suggestionTypes', title: I18n.t(keys.SarExplorer.Scene.suggestionType) },
-                { key: 'suggestions', title: I18n.t(keys.SarExplorer.Scene.suggestion) },
-                { key: 'evidences', title: I18n.t(keys.SarExplorer.Scene.evidence) }
+                { key: 'sars', title: I18n.t(keys.SarExplorer.SarScenes.sar) },
+                { key: 'criterions', title: I18n.t(keys.SarExplorer.SarScenes.criterion) },
+                { key: 'suggestionTypes', title: I18n.t(keys.SarExplorer.SarScenes.suggestionType) },
+                { key: 'suggestions', title: I18n.t(keys.SarExplorer.SarScenes.suggestion) },
+                { key: 'evidences', title: I18n.t(keys.SarExplorer.SarScenes.evidence) }
             ],
             data: [],
             dataSuggestions: {},
@@ -540,7 +540,7 @@ class SarExplorer extends Component {
             subCriterionView
         } = this.state;
         let currentScene = scene[currentIdx]
-        let title = downloadMode ? 'Download Offline' : 'SAR Editor'
+        let title = downloadMode ? I18n.t(keys.SarExplorer.SarScenes.Title.download) : I18n.t(keys.SarExplorer.SarScenes.Title.editor);
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
@@ -734,7 +734,7 @@ const mapStateToProps = state => {
         token: state.account.token,
         email: state.account.email,
         admin: state.account.admin,
-        directoryInfo: state.directory.directoryInfo
+        directoryInfo: state.directory.directoryInfo,
     };
 };
 

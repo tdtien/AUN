@@ -18,11 +18,13 @@ import Comment from './src/components/Comment/Comment';
 import Images from './src/assets/images';
 import TextViewer from './src/components/TextViewer/TextViewer';
 import SarViewer from './src/components/SarViewer/SarViewer';
+import I18n from './src/i18n/i18n';
 
 class App extends Component {
 
   constructor(props) {
     super(props);
+    I18n.locale = this.props.language;
     this.state = {
       isSplashScreenVisible: true
     }
@@ -174,7 +176,8 @@ const mapStateToProps = state => {
   return {
     id: state.account.id,
     token: state.account.token,
-    isLoggedIn: state.account.isLoggedIn
+    isLoggedIn: state.account.isLoggedIn,
+    language: state.setting.language
   };
 };
 

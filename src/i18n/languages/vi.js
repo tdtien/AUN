@@ -1,11 +1,28 @@
 import keys from "../keys";
 
 export default {
-    [keys.SarExplorer.Scene.sar]: 'Các bộ tiêu chuẩn',
-    [keys.SarExplorer.Scene.criterion]: 'Các tiêu chuẩn',
-    [keys.SarExplorer.Scene.suggestionType]: 'Các gợi ý',
-    [keys.SarExplorer.Scene.suggestion]: 'Các ',
-    [keys.SarExplorer.Scene.evidence]: 'Các minh chứng',
+    //Common
+    [keys.Common.error]: 'Lỗi',
 
-    [keys.SideMenu.Setting.title]: 'Cấu hình',
+    //SideMenu
+    [keys.SideMenu.Main.btnLogout]: 'ĐĂNG XUẤT',
+    [keys.SideMenu.Main.btnSetting]: 'Cấu hình',
+    [keys.SideMenu.Setting.lblTitle]: 'Cấu hình',
+    [keys.SideMenu.Setting.lblLanguage]: 'Ngôn ngữ',
+
+    //SarExplorer
+    [keys.SarExplorer.SarScenes.sar]: 'Các bộ tiêu chuẩn',
+    [keys.SarExplorer.SarScenes.criterion]: 'Các tiêu chuẩn',
+    [keys.SarExplorer.SarScenes.suggestionType]: 'Các gợi ý',
+    [keys.SarExplorer.SarScenes.suggestion]: 'Các ',
+    [keys.SarExplorer.SarScenes.evidence]: 'Các minh chứng',
+
+    [keys.SarExplorer.SarScenes.Title.editor]: 'SAR Editor-vn',
+    [keys.SarExplorer.SarScenes.Title.download]: 'Tải xuống',
+
+
+    //Merchant
+
+    //SarViewer
+
 }

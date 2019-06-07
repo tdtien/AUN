@@ -15,7 +15,7 @@ class SideMenu extends Component {
         super(props);
         this.state = {
             settingView: false,
-            segmentIndex: 0,
+            segmentIndex: this.props.language === 'en' ? 0 : 1,
         }
     };
 
@@ -39,6 +39,7 @@ class SideMenu extends Component {
 
     render() {
         const { settingView, segmentIndex } = this.state;
+        const { email, language } = this.props;
         return (
             <Container>
                 {!settingView ? (
@@ -59,7 +60,7 @@ class SideMenu extends Component {
                                     <Thumbnail source={Images.defaultUser} small />
                                 </Left>
                                 <Body>
-                                    <Text>{this.props.email}</Text>
+                                    <Text>{email}</Text>
                                 </Body>
                             </ListItem>
                             <ListItem button onPress={() => Actions.currentScene == '_sarExplorer' ? Actions.drawerClose() : Actions.sarExplorer()} icon noBorder >
@@ -83,7 +84,7 @@ class SideMenu extends Component {
                                     <Icon name={AppCommon.icon("settings")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                                 </Left>
                                 <Body>
-                                    <Text>Setting</Text>
+                                    <Text>{I18n.t(keys.SideMenu.Main.btnSetting)}</Text>
                                 </Body>
                             </ListItem>
                         </List>
@@ -97,9 +98,13 @@ class SideMenu extends Component {
                             >
                                 <Icon name={AppCommon.icon("arrow-back")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
                             </Button>
-                            <Text style={{ textAlign: 'center', fontSize: 23, fontWeight: 'bold', marginBottom: 5 }}>{I18n.t(keys.SideMenu.Setting.title)}</Text>
+                            <Text style={{ textAlign: 'center', fontSize: 23, fontWeight: 'bold', marginBottom: 5 }}>
+                                {I18n.t(keys.SideMenu.Setting.lblTitle)}
+                            </Text>
                             <View style={{ marginHorizontal: 10, paddingVertical: 10, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#e6e6e6', marginTop: 10 }}>
-                                <Text style={{ fontSize: AppCommon.font_size, fontWeight: 'bold' }}>Language</Text>
+                                <Text style={{ fontSize: AppCommon.font_size, fontWeight: 'bold' }}>
+                                    {I18n.t(keys.SideMenu.Setting.lblLanguage)}
+                                </Text>
                                 <Segment style={{ backgroundColor: 'white', borderRadius: 10 }} >
                                     <Button
                                         first
@@ -112,7 +117,7 @@ class SideMenu extends Component {
                                         active={segmentIndex === 0 ? true : false}
                                         onPress={() => this.toggleSegment(0)}
                                     >
-                                        <Text style={{ color: segmentIndex === 0 ? 'white' : AppCommon.colors }}>English</Text>
+                                        <Text style={{ color: segmentIndex === 0 ? 'white' : '#999999' }}>English</Text>
                                     </Button>
                                     <Button
                                         style={{
@@ -124,7 +129,7 @@ class SideMenu extends Component {
                                         active={segmentIndex === 1 ? true : false}
                                         onPress={() => this.toggleSegment(1)}
                                     >
-                                        <Text style={{ color: segmentIndex === 1 ? 'white' : AppCommon.colors }}>Vietnamese</Text>
+                                        <Text style={{ color: segmentIndex === 1 ? 'white' : '#999999' }}>Tiếng Việt</Text>
                                     </Button>
                                 </Segment>
                             </View>
@@ -139,7 +144,7 @@ class SideMenu extends Component {
                             onPress={() => this.handleLogout()}
                         >
                             <Icon name={AppCommon.icon("log-out")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                            <Text style={{ color: "#fff" }}>Log out</Text>
+                            <Text style={{ color: "#fff" }}>{I18n.t(keys.SideMenu.Main.btnLogout)}</Text>
                         </Button>
                     </FooterTab>
                 </Footer>
