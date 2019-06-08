@@ -93,33 +93,29 @@ class SarExplorer extends Component {
             currentItem: {},
             previousItem: []
         }, () => {
-            if (this.state.isConnected) {
-                this.handleRequest()
-            } else {
-                if (isAlert) {
-                    Alert.alert(I18n.t(keys.Common.alertError), I18n.t(keys.Common.alertNetworkRequestFail),
-                        [
-                            {
-                                text: I18n.t(keys.Common.lblNo),
-                                style: 'cancel',
-                                onPress: () => {
-                                    this.setState({
-                                        isLoading: false,
-                                        refreshing: false,
-                                    })
-                                }
-                            },
-                            {
-                                text: I18n.t(keys.Common.lblYes),
-                                onPress: () => {
-                                    this.handleRequest()
-                                }
+            if (isAlert) {
+                Alert.alert(I18n.t(keys.Common.alertError), I18n.t(keys.Common.alertNetworkRequestFail),
+                    [
+                        {
+                            text: I18n.t(keys.Common.lblNo),
+                            style: 'cancel',
+                            onPress: () => {
+                                this.setState({
+                                    isLoading: false,
+                                    refreshing: false,
+                                })
                             }
-                        ]
-                    );
-                } else {
-                    this.handleRequest()
-                }
+                        },
+                        {
+                            text: I18n.t(keys.Common.lblYes),
+                            onPress: () => {
+                                this.handleRequest()
+                            }
+                        }
+                    ]
+                );
+            } else {
+                this.handleRequest()
             }
         })
     }
@@ -274,7 +270,7 @@ class SarExplorer extends Component {
 
     generateCacheKey = (item) => {
         let type = this.state.scene[this.state.currentIdx].key;
-        return type === 'sars' ? 'root' : `${item.key}${item.id}`
+        return type === 'sars' ? 'root' : `${item.key}${item.type || ''}${item.id}`
     }
 
     handleRefresh = () => {
