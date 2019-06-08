@@ -7,41 +7,81 @@ export default {
         lblCancel: 'Common_lblCancel',
         lblDelete: 'Common_lblDelete',
         lblSuccess: 'Common_lblSuccess',
-        alertNetworkRequestFail: 'Common_alertNetworkRequestFail',
+        lblSet: 'Common_lblSet',
+        lblUpload: 'Common_lblUpload',
         lblNoContent: 'Common_lblNoContent',
         lblReloadRequest: 'Common_lblReloadRequest',
+        alertNetworkRequestFail: 'Common_alertNetworkRequestFail',
+        alertInvalidFileName: 'Common_alertInvalidFileName',
+    },
+    Login: {
+        lblTitle: 'Login_lblTitle',
+        lblEmail: 'Login_lblEmail',
+        lblPassword: 'Login_lblPassword',
+        btnSignIn: 'Login_btnSignIn',
+        toastEmptyEmail: 'Login_toastEmptyEmail',
+        toastEmptyPassword: 'Login_toastEmptyPassword',
     },
     SideMenu: {
         Main: {
-            btnLogout: 'Main_btnLogout',
-            btnSetting: 'Main_btnSetting',
+            btnLogout: 'SideMenu_Main_btnLogout',
+            btnSetting: 'SideMenu_Main_btnSetting',
         },
         Setting: {
             lblTitle: 'Setting_title',
             lblLanguage: 'Setting_lblLanguage',
-
         },
     },
     SarExplorer: {
-        SarScenes: {
-            lblImplication: 'SarScenes_lblImplication',
-            lblQuestion: 'SarScenes_lblQuestion',
-            lblEvidenceType: 'SarScenes_lblEvidenceType',
-            lblSubcriterion: 'SarExplorer_lblSubcriterion',
+        Main: {
+            lblImplication: 'SarExplorer_Main_lblImplication',
+            lblQuestion: 'SarExplorer_Main_lblQuestion',
+            lblEvidenceType: 'SarExplorer_Main_lblEvidenceType',
+            lblSubcriterion: 'SarExplorer_Main_lblSubcriterion',
             Title: {
-                editor: 'Title_editor',
-                download: 'Titile_download'
+                editor: 'SarExplorer_Main_Title_editor',
+                download: 'SarExplorer_Main_Title_download'
             },
+            alertNoItemDownload: 'SarExplorer_Main_alertNoItemDownload',
+            lblDownloadOption: 'SarExplorer_Main_lblDownloadOption',
+            alertDownloadSuccess: 'SarExplorer_Main_alertDownloadSuccess',
+            alertDownloadFail: 'SarExplorer_Main_alertDownloadFail',
         },
-        alertNoItemDownload: 'SarExplorer_alertNoItemDownload',
-        lblDownloadOption: 'SarExplorer_lblDownloadOption',
-        alertDownloadSuccess: 'SarExplorer_alertDownloadSuccess',
-        alertDownloadFail: 'SarExplorer_alertDownloadFail',
+        Comment: {
+            alertEmptyComment: 'Comment_alertEmptyComment',
+            alertEmptyNote: 'Comment_alertEmptyNote',
+            lblTitle: 'Comment_lblTitle',
+            btnSeeMore: 'Comment_btnSeeMore',
+            lblComment: 'Comment_lblComment',
+            lblNote: 'Comment_lblNote',
+            lblCommentPlaceholder: 'Comment_lblCommentPlaceholder',
+            lblNotePlaceholder: 'Comment_lblNotePlaceholder',
+        },
+        AddButton: {
+            Main: {
+                lblTitle: 'AddButton_Main_lblTitle',
+                lblOptionImages: 'AddButton_Main_lblOptionImages',
+                lblOptionLink: 'AddButton_Main_lblOptionLink',
+                lblOptionEvidence: 'AddButton_Main_lblOptionEvidence',
+                alertInvalidData: 'AddButton_Main_alertInvalidData',
+                lblUploadDialogTitle: 'AddButton_Main_lblUploadDialogTitle',
+                lblUploadSuccess: 'AddButton_Main_lblUploadSuccess',
+            },
+            UploadLinkDialog: {
+                lblTitle: 'UploadLinkDialog_lblTitle',
+                lblLinkPlaceholder: 'UploadLinkDialog_lblLinkPlaceholder',
+                lblFileNamePlaceholder: 'UploadLinkDialog_lblFileNamePlaceholder',
+            }
+        },
+        TextViewer: {
+            lblImplication: 'TextViewer_lblImplication',
+            lblQuestion: 'TextViewer_lblQuestion',
+        },
     },
     Merchant: {
         Main: {
-            lblTitle: 'Main_lblTitle',
-            lblSearchPlaceholder: 'Main_lblSearchPlaceholder',
+            lblTitle: 'Merchant_Main_lblTitle',
+            lblSearchPlaceholder: 'Merchant_Main_lblSearchPlaceholder',
         },
         MerchantItem: {
             lblDeleteFolder: 'MerchantItem_lblDeleteFolder',
@@ -58,6 +98,11 @@ export default {
             alertExportPdfFail: 'SortList_alertExportPdfFail',
             alertConvertImagesFail: 'SortList_alertConvertImagesFail',
         },
+        ImageModal: {
+            lblDeleteImage: 'ImageModal_lblDeleteImage',
+            alertDeleteImage: 'ImageModal_alertDeleteImage',
+            lblSaveDialogTitle: 'ImageModal_lblSaveDialogTitle',
+        },
         Breadcrumb: {
             lblImportImages: 'Breadcrumb_lblImportImages',
             lblChooseImages: 'Breadcrumb_lblChooseImages',
@@ -66,12 +111,10 @@ export default {
         }
     },
     PDFViewer: {
-        alertInvalidFileName: 'PDFViewer_alertInvalidFileName',
         alertDeleteFolderImages: 'PDFViewer_alertDeleteFolderImages',
         btnBack: 'PDFViewer_btnBack',
         btnNext: 'PDFViewer_btnNext',
         lblUploadDialogTitle: 'PDFViewer_lblUploadDialogTitle',
-        btnSet: 'PDFViewer_btnSet',
     },
     SarViewer: {
 

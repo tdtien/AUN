@@ -2,9 +2,10 @@ import React, { Component } from "react";
 import { TouchableOpacity, StyleSheet, View, Modal } from "react-native";
 import { Form, Text, InputGroup, Icon, Input } from "native-base";
 import { AppCommon } from "../../commons/commons";
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 export default class UploadLinkDialog extends Component {
-
     constructor(props) {
         super(props)
         this.state = {
@@ -14,8 +15,8 @@ export default class UploadLinkDialog extends Component {
     }
 
     render() {
-        const { isDialogVisible, handleUploadLink, toggleLinkDialog } = this.props
-        const { linkUpload, fileNameUpload } = this.state
+        const { isDialogVisible, handleUploadLink, toggleLinkDialog } = this.props;
+        const { linkUpload, fileNameUpload } = this.state;
         return (
             <View>
                 <Modal
@@ -24,13 +25,13 @@ export default class UploadLinkDialog extends Component {
                 >
                     <View style={styles.container}>
                         <View style={styles.content}>
-                            <Text style={styles.header}>Complete information to upload</Text>
+                            <Text style={styles.header}>{I18n.t(keys.SarExplorer.AddButton.UploadLinkDialog.lblTitle)}</Text>
                             <Form>
                                 <InputGroup style={styles.dataInput}>
                                     <Icon name={AppCommon.icon("link")} style={{ color: 'black', fontSize: AppCommon.icon_size }} />
                                     <Input
                                         style={styles.textInput}
-                                        placeholder="Set link..."
+                                        placeholder={I18n.t(keys.SarExplorer.AddButton.UploadLinkDialog.lblLinkPlaceholder)}
                                         autoCapitalize="none"
                                         onChangeText={linkUpload => this.setState({ linkUpload: linkUpload })}
                                     />
@@ -39,17 +40,17 @@ export default class UploadLinkDialog extends Component {
                                     <Icon name="filetext1" type="AntDesign" style={{ color: 'black', fontSize: AppCommon.icon_size }} />
                                     <Input
                                         style={styles.textInput}
-                                        placeholder="Set file name..."
+                                        placeholder={I18n.t(keys.SarExplorer.AddButton.UploadLinkDialog.lblFileNamePlaceholder)}
                                         onChangeText={fileNameUpload => this.setState({ fileNameUpload: fileNameUpload })}
                                     />
                                 </InputGroup>
                             </Form>
                             <View style={styles.footer}>
                                 <TouchableOpacity onPress={() => toggleLinkDialog()} style={{ marginTop: 10 }}>
-                                    <Text style={{ fontSize: 15, color: AppCommon.colors }}>CANCEL</Text>
+                                    <Text style={{ fontSize: 15, color: AppCommon.colors }}>{I18n.t(keys.Common.lblCancel).toUpperCase()}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => handleUploadLink(linkUpload, fileNameUpload)} style={{ marginTop: 10, marginLeft: 20 }}>
-                                    <Text style={{ fontSize: 15, color: AppCommon.colors }}>UPLOAD</Text>
+                                    <Text style={{ fontSize: 15, color: AppCommon.colors }}>{I18n.t(keys.Common.lblUpload).toUpperCase()}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

@@ -21,6 +21,8 @@ import { requestLogin } from "../../api/accountApi";
 import { connect } from "react-redux";
 import { loginAccount } from "../../actions/account";
 import Loader from "../Loader/Loader";
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 class Login extends Component {
   constructor(props) {
@@ -37,16 +39,16 @@ class Login extends Component {
     if (this.state.email === "") {
       this.setState({ isLoading: false });
       Toast.show({
-        text: "Please enter your email address",
+        text: I18n.t(keys.Login.toastEmptyEmail),
         type: "warning",
-        buttonText: "Okay"
+        buttonText: I18n.t(keys.Common.lblOK)
       });
     } else if (this.state.password === "") {
       this.setState({ isLoading: false });
       Toast.show({
-        text: "Please enter your password",
+        text: I18n.t(keys.Login.toastEmptyPassword),
         type: "warning",
-        buttonText: "Okay"
+        buttonText: I18n.t(keys.Common.lblOK)
       });
     } else {
       requestLogin(this.state.email, this.state.password).then(res => {
@@ -58,7 +60,7 @@ class Login extends Component {
           Toast.show({
             text: res.msg,
             type: "danger",
-            buttonText: "Okay"
+            buttonText: I18n.t(keys.Common.lblOK)
           });
         }
       }).catch(error => {
@@ -75,11 +77,11 @@ class Login extends Component {
         <Content>
           <View style={styles.logoContainer}>
             <Image style={styles.logo} source={Images.logo} />
-            <Text style={styles.title}>AUN Inspection System</Text>
+            <Text style={styles.title}>{I18n.t(keys.Login.lblTitle)}</Text>
           </View>
           <Form>
             <Item floatingLabel style={styles.inputStyle}>
-              <Label>Email</Label>
+              <Label>{I18n.t(keys.Login.lblEmail)}</Label>
               <Input
                 keyboardType="email-address"
                 onChangeText={email => this.setState({ email: email })}
@@ -89,7 +91,7 @@ class Login extends Component {
               />
             </Item>
             <Item floatingLabel style={styles.inputStyle}>
-              <Label>Password</Label>
+              <Label>{I18n.t(keys.Login.lblPassword)}</Label>
               <Input
                 autoCapitalize="none"
                 secureTextEntry
@@ -102,18 +104,18 @@ class Login extends Component {
             <ListItem noBorder>
               <Body>
                 <Button info block onPress={() => this.handleLogin()}>
-                  <Text>Sign In</Text>
+                  <Text>{I18n.t(keys.Login.btnSignIn)}</Text>
                 </Button>
               </Body>
             </ListItem>
           </Form>
         </Content>
-        <View style={styles.registerContainer}>
+        {/* <View style={styles.registerContainer}>
           <Text style={{ fontSize: 15 }}>Don't have account yet?</Text>
           <Button transparent info onPress={() => Actions.register()}>
             <Text style={{ fontSize: 13 }}>Register now!</Text>
           </Button>
-        </View>
+        </View> */}
         <Loader loading={this.state.isLoading} />
       </Container>
     );

@@ -12,24 +12,10 @@ import UploadLinkDialog from "./UploadLinkDialog";
 import { fileToBase64 } from "../../commons/utilitiesFunction";
 import { uploadEvidence } from "../../api/accountApi";
 import { validateFileName } from "../../commons/validation";
-
-const pickerOptions = [
-    {
-        key: 'images',
-        title: 'Edit from images in device...',
-    },
-    {
-        key: 'link',
-        title: 'Upload from link...'
-    },
-    {
-        key: 'evidence',
-        title: 'Upload from PDF file in device...'
-    }
-]
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 export default class AddButton extends Component {
-
     constructor(props) {
         super(props)
         this.state = {
@@ -81,7 +67,7 @@ export default class AddButton extends Component {
 
     handleUploadByFile = (fileName) => {
         if (!validateFileName(fileName)) {
-            Alert.alert('Error', 'Your file name just use alphabet, numbers and underscore');
+            Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.Common.alertInvalidFileName));
             return;
         }
         let type = 'FILE';
@@ -94,7 +80,7 @@ export default class AddButton extends Component {
 
     handleUploadByLink = (link, fileName) => {
         if (!validateFileName(fileName)) {
-            Alert.alert('Error', 'Your file name just use alphabet, numbers and underscore');
+            Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.Common.alertInvalidFileName));
             return;
         }
         let type = 'LINK';
@@ -124,17 +110,18 @@ export default class AddButton extends Component {
                     isLoading: false
                 })
                 if (responseJson.success === false) {
-                    Alert.alert('Error', 'Invalid data. Please check your data input.');
+                    Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.SarExplorer.AddButton.Main.alertInvalidData));
                 } else {
-                    if (responseJson.msg === 'Upload file successful') {
-                        Alert.alert(
-                            'Success',
-                            responseJson.msg,
-                            [
-                                { text: 'OK', onPress: () => this.props.handleRefresh() }
-                            ]
-                        );
-                    }
+                    Alert.alert(
+                        I18n.t(keys.Common.lblSuccess),
+                        I18n.t(keys.SarExplorer.AddButton.Main.lblUploadSuccess),
+                        [
+                            {
+                                text: I18n.t(keys.Common.lblOK),
+                                onPress: () => this.props.handleRefresh()
+                            }
+                        ]
+                    );
                 }
             })
             .catch((error) => {
@@ -142,7 +129,7 @@ export default class AddButton extends Component {
                     isLoading: false
                 })
                 console.log('Error: ' + error);
-                Alert.alert('Error', error);
+                Alert.alert(I18n.t(keys.Common.lblError), error);
             });
     }
 
@@ -160,6 +147,20 @@ export default class AddButton extends Component {
 
     render() {
         const { isShowUploadPicker, isShowFileUploadDialog, isShowLinkUploadDialog, isLoading } = this.state
+        let pickerOptions = [
+            {
+                key: 'images',
+                title: I18n.t(keys.SarExplorer.AddButton.Main.lblOptionImages),
+            },
+            {
+                key: 'link',
+                title: I18n.t(keys.SarExplorer.AddButton.Main.lblOptionLink),
+            },
+            {
+                key: 'evidence',
+                title: I18n.t(keys.SarExplorer.AddButton.Main.lblOptionEvidence),
+            }
+        ]
         return (
             <View>
                 <TouchableOpacity style={styles.addButton} onPress={() => isLoading ? null : this.toggleUploadPicker()}>
@@ -175,7 +176,7 @@ export default class AddButton extends Component {
                 >
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
-                            <Text style={styles.modalHeader}>Please choose how to upload</Text>
+                            <Text style={styles.modalHeader}>{I18n.t(keys.SarExplorer.AddButton.Main.lblTitle)}</Text>
                             {pickerOptions.map((item, index) => {
                                 return (
                                     <TouchableOpacity key={index} onPress={() => this.handlePickerValue(item)} style={{ paddingVertical: 12 }}>
@@ -184,15 +185,16 @@ export default class AddButton extends Component {
                                 )
                             })}
                             <TouchableOpacity onPress={() => this.toggleUploadPicker()} style={{ alignItems: 'flex-end', marginTop: 10 }}>
-                                <Text style={{ fontSize: 15, color: AppCommon.colors }}>CANCEL</Text>
+                                <Text style={{ fontSize: 15, color: AppCommon.colors }}>{I18n.t(keys.Common.lblCancel).toUpperCase()}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </Modal>
                 <DialogInput isDialogVisible={isShowFileUploadDialog}
-                    title={"Set name for doc to upload"}
+                    title={I18n.t(keys.SarExplorer.AddButton.Main.lblUploadDialogTitle)}
                     hintInput={this.state.fileNameUpload}
-                    submitText={"Set"}
+                    submitText={I18n.t(keys.Common.lblSet)}
+                    cancelText={I18n.t(keys.Common.lblCancel)}
                     submitInput={(inputText) => { this.handleUploadByFile(inputText) }}
                     closeDialog={() => { this.setState({ isShowFileUploadDialog: false }) }}>
                 </DialogInput>

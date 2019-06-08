@@ -72,7 +72,7 @@ class PDFViewer extends React.Component {
 
     handleUploadPdf = (fileName) => {
         if (!validateFileName(fileName)) {
-            Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.PDFViewer.alertInvalidFileName));
+            Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.Common.alertInvalidFileName));
             return;
         }
         this.setState({
@@ -88,14 +88,13 @@ class PDFViewer extends React.Component {
         uploadEvidence(this.props.token, data)
             .then((responseJson) => {
                 console.log('responseJson: ' + responseJson.msg);
-                if (responseJson.msg === 'Upload file successful') {
+                if (responseJson.success === true) {
                     this.setState({
                         isLoading: false,
                     })
-                    let message = responseJson.msg + '\r\n' + I18n.t(keys.PDFViewer.alertDeleteFolderImages);
                     Alert.alert(
-                        I18n.t(keys.Common.lblSuccesss),
-                        message,
+                        I18n.t(keys.Common.lblSuccess),
+                        I18n.t(keys.PDFViewer.alertDeleteFolderImages),
                         [
                             {
                                 text: I18n.t(keys.Common.lblNo),
@@ -261,7 +260,7 @@ class PDFViewer extends React.Component {
                 <DialogInput isDialogVisible={isDialogVisible}
                     title={I18n.t(keys.PDFViewer.lblUploadDialogTitle)}
                     hintInput={fileName}
-                    submitText={I18n.t(keys.PDFViewer.btnSet)}
+                    submitText={I18n.t(keys.Common.lblSet)}
                     cancelText={I18n.t(keys.Common.lblCancel)}
                     submitInput={(inputText) => { this.handleUploadPdf(inputText) }}
                     closeDialog={() => { this.setState({ isDialogVisible: false }) }}>

@@ -148,10 +148,10 @@ class SarExplorer extends Component {
                 directoryInfo[email].find(item => item.id === id).criterions;
         } else if (scene[currentIdx].key === 'suggestionTypes') {
             localData = [
-                { id: 'implications', name: I18n.t(keys.SarExplorer.SarScenes.lblImplication) },
-                { id: 'questions', name: I18n.t(keys.SarExplorer.SarScenes.lblQuestion) },
-                { id: 'evidences', name: I18n.t(keys.SarExplorer.SarScenes.lblEvidenceType) },
-                { id: 'subCriterions', name: I18n.t(keys.SarExplorer.SarScenes.lblSubcriterion), disable: true }
+                { id: 'implications', name: I18n.t(keys.SarExplorer.Main.lblImplication) },
+                { id: 'questions', name: I18n.t(keys.SarExplorer.Main.lblQuestion) },
+                { id: 'evidences', name: I18n.t(keys.SarExplorer.Main.lblEvidenceType) },
+                { id: 'subCriterions', name: I18n.t(keys.SarExplorer.Main.lblSubcriterion), disable: true }
             ]
             var dataSuggestions = (Object.keys(directoryInfo).length === 0) ? [] :
                 directoryInfo[email]
@@ -207,10 +207,10 @@ class SarExplorer extends Component {
                             getDataSar(token, 'subCriterions', id)
                                 .then((response) => {
                                     var data = [
-                                        { id: 'implications', name: I18n.t(keys.SarExplorer.SarScenes.lblImplication) },
-                                        { id: 'questions', name: I18n.t(keys.SarExplorer.SarScenes.lblQuestion) },
-                                        { id: 'evidences', name: I18n.t(keys.SarExplorer.SarScenes.lblEvidenceType) },
-                                        { id: 'subCriterions', name: I18n.t(keys.SarExplorer.SarScenes.lblSubcriterion), disable: true }
+                                        { id: 'implications', name: I18n.t(keys.SarExplorer.Main.lblImplication) },
+                                        { id: 'questions', name: I18n.t(keys.SarExplorer.Main.lblQuestion) },
+                                        { id: 'evidences', name: I18n.t(keys.SarExplorer.Main.lblEvidenceType) },
+                                        { id: 'subCriterions', name: I18n.t(keys.SarExplorer.Main.lblSubcriterion), disable: true }
                                     ]
                                     responseJson.data.subCriterions = response.data;
                                     data.forEach(element => {
@@ -388,7 +388,7 @@ class SarExplorer extends Component {
         const { token, email } = this.props
         let selectedData = this.state.data.filter(item => item.checked)
         if (selectedData.length === 0) {
-            Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.SarExplorer.alertNoItemDownload))
+            Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.SarExplorer.Main.alertNoItemDownload))
             return
         }
         this.setState({ isLoading: true })
@@ -407,7 +407,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
-                        Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
+                        Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
                     });
             })
         } else if (scene[currentIdx].key === 'criterions') {
@@ -426,7 +426,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
-                        Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
+                        Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
                     });
             })
         } else if (subCriterionView) {
@@ -446,7 +446,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
-                        Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
+                        Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
                     });
             })
         } else if (scene[currentIdx].key === 'suggestionTypes') {
@@ -482,7 +482,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
-                        Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
+                        Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
                     });
             })
         } else if (scene[currentIdx].key === 'suggestions') {
@@ -505,7 +505,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
-                        Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
+                        Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
                     });
             })
         } else if (scene[currentIdx].key === 'evidences') {
@@ -546,7 +546,7 @@ class SarExplorer extends Component {
                 }
                 // console.log('directoryInfo: ' + JSON.stringify(directoryInfo));
                 this.props.setDirectoryInfo(directoryInfo);
-                Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadSuccess));
+                Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadSuccess));
             }).catch(error => {
                 this.setState({
                     isLoading: false,
@@ -554,7 +554,7 @@ class SarExplorer extends Component {
                     downloadMode: false
                 })
                 console.error('Error when download: ' + error);
-                Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
+                Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
             })
     }
 
@@ -628,7 +628,7 @@ class SarExplorer extends Component {
             subCriterionView
         } = this.state;
         let currentScene = scene[currentIdx]
-        let title = downloadMode ? I18n.t(keys.SarExplorer.SarScenes.Title.download) : I18n.t(keys.SarExplorer.SarScenes.Title.editor);
+        let title = downloadMode ? I18n.t(keys.SarExplorer.Main.Title.download) : I18n.t(keys.SarExplorer.Main.Title.editor);
         return (
             <Container style={{ backgroundColor: AppCommon.background_color }}>
                 <Header
@@ -667,7 +667,7 @@ class SarExplorer extends Component {
                                 <MenuOption onSelect={() => this.state.downloadMode ? this.turnOffDownloadMode() : this.turnOnDownloadMode()}>
                                     <View style={styles.popupItem}>
                                         <Icon name={AppCommon.icon("download")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
-                                        <Text style={styles.popupItemText}>{I18n.t(keys.SarExplorer.lblDownloadOption)}</Text>
+                                        <Text style={styles.popupItemText}>{I18n.t(keys.SarExplorer.Main.lblDownloadOption)}</Text>
                                     </View>
                                 </MenuOption>
                             </MenuOptions>
@@ -728,7 +728,7 @@ class SarExplorer extends Component {
                         <Right>
                             <View style={styles.footerButton}>
                                 <TouchableOpacity style={{ marginLeft: 20, flexDirection: 'row' }} onPress={() => this.handlePush(data[data.length - 1])} >
-                                    <Text style={{ fontSize: AppCommon.font_size, color: 'white', paddingRight: 10 }}>{I18n.t(keys.SarExplorer.SarScenes.lblSubcriterion)}</Text>
+                                    <Text style={{ fontSize: AppCommon.font_size, color: 'white', paddingRight: 10 }}>{I18n.t(keys.SarExplorer.Main.lblSubcriterion)}</Text>
                                     <Icon name={AppCommon.icon("arrow-forward")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
                             </View>

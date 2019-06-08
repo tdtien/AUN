@@ -10,6 +10,8 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { Actions } from "react-native-router-flux";
 import DialogInput from "react-native-dialog-input";
 import moment from "moment";
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 export default class ImageModal extends Component {
     constructor(props) {
@@ -85,54 +87,57 @@ export default class ImageModal extends Component {
     }
 
     handleDelete = () => {
-        Alert.alert('Delete image', 'Are you sure you want to delete this image?', [
-            {
-                text: 'Cancel',
-                style: "cancel",
-                onPress: () => null,
-            },
-            {
-                text: 'OK',
-                onPress: () => {
-                    this.setState({
-                        isLoading: true,
-                    })
-                    var url = this.state.images[this.state.currentIndex].url;
-                    let path = url.substring(0, url.indexOf('?'));
-                    // let path = this.state.images[this.state.currentIndex].url;
-                    console.log('Current path: ' + path);
-                    deleteItem(path).then(result => {
-                        console.log('Delete Success');
-                        let temp = this.state.images;
-                        temp.splice(this.state.currentIndex, 1);
-                        //if temp is empty, delete original folder
-                        if (temp.length === 0) {
-                            console.log('Folder empty');
-                            deleteItem(this.props.folderPath).then(result => {
-                                console.log('Delete original folder success');
-                                popToSceneWithUpdate('_merchant', { version: Math.random() });
-                            })
-                        } else {
-                            let index = 0;
-                            if (this.state.currentIndex !== 0) {
-                                index = this.state.currentIndex - 1;
-                            }
-                            this.setState({
-                                images: temp,
-                                currentIndex: index,
-                                isLoading: false
-                            });
-                        }
-                    }).catch(error => {
-                        console.log('Delete Error: ' + error.message);
-                        this.setState({
-                            isLoading: false,
-                        });
-                        Alert.alert('Error', error.message);
-                    })
+        Alert.alert(
+            I18n.t(keys.Merchant.ImageModal.lblDeleteImage),
+            I18n.t(keys.Merchant.ImageModal.alertDeleteImage),
+            [
+                {
+                    text: I18n.t(keys.Common.lblCancel),
+                    style: "cancel",
+                    onPress: () => null,
                 },
-            }
-        ]);
+                {
+                    text: I18n.t(keys.Common.lblOK),
+                    onPress: () => {
+                        this.setState({
+                            isLoading: true,
+                        })
+                        var url = this.state.images[this.state.currentIndex].url;
+                        let path = url.substring(0, url.indexOf('?'));
+                        // let path = this.state.images[this.state.currentIndex].url;
+                        console.log('Current path: ' + path);
+                        deleteItem(path).then(result => {
+                            console.log('Delete Success');
+                            let temp = this.state.images;
+                            temp.splice(this.state.currentIndex, 1);
+                            //if temp is empty, delete original folder
+                            if (temp.length === 0) {
+                                console.log('Folder empty');
+                                deleteItem(this.props.folderPath).then(result => {
+                                    console.log('Delete original folder success');
+                                    popToSceneWithUpdate('_merchant', { version: Math.random() });
+                                })
+                            } else {
+                                let index = 0;
+                                if (this.state.currentIndex !== 0) {
+                                    index = this.state.currentIndex - 1;
+                                }
+                                this.setState({
+                                    images: temp,
+                                    currentIndex: index,
+                                    isLoading: false
+                                });
+                            }
+                        }).catch(error => {
+                            console.log('Delete Error: ' + error.message);
+                            this.setState({
+                                isLoading: false,
+                            });
+                            Alert.alert(I18n.t(keys.Common.lblError), error.message);
+                        })
+                    },
+                }
+            ]);
     };
 
     handleChange = (index) => {
@@ -225,9 +230,10 @@ export default class ImageModal extends Component {
                 />
                 {/* <Loader loading={this.state.isLoading} /> */}
                 <DialogInput isDialogVisible={this.state.isDialogVisible}
-                    title={"Set name for doc"}
+                    title={I18n.t(keys.Merchant.ImageModal.lblSaveDialogTitle)}
                     hintInput={"New_Doc_"}
-                    submitText={"Set"}
+                    submitText={I18n.t(keys.Common.lblSet)}
+                    cancelText={I18n.t(keys.Common.lblCancel)}
                     submitInput={(inputText) => { this.handleSave(inputText, 0) }}
                     closeDialog={() => { this.showDialog(false) }}>
                 </DialogInput>

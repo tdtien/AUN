@@ -33,6 +33,8 @@ import moment from "moment";
 import { connect } from 'react-redux';
 import { getAllComments, getAllNotes, addComment } from '../../api/accountApi';
 import HTML from 'react-native-render-html';
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 class Comment extends Component {
     constructor(props) {
@@ -88,8 +90,8 @@ class Comment extends Component {
                     isLoading: false,
                     refreshing: false,
                 })
-                console.error('Error: ' + error);
-                Alert.alert('Error when get comments: ' + error);
+                console.error('Error when get comments: ' + error);
+                Alert.alert(I18n.t(keys.Common.lblError), error);
             });
     }
 
@@ -110,8 +112,8 @@ class Comment extends Component {
                     isLoading: false,
                     refreshing: false,
                 })
-                console.error('Error: ' + error);
-                Alert.alert('Error when get notes: ' + error);
+                console.error('Error when get notes: ' + error);
+                Alert.alert(I18n.t(keys.Common.lblError), error);
             });
     }
 
@@ -153,7 +155,7 @@ class Comment extends Component {
     handleSendMessage = () => {
         const { message, activeTabIndex } = this.state
         if (message === '') {
-            Alert.alert('Error', activeTabIndex === 0 ? 'Empty comment!' : 'Empty note!');
+            Alert.alert(I18n.t(keys.Common.lblError), activeTabIndex === 0 ? I18n.t(keys.SarExplorer.Comment.alertEmptyComment) : I18n.t(keys.SarExplorer.Comment.alertEmptyNote));
             return;
         }
         Keyboard.dismiss();
@@ -173,8 +175,8 @@ class Comment extends Component {
                 activeTabIndex === 0 ? this.handleGetComments(true, true) : this.handleGetNotes(true, true)
             })
             .catch((error) => {
-                console.log('Error: ' + error);
-                Alert.alert('Error when add comment: ' + error);
+                console.log('Error when add comments: ' + error);
+                Alert.alert(I18n.t(keys.Common.lblError), error);
             })
         this.setState({
             message: ''
@@ -211,7 +213,7 @@ class Comment extends Component {
                                 <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                             <Body style={{ flex: 1 }}>
-                                <Title style={{ alignSelf: "center", color: 'white' }}>Content</Title>
+                                <Title style={{ alignSelf: "center", color: 'white' }}>{I18n.t(keys.SarExplorer.Comment.lblTitle)}</Title>
                             </Body>
                         </Header>
                     ) : (<View />)}
@@ -230,12 +232,12 @@ class Comment extends Component {
                             {
                                 (fullContent || content.length <= 300) ? (
                                     <View style={styles.content} >
-                                        <HTML html={content} baseFontStyle={{ fontSize: AppCommon.font_size }} onLinkPress={(evt, href) => Linking.openURL(href)}/>
+                                        <HTML html={content} baseFontStyle={{ fontSize: AppCommon.font_size }} onLinkPress={(evt, href) => Linking.openURL(href)} />
                                     </View>
                                 ) : (
                                         <View style={styles.content}>
-                                            <HTML html={content.substring(0, 300)} baseFontStyle={{ fontSize: AppCommon.font_size }} onLinkPress={(evt, href) => Linking.openURL(href)}/>
-                                            <Text style={[styles.text, { color: '#8c8c8c' }]}>... Xem thêm</Text>
+                                            <HTML html={content.substring(0, 300)} baseFontStyle={{ fontSize: AppCommon.font_size }} onLinkPress={(evt, href) => Linking.openURL(href)} />
+                                            <Text style={[styles.text, { color: '#8c8c8c' }]}>... {I18n.t(keys.SarExplorer.Comment.btnSeeMore)}</Text>
                                         </View>
                                     )
                             }
@@ -246,10 +248,10 @@ class Comment extends Component {
                                     style={{ flex: 1, flexDirection: 'row', marginBottom: 10, borderBottomWidth: 1, borderTopWidth: 1, borderColor: '#e6e6e6', height: 50 }}
                                 >
                                     <TouchableOpacity style={activeTabIndex === 0 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(0)}>
-                                        <Text style={activeTabIndex === 0 ? styles.activeText : [styles.text, { fontSize: 17 }]}>Comment</Text>
+                                        <Text style={activeTabIndex === 0 ? styles.activeText : [styles.text, { fontSize: 17 }]}>{I18n.t(keys.SarExplorer.Comment.lblComment)}</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={activeTabIndex === 1 ? styles.activeTab : styles.tab} onPress={() => this.changeActiveTab(1)}>
-                                        <Text style={activeTabIndex === 1 ? styles.activeText : [styles.text, { fontSize: 17 }]}>Note</Text>
+                                        <Text style={activeTabIndex === 1 ? styles.activeText : [styles.text, { fontSize: 17 }]}>{I18n.t(keys.SarExplorer.Comment.lblNote)}</Text>
                                     </TouchableOpacity>
                                 </View>
                                 <FlatList
@@ -273,7 +275,7 @@ class Comment extends Component {
                             <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginHorizontal: marginHorizontal, paddingVertical: 6 }}>
                                 <TextInput
                                     style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, height: 40, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15 }}
-                                    placeholder={activeTabIndex === 0 ? 'Add comment...' : 'Add note...'}
+                                    placeholder={activeTabIndex === 0 ? I18n.t(keys.SarExplorer.Comment.lblCommentPlaceholder) : I18n.t(keys.SarExplorer.Comment.lblNotePlaceholder)}
                                     onChangeText={(message) => this.setState({ message: message })}
                                     value={this.state.message}
                                     returnKeyType="done"

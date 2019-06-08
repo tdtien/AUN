@@ -15,6 +15,8 @@ import {
 } from 'native-base';
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from '../../commons/commons';
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 export default class TextViewer extends Component {
     constructor(props) {
@@ -23,7 +25,7 @@ export default class TextViewer extends Component {
 
     render() {
         var { title, hasHeader, data } = this.props;
-        let titleHeader = title.charAt(0).toUpperCase() + title.slice(1, title.length);
+        let titleHeader = title === 'Implication' ? I18n.t(keys.SarExplorer.TextViewer.lblImplication) : I18n.t(keys.SarExplorer.TextViewer.lblQuestion);
         return (
             <Container style={{ backgroundColor: 'white' }}>
                 {hasHeader ? (
