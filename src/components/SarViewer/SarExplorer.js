@@ -232,6 +232,14 @@ class SarExplorer extends Component {
                                         })
                                     })
                                 })
+                                .catch((error) => {
+                                    this.setState({
+                                        isLoading: false,
+                                        refreshing: false,
+                                        data: []
+                                    })
+                                    console.error(error)
+                                })
                         } else {
                             this.setState({
                                 isLoading: false,
@@ -249,6 +257,7 @@ class SarExplorer extends Component {
                         this.setState({
                             isLoading: false,
                             refreshing: false,
+                            data: []
                         })
                     }
                 })
@@ -256,6 +265,7 @@ class SarExplorer extends Component {
                     this.setState({
                         isLoading: false,
                         refreshing: false,
+                        data: []
                     })
                     console.error(error)
                 })

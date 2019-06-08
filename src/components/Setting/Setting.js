@@ -39,8 +39,8 @@ class Setting extends Component {
                     style={{ backgroundColor: AppCommon.colors }}
                     hasTabs
                 >
-                    <TouchableOpacity style={styles.headerButton} onPress={() => Actions.pop()} >
-                        <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                    <TouchableOpacity style={styles.headerButton} onPress={() => Actions.drawerOpen()} >
+                        <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: "white" }}> {I18n.t(keys.SideMenu.Setting.lblTitle)}</Title>
