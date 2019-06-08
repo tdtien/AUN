@@ -94,7 +94,7 @@ class SarExplorer extends Component {
             previousItem: []
         }, () => {
             if (isAlert) {
-                Alert.alert(I18n.t(keys.Common.alertError), I18n.t(keys.Common.alertNetworkRequestFail),
+                Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.Common.alertNetworkRequestFail),
                     [
                         {
                             text: I18n.t(keys.Common.lblNo),
@@ -388,7 +388,7 @@ class SarExplorer extends Component {
         const { token, email } = this.props
         let selectedData = this.state.data.filter(item => item.checked)
         if (selectedData.length === 0) {
-            Alert.alert('Error!', I18n.t(keys.SarExplorer.alertNoItemDownload))
+            Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.SarExplorer.alertNoItemDownload))
             return
         }
         this.setState({ isLoading: true })
@@ -407,7 +407,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
-                        Alert.alert('Download Offline', 'Download failed!')
+                        Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
                     });
             })
         } else if (scene[currentIdx].key === 'criterions') {
@@ -426,7 +426,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
-                        Alert.alert('Download Offline', 'Download failed!')
+                        Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
                     });
             })
         } else if (subCriterionView) {
@@ -446,7 +446,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
-                        Alert.alert('Download Offline', 'Download failed!')
+                        Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
                     });
             })
         } else if (scene[currentIdx].key === 'suggestionTypes') {
@@ -482,7 +482,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
-                        Alert.alert('Download Offline', 'Download failed!')
+                        Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
                     });
             })
         } else if (scene[currentIdx].key === 'suggestions') {
@@ -505,7 +505,7 @@ class SarExplorer extends Component {
                             refreshing: false,
                         })
                         console.error('Error when download: ' + error);
-                        Alert.alert('Download Offline', 'Download failed!')
+                        Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
                     });
             })
         } else if (scene[currentIdx].key === 'evidences') {
@@ -546,15 +546,15 @@ class SarExplorer extends Component {
                 }
                 // console.log('directoryInfo: ' + JSON.stringify(directoryInfo));
                 this.props.setDirectoryInfo(directoryInfo);
-                Alert.alert('Download Offline', 'Download successful!')
+                Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadSuccess));
             }).catch(error => {
                 this.setState({
                     isLoading: false,
                     refreshing: false,
                     downloadMode: false
                 })
-                Alert.alert('Download Offline', 'Download failed!')
                 console.error('Error when download: ' + error);
+                Alert.alert(I18n.t(keys.SarExplorer.lblDownloadOption), I18n.t(keys.SarExplorer.alertDownloadFail));
             })
     }
 

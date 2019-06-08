@@ -10,6 +10,8 @@ import MerchantItem from "./MerchantItem";
 import moment from 'moment'
 import Loader from '../Loader/Loader';
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 export default class Merchant extends Component {
     constructor(props) {
@@ -137,43 +139,6 @@ export default class Merchant extends Component {
         );
     }
 
-    handleDeleteItem = (item, secId, rowId, rowMap) => {
-        Alert.alert(
-            'Delete folder',
-            'Are you sure you want to delete this folder',
-            [
-                {
-                    text: 'Cancel',
-                    style: 'cancel',
-                    onPress: () => null,
-                },
-                {
-                    text: 'OK',
-                    onPress: () => {
-                        this.setState({
-                            isLoading: true
-                        })
-                        rowMap[`${secId}${rowId}`].props.closeRow();
-                        deleteItem(`file://${item.path}`).then(result => {
-                            let temp = this.state.data;
-                            temp.splice(temp.indexOf(item), 1);
-                            this.setState({
-                                data: temp,
-                                isLoading: false
-                            })
-                            // this.makeRemoteRequest();
-                        }).catch(error => {
-                            this.setState({
-                                isLoading: false
-                            })
-                            Alert.alert('Error', error.message);
-                        })
-                    },
-                }
-            ]
-        )
-    }
-
     handleSearch = (searchText) => {
         var temp = [];
         if (searchText) {
@@ -214,7 +179,7 @@ export default class Merchant extends Component {
             this.setState({
                 isLoading: false
             })
-            Alert.alert('Error', error.message);
+            Alert.alert(I18n.t(keys.Common.lblError), error.message);
         })
     }
 
@@ -241,7 +206,7 @@ export default class Merchant extends Component {
                     <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
                 <Body style={{ flex: 1 }}>
-                    <Title style={{ alignSelf: "center", color: 'white' }}>All Docs</Title>
+                    <Title style={{ alignSelf: "center", color: 'white' }}>{I18n.t(keys.Merchant.Main.lblTitle)}</Title>
                 </Body>
                 <TouchableOpacity style={styles.menuButton} onPress={() => this.handleSearchPressed()} >
                     <Icon name={AppCommon.icon("search")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
@@ -261,7 +226,7 @@ export default class Merchant extends Component {
                     <Item >
                         <Icon name={AppCommon.icon("search")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                         <Input
-                            placeholder="Search..."
+                            placeholder={I18n.t(keys.Merchant.Main.lblSearchPlaceholder)}
                             onChangeText={searchText => {
                                 this.setState({ searchText: searchText });
                                 this.handleSearch(searchText);

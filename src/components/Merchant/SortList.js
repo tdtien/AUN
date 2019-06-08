@@ -20,6 +20,8 @@ import { folderToBase64 } from "../../commons/utilitiesFunction";
 import { convert2Pdf } from "../../api/accountApi";
 import RNFS from "react-native-fs";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 const window = Dimensions.get('window');
 const imageWidth = (window.width - 30 * 2)
@@ -48,7 +50,7 @@ class SortList extends Component {
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", marginRight: 15, color: 'white' }}>Sort image to export PDF</Title>
+                        <Title style={{ alignSelf: "center", marginRight: 15, color: 'white' }}>{I18n.t(keys.Merchant.SortList.lblTitle)}</Title>
                     </Body>
                     <TouchableOpacity style={styles.headerButton} onPress={() => this.handleExport2Pdf()} >
                         <Icon name="pdffile1" type="AntDesign" style={{ color: 'white', fontSize: AppCommon.icon_size }} />
@@ -59,7 +61,7 @@ class SortList extends Component {
                     handlePress={this.handlePopTo}
                     previousItem={AppCommon.uploadFlow.slice(0, 2)}
                     currentItem={AppCommon.uploadFlow[2]}
-                    nextItem={AppCommon.uploadFlow.slice(3,AppCommon.uploadFlow.length)}
+                    nextItem={AppCommon.uploadFlow.slice(3, AppCommon.uploadFlow.length)}
                 />
                 <SortableList
                     style={styles.list}
@@ -103,7 +105,7 @@ class SortList extends Component {
                             };
                             Actions.pdfViewer(props);
                         } else {
-                            Alert.alert('Error', 'Cannot conver to pdf. Please contact developer to fix this issue');
+                            Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.Merchant.SortList.alertExportPdfFail));
                         }
                     })
                     .catch((error) => {
@@ -113,7 +115,7 @@ class SortList extends Component {
             }).catch(error => {
                 this.setState({ isLoading: false })
                 console.log('Error when convert to pdf: ' + error);
-                Alert.alert('Error', 'Error when convert to pdf');
+                Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.Merchant.SortList.alertConvertImagesFail));
             })
     }
 

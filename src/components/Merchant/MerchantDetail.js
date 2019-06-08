@@ -40,6 +40,8 @@ import {
 } from 'react-native-popup-menu';
 import { FlatGrid } from "react-native-super-grid";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 const screenWidth = Dimensions.get('window').width;
 const columns = 2;
@@ -158,43 +160,46 @@ class MerchantDetail extends Component {
     }
 
     handleDeleteMultipleImages = () => {
-        Alert.alert('Delete images', 'Are you sure you want to delete these images?', [
-            {
-                text: 'Cancel',
-                style: "cancel",
-                onPress: () => null,
-            },
-            {
-                text: 'OK',
-                onPress: () => {
-                    this.setState({
-                        isLoading: true
-                    })
-                    let deletedItems = this.state.selectedCheckList;
-                    deleteMultipleItems(deletedItems)
-                        .then(result => {
-                            if (this.state.data.length === deletedItems.length) {
-                                console.log('Folder empty');
-                                deleteItem(this.props.folderPath).then(result => {
-                                    console.log('Delete original folder success');
-                                    popToSceneWithUpdate('_merchant');
-                                })
-                            } else {
+        Alert.alert(
+            I18n.t(keys.Merchant.MerchantDetail.lblDeleteImages),
+            I18n.t(keys.Merchant.MerchantDetail.alertDeleteImages),
+            [
+                {
+                    text: I18n.t(keys.Common.lblCancel),
+                    style: "cancel",
+                    onPress: () => null,
+                },
+                {
+                    text: I18n.t(keys.Common.lblOK),
+                    onPress: () => {
+                        this.setState({
+                            isLoading: true
+                        })
+                        let deletedItems = this.state.selectedCheckList;
+                        deleteMultipleItems(deletedItems)
+                            .then(result => {
+                                if (this.state.data.length === deletedItems.length) {
+                                    console.log('Folder empty');
+                                    deleteItem(this.props.folderPath).then(result => {
+                                        console.log('Delete original folder success');
+                                        popToSceneWithUpdate('_merchant');
+                                    })
+                                } else {
+                                    this.setState({
+                                        isLoading: false,
+                                        isCheckBoxVisible: false
+                                    });
+                                    this.makeRemoteRequest()
+                                }
+                            }).catch(error => {
                                 this.setState({
                                     isLoading: false,
-                                    isCheckBoxVisible: false
                                 });
-                                this.makeRemoteRequest()
-                            }
-                        }).catch(error => {
-                            this.setState({
-                                isLoading: false,
-                            });
-                            Alert.alert('Error', error.message);
-                        })
-                },
-            }
-        ]);
+                                Alert.alert(I18n.t(keys.Common.lblError), error.message);
+                            })
+                    },
+                }
+            ]);
     }
 
     handleDeselectCheckbox = () => {
@@ -321,13 +326,13 @@ class MerchantDetail extends Component {
                             <MenuOption onSelect={() => this.handleSelectMultipleImages()}>
                                 <View style={styles.popupItem}>
                                     <Icon name={AppCommon.icon("checkbox")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
-                                    <Text style={styles.popupItemText}>Select</Text>
+                                    <Text style={styles.popupItemText}>{I18n.t(keys.Merchant.MerchantDetail.btnSelect)}</Text>
                                 </View>
                             </MenuOption>
                             <MenuOption onSelect={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName, folderPath: this.props.folderPath, flow: this.props.flow })}>
                                 <View style={styles.popupItem}>
                                     <Icon name="pdffile1" type="AntDesign" style={{ color: 'red', fontSize: AppCommon.icon_size }} />
-                                    <Text style={styles.popupItemText}>Export to PDF</Text>
+                                    <Text style={styles.popupItemText}>{I18n.t(keys.Merchant.MerchantDetail.btnExportPdf)}</Text>
                                 </View>
                             </MenuOption>
                         </MenuOptions>

@@ -12,6 +12,8 @@ import { Actions } from "react-native-router-flux";
 import RNFS from 'react-native-fs'
 import moment from 'moment'
 import Swipeout from 'react-native-swipeout'
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 export default class MerchantItem extends Component {
     constructor(props) {
@@ -79,22 +81,22 @@ export default class MerchantItem extends Component {
                 {
                     onPress: () => {
                         Alert.alert(
-                            'Delete folder',
-                            'Are you sure you want to delete this folder',
+                            I18n.t(keys.Merchant.MerchantItem.lblDeleteFolder),
+                            I18n.t(keys.Merchant.MerchantItem.alertDeleteFolder),
                             [
                                 {
-                                    text: 'Cancel',
+                                    text: I18n.t(keys.Common.lblCancel),
                                     style: 'cancel',
                                     onPress: () => null,
                                 },
                                 {
-                                    text: 'OK',
+                                    text: I18n.t(keys.Common.lblOK),
                                     onPress: () => { this.props.action(this.props.item) },
                                 }
                             ]
                         )
                     },
-                    text: 'Delete', type: 'delete'
+                    text: I18n.t(keys.Common.lblDelete), type: 'delete'
                 }
             ]
         }

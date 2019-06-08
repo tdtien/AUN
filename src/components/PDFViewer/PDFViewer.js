@@ -25,6 +25,8 @@ import DialogInput from "react-native-dialog-input";
 import { validateFileName } from '../../commons/validation';
 import { deleteItem, popToSceneWithUpdate, cachePdf, findPdfCacheItem } from '../../commons/utilitiesFunction';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 class PDFViewer extends React.Component {
     constructor(props) {
@@ -70,7 +72,7 @@ class PDFViewer extends React.Component {
 
     handleUploadPdf = (fileName) => {
         if (!validateFileName(fileName)) {
-            Alert.alert('Error', 'Your file name just use alphabet, numbers and underscore');
+            Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.PDFViewer.alertInvalidFileName));
             return;
         }
         this.setState({
@@ -90,18 +92,19 @@ class PDFViewer extends React.Component {
                     this.setState({
                         isLoading: false,
                     })
-                    let message = responseJson.msg + '\r\n' + 'Do you want to delete the image folder ?'
+                    let message = responseJson.msg + '\r\n' + I18n.t(keys.PDFViewer.alertDeleteFolderImages);
                     Alert.alert(
-                        'Success',
+                        I18n.t(keys.Common.lblSuccesss),
                         message,
                         [
                             {
-                                text: 'No',
+                                text: I18n.t(keys.Common.lblNo),
                                 style: 'cancel',
                                 onPress: () => popToSceneWithUpdate('_sarExplorer', this.props.flow),
                             },
                             {
-                                text: 'Yes', onPress: () => {
+                                text: I18n.t(keys.Common.lblYes),
+                                onPress: () => {
                                     this.setState({
                                         isLoading: true
                                     })
@@ -112,7 +115,7 @@ class PDFViewer extends React.Component {
                                     }).catch(error => {
                                         this.setState({
                                             isLoading: false
-                                        }, () => Alert.alert('Error', error.message))
+                                        }, () => Alert.alert(I18n.t(keys.Common.lblError), error.message))
                                     })
                                 }
                             }
@@ -120,7 +123,7 @@ class PDFViewer extends React.Component {
                     );
                 }
                 else {
-                    Alert.alert('Error1', responseJson.msg);
+                    Alert.alert(I18n.t(keys.Common.lblError), responseJson.msg);
                 }
             })
             .catch((error) => {
@@ -128,7 +131,7 @@ class PDFViewer extends React.Component {
                     isLoading: false
                 })
                 console.error('Error: ' + error);
-                Alert.alert('Error2', error);
+                Alert.alert(I18n.t(keys.Common.lblError), error);
             });
     }
 
@@ -183,10 +186,10 @@ class PDFViewer extends React.Component {
                 }}
             >
                 <TouchableOpacity onPress={() => this.handleViewEvidences('back')}>
-                    <Text style={{ fontSize: 17, color: 'black' }}>Back</Text>
+                    <Text style={{ fontSize: 17, color: 'black' }}>{I18n.t(keys.PDFViewer.btnBack)}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => this.handleViewEvidences('next')}>
-                    <Text style={{ fontSize: 17, color: 'black' }}>Next</Text>
+                    <Text style={{ fontSize: 17, color: 'black' }}>{I18n.t(keys.PDFViewer.btnNext)}</Text>
                 </TouchableOpacity>
             </View>
         ) : null
@@ -256,9 +259,10 @@ class PDFViewer extends React.Component {
                     />
                 </View>
                 <DialogInput isDialogVisible={isDialogVisible}
-                    title={"Set name for doc to upload"}
+                    title={I18n.t(keys.PDFViewer.lblUploadDialogTitle)}
                     hintInput={fileName}
-                    submitText={"Set"}
+                    submitText={I18n.t(keys.PDFViewer.btnSet)}
+                    cancelText={I18n.t(keys.Common.lblCancel)}
                     submitInput={(inputText) => { this.handleUploadPdf(inputText) }}
                     closeDialog={() => { this.setState({ isDialogVisible: false }) }}>
                 </DialogInput>
