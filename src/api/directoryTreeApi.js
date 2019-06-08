@@ -6,7 +6,7 @@ export async function getDataSar(token, type = '', id = 0) {
         case 'sars': return getAllSars(token)
         case 'criterions': return getAllCriterions(token, id)
         case 'subCriterions': return getAllSubCriterions(token, id)
-        case 'suggestionTypes': 
+        case 'suggestionTypes':
         case 'suggestions': return getAllSuggestions(token, id)
         case 'evidences': return getAllEvidences(token, id)
         default: return Promise.resolve({});
@@ -26,6 +26,21 @@ export async function getAllSars(token) {
             .then(responseJson => resolve(responseJson))
             .catch(error => reject(error));
     });
+}
+
+export async function getContentAllSar(token) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/sars/content`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    })
 }
 
 export async function getContentSar(token, id) {

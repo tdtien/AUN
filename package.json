@@ -7,6 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "native-base": "^2.12.0",
     "react": "16.6.3",
@@ -14,6 +15,7 @@
     "react-native-cache": "^1.1.7",
     "react-native-dialog-input": "^1.0.7",
     "react-native-document-picker": "^2.3.0",
+    "react-native-final-tree-view": "^1.1.0",
     "react-native-fs": "^2.13.3",
     "react-native-i18n": "^2.0.15",
     "react-native-image-crop-picker": "^0.22.0",
@@ -27,7 +29,6 @@
     "react-native-sortable-list": "0.0.22",
     "react-native-super-grid": "^3.0.3",
     "react-native-swipeout": "^2.3.6",
-    "react-native-tree-select": "^2.0.4",
     "react-native-vector-icons": "^6.3.0",
     "react-native-webview": "^5.10.0",
     "react-redux": "^6.0.0",
