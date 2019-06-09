@@ -28,7 +28,8 @@ import {
     popWithUpdate,
     deleteItem,
     deleteMultipleItems,
-    popToSceneWithUpdate
+    popToSceneWithUpdate,
+    getTextsFromUploadFlow
 } from "../../commons/utilitiesFunction";
 import Loader from '../Loader/Loader'
 import CameraButton from "./CameraButton";
@@ -295,12 +296,13 @@ class MerchantDetail extends Component {
         if (isRoot) {
             sceneKey = '_sarExplorer';
         } else {
-            sceneKey = AppCommon.uploadFlow[index].key;
+            sceneKey = AppCommon.uploadFlow[index].scene;
         }
         Actions.popTo(sceneKey);
     }
 
     render() {
+        let uploadFlow = getTextsFromUploadFlow();
         let selectImageTitle = (!this.state.isSelectAll) ? 'Select All' : 'Deselect All'
         let header = (!this.state.isCheckBoxVisible) ? (
             <Header
@@ -315,7 +317,7 @@ class MerchantDetail extends Component {
                     <Title style={{ alignSelf: "center", marginRight: 15, color: 'white' }}>{this.props.folderName}</Title>
                 </Body>
                 <TouchableOpacity style={styles.headerButton} onPress={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName, folderPath: this.props.folderPath, flow: this.props.flow })} >
-                    <Icon name="pdffile1" type="AntDesign" style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                    <Icon name="sort" type="MaterialCommunityIcons" style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                 </TouchableOpacity>
                 <View style={styles.headerMoreButton}>
                     <Menu>
@@ -327,12 +329,6 @@ class MerchantDetail extends Component {
                                 <View style={styles.popupItem}>
                                     <Icon name={AppCommon.icon("checkbox")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
                                     <Text style={styles.popupItemText}>{I18n.t(keys.Merchant.MerchantDetail.btnSelect)}</Text>
-                                </View>
-                            </MenuOption>
-                            <MenuOption onSelect={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName, folderPath: this.props.folderPath, flow: this.props.flow })}>
-                                <View style={styles.popupItem}>
-                                    <Icon name="pdffile1" type="AntDesign" style={{ color: 'red', fontSize: AppCommon.icon_size }} />
-                                    <Text style={styles.popupItemText}>{I18n.t(keys.Merchant.MerchantDetail.btnExportPdf)}</Text>
                                 </View>
                             </MenuOption>
                         </MenuOptions>
@@ -365,10 +361,10 @@ class MerchantDetail extends Component {
                     <Right>
                         <View style={styles.footerButton}>
                             <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : Actions.sortList({ data: this.processData(), folderName: this.props.folderName, folderPath: this.props.folderPath, flow: this.props.flow })} >
-                                <Icon name="pdffile1" type="AntDesign" style={{ color: isDisable ? 'gray' : 'white', fontSize: AppCommon.icon_size }} />
+                                <Icon name="sort" type="MaterialCommunityIcons" style={{ color: isDisable ? '#bfbfbf' : 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                             <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : this.handleDeleteMultipleImages()} >
-                                <Icon name={AppCommon.icon("trash")} style={{ color: isDisable ? 'gray' : 'white', fontSize: AppCommon.icon_size }} />
+                                <Icon name={AppCommon.icon("trash")} style={{ color: isDisable ? '#bfbfbf' : 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                         </View>
                     </Right>
@@ -384,9 +380,9 @@ class MerchantDetail extends Component {
                 <BreadCrumb
                     isConnected={false}
                     handlePress={this.handlePopTo}
-                    previousItem={AppCommon.uploadFlow.slice(0, 1)}
-                    currentItem={AppCommon.uploadFlow[1]}
-                    nextItem={AppCommon.uploadFlow.slice(2, AppCommon.uploadFlow.length)}
+                    previousItem={uploadFlow.slice(0, 1)}
+                    currentItem={uploadFlow[1]}
+                    nextItem={uploadFlow.slice(2, uploadFlow.length)}
                 />
                 <Content>
                     <FlatGrid

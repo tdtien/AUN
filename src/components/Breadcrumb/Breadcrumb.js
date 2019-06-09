@@ -21,7 +21,7 @@ export default class BreadCrumb extends Component {
                 showsVerticalScrollIndicator={false}
                 ref={ref => this.scrollView = ref}
                 onContentSizeChange={(contentWidth, contentHeight) => {
-                    if (typeof nextItem === 'undefined') {
+                    if (typeof nextItem === 'undefined' || nextItem.length <= 2) {
                         if (contentWidth > window.width) {
                             this.scrollView.scrollToEnd({ animated: true });
                         } else {

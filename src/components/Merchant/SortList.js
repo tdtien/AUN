@@ -16,7 +16,7 @@ import { AppCommon } from "../../commons/commons";
 import { Actions } from "react-native-router-flux";
 import Loader from "../Loader/Loader";
 import { connect } from 'react-redux'
-import { folderToBase64 } from "../../commons/utilitiesFunction";
+import { folderToBase64, getTextsFromUploadFlow } from "../../commons/utilitiesFunction";
 import { convert2Pdf } from "../../api/accountApi";
 import RNFS from "react-native-fs";
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
@@ -39,6 +39,7 @@ class SortList extends Component {
     }
 
     render() {
+        let uploadFlow = getTextsFromUploadFlow();
         return (
             <Container>
                 <Header
@@ -59,9 +60,9 @@ class SortList extends Component {
                 <BreadCrumb
                     isConnected={false}
                     handlePress={this.handlePopTo}
-                    previousItem={AppCommon.uploadFlow.slice(0, 2)}
-                    currentItem={AppCommon.uploadFlow[2]}
-                    nextItem={AppCommon.uploadFlow.slice(3, AppCommon.uploadFlow.length)}
+                    previousItem={uploadFlow.slice(0, 2)}
+                    currentItem={uploadFlow[2]}
+                    nextItem={uploadFlow.slice(3, uploadFlow.length)}
                 />
                 <SortableList
                     style={styles.list}
@@ -128,7 +129,7 @@ class SortList extends Component {
         if (isRoot) {
             sceneKey = '_sarExplorer';
         } else {
-            sceneKey = AppCommon.uploadFlow[index].key;
+            sceneKey = AppCommon.uploadFlow[index].scene;
         }
         Actions.popTo(sceneKey);
     }

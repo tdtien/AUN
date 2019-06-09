@@ -1,5 +1,6 @@
 import { Platform } from 'react-native'
 import RNFS from "react-native-fs";
+import keys from '../i18n/keys';
 
 export class AppCommon {
     static colors = "#2196F3"
@@ -17,10 +18,11 @@ export class AppCommon {
         return Platform.OS === 'ios' ? ('ios-' + name) : ('md-' + name);
     }
     static uploadFlow = [
-        { key: 'merchant', name: 'Import images' },
-        { key: 'merchantDetail', name: 'Choose images' },
-        { key: 'sortList', name: 'Sort images' },
-        { key: 'pdfViewer', name: 'Upload evidence' }
+        { scene: 'merchant', key: keys.Merchant.Breadcrumb.lblImportImages },
+        { scene: 'merchantDetail', key: keys.Merchant.Breadcrumb.lblChooseImages },
+        { scene: 'sortList', key: keys.Merchant.Breadcrumb.lblSortImages },
+        { scene: 'pdfViewer', key: keys.Merchant.Breadcrumb.lblConvertPDF },
+        { scene: 'pdfViewer2', key: keys.Merchant.Breadcrumb.lblUploadEvidence }
     ]
     static pdf_caches = []
 }

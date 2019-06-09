@@ -85,6 +85,12 @@ export default {
     [keys.Merchant.ImageModal.alertDeleteImage]: 'Bạn có chắc bạn muốn xóa hình ảnh này?',
     [keys.Merchant.ImageModal.lblSaveDialogTitle]: 'Đặt tên cho tập tin',
 
+    [keys.Merchant.Breadcrumb.lblImportImages]: 'Thêm ảnh',
+    [keys.Merchant.Breadcrumb.lblChooseImages]: 'Chọn ảnh',
+    [keys.Merchant.Breadcrumb.lblSortImages]: 'Sắp xếp ảnh',
+    [keys.Merchant.Breadcrumb.lblConvertPDF]: 'Chuyển thành PDF',
+    [keys.Merchant.Breadcrumb.lblUploadEvidence]: 'Tải lên',
+
     //PDFViewer
     [keys.PDFViewer.alertDeleteFolderImages]: 'Tải lên thành công.\r\nBạn có muốn xóa thư mục hình ảnh này?',
     [keys.PDFViewer.btnBack]: 'Trước',

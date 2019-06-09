@@ -85,6 +85,12 @@ export default {
     [keys.Merchant.ImageModal.alertDeleteImage]: 'Are you sure you want to delete this image?',
     [keys.Merchant.ImageModal.lblSaveDialogTitle]: 'Set name for doc',
 
+    [keys.Merchant.Breadcrumb.lblImportImages]: 'Import images',
+    [keys.Merchant.Breadcrumb.lblChooseImages]: 'Choose images',
+    [keys.Merchant.Breadcrumb.lblSortImages]: 'Sort images',
+    [keys.Merchant.Breadcrumb.lblConvertPDF]: 'Convert to PDF',
+    [keys.Merchant.Breadcrumb.lblUploadEvidence]: 'Upload evidence',
+
     //PDFViewer
     [keys.PDFViewer.alertDeleteFolderImages]: 'Upload file successful.\r\nDo you want to delete the image folder?',
     [keys.PDFViewer.btnBack]: 'Back',

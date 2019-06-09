@@ -23,7 +23,7 @@ import { uploadEvidence } from '../../api/accountApi';
 import { AppCommon } from '../../commons/commons';
 import DialogInput from "react-native-dialog-input";
 import { validateFileName } from '../../commons/validation';
-import { deleteItem, popToSceneWithUpdate, cachePdf, findPdfCacheItem } from '../../commons/utilitiesFunction';
+import { deleteItem, popToSceneWithUpdate, cachePdf, findPdfCacheItem, getTextsFromUploadFlow } from '../../commons/utilitiesFunction';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import I18n from '../../i18n/i18n';
 import keys from '../../i18n/keys';
@@ -39,6 +39,7 @@ class PDFViewer extends React.Component {
             currentEvidence: this.props.currentEvidence,
             evidenceArray: this.props.evidenceArray,
             fileName: this.props.fileName,
+            breadcrumbIndex: 3,
         }
     }
 
@@ -82,7 +83,8 @@ class PDFViewer extends React.Component {
         var data = {
             type: 'FILE',
             file: this.props.base64,
-            suggestionId: this.props.flow.suggestionInfo.id,
+            // suggestionId: this.props.flow.suggestionInfo.id,
+            suggestionId: 18,
             name: fileName
         }
         uploadEvidence(this.props.token, data)
@@ -91,6 +93,7 @@ class PDFViewer extends React.Component {
                 if (responseJson.success === true) {
                     this.setState({
                         isLoading: false,
+                        breadcrumbIndex: 4,
                     })
                     Alert.alert(
                         I18n.t(keys.Common.lblSuccess),
@@ -151,15 +154,21 @@ class PDFViewer extends React.Component {
         let sceneKey = '';
         if (isRoot) {
             sceneKey = '_sarExplorer';
+        } else if (AppCommon.uploadFlow[index].scene === 'pdfViewer') {
+            this.setState({
+                breadcrumbIndex: 3,
+            })
+            return;
         } else {
-            sceneKey = AppCommon.uploadFlow[index].key;
+            sceneKey = AppCommon.uploadFlow[index].scene;
         }
         Actions.popTo(sceneKey);
     }
 
     render() {
         let { evidenceArray, base64, hasHeader, width } = this.props;
-        let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading } = this.state
+        let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading, breadcrumbIndex } = this.state
+        let uploadFlow = getTextsFromUploadFlow();
         let uri = '';
         if (base64 !== null) {
             uri = `data:application/pdf;base64,${base64}`;
@@ -225,8 +234,9 @@ class PDFViewer extends React.Component {
                     <BreadCrumb
                         isConnected={false}
                         handlePress={this.handlePopTo}
-                        previousItem={AppCommon.uploadFlow.slice(0, 3)}
-                        currentItem={AppCommon.uploadFlow[3]}
+                        previousItem={uploadFlow.slice(0, breadcrumbIndex)}
+                        currentItem={uploadFlow[breadcrumbIndex]}
+                        nextItem={uploadFlow.slice(breadcrumbIndex + 1, uploadFlow.length)}
                     />
                 }
                 {(isShowPdfView) ? pdfArrayView : null}

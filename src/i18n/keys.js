@@ -107,6 +107,7 @@ export default {
             lblImportImages: 'Breadcrumb_lblImportImages',
             lblChooseImages: 'Breadcrumb_lblChooseImages',
             lblSortImages: 'Breadcrumb_lblSortImages',
+            lblConvertPDF: 'Breadcrumb_lblConvertPDF',
             lblUploadEvidence: 'Breadcrumb_lblUploadEvidence',
         }
     },

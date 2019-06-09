@@ -4,7 +4,7 @@ import { ActivityIndicator, Alert, BackHandler, FlatList, RefreshControl, StyleS
 import RNFS from "react-native-fs";
 import { Actions } from "react-native-router-flux";
 import { AppCommon } from "../../commons/commons";
-import { deleteItem } from '../../commons/utilitiesFunction';
+import { deleteItem, getTextsFromUploadFlow, } from '../../commons/utilitiesFunction';
 import CameraButton from "./CameraButton";
 import MerchantItem from "./MerchantItem";
 import moment from 'moment'
@@ -188,12 +188,13 @@ export default class Merchant extends Component {
         if (isRoot) {
             sceneKey = '_sarExplorer';
         } else {
-            sceneKey = AppCommon.uploadFlow[index].key;
+            sceneKey = AppCommon.uploadFlow[index].scene;
         }
         Actions.popTo(sceneKey);
     }
 
     render() {
+        let uploadFlow = getTextsFromUploadFlow();
         let dataRender = this.state.searchText ? this.state.dataFilter : this.state.data;
         let header = (!this.state.isSearching) ? (
             <Header
@@ -246,8 +247,8 @@ export default class Merchant extends Component {
                     isConnected={false}
                     handlePress={this.handlePopTo}
                     previousItem={[]}
-                    currentItem={AppCommon.uploadFlow[0]}
-                    nextItem={AppCommon.uploadFlow.slice(1, AppCommon.uploadFlow.length)}
+                    currentItem={uploadFlow[0]}
+                    nextItem={uploadFlow.slice(1, uploadFlow.length)}
                 />
                 <Content
                     style={{ flex: 1 }}

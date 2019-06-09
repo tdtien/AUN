@@ -2,6 +2,7 @@ import RNFS from 'react-native-fs'
 import { Actions } from 'react-native-router-flux';
 import { AppCommon } from './commons';
 import { validateSimpleURL } from './validation';
+import I18n from '../i18n/i18n';
 
 export function createFolder(mainPath) {
     return new Promise((resolve, reject) => {
@@ -339,4 +340,12 @@ export function findPdfCacheItem(id) {
 
 export function getRandomArbitrary(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
+}
+
+export function getTextsFromUploadFlow() {
+    let texts = [];
+    for (let item of AppCommon.uploadFlow) {
+        texts.push({ name: I18n.t(item.key) });
+    }
+    return texts;
 }
