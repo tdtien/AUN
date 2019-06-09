@@ -28,7 +28,7 @@ class SarViewer extends Component {
             data: {},
             currentItem: {},
             previousItem: [],
-            position: 0
+            position: 10
         }
     }
 
@@ -74,7 +74,6 @@ class SarViewer extends Component {
     generateIndex = (item, rootIndex) => {
         return item.children && item.children.forEach((child, index) => {
             child.index = `${rootIndex}.${index + 1}`
-            child.shortName = limitText(child.name || child.content, Math.floor(this.state.treeWidth / 8))
             child.internalId = _.uniqueId('tree_')
             this.generateIndex(child, child.index)
         });
@@ -89,7 +88,6 @@ class SarViewer extends Component {
                     responeJson.data.forEach((element) => {
                         element.index = element.id
                         element.internalId = _.uniqueId('tree_')
-                        element.shortName = limitText(element.name || element.content, Math.floor(this.state.treeWidth / 8))
                         this.generateIndex(element, element.id)
                     })
                     this.setState({
@@ -261,10 +259,9 @@ class SarViewer extends Component {
         //     item.isLoad = true;
         // }
         if (item.key === 'sar') {
-            this.setState({ isLoadingContent: true }, () => this.makeRemoteRequest(item))
+            this.setState({ isLoadingContent: true, position: 10 }, () => this.makeRemoteRequest(item))
         }
         if (item.offSet) {
-            console.log('item.offSet', item.offSet)
             this.scrollView.scrollTo({ x: 0, y: item.offSet, animated: true })
         }
         // previousItem = []
@@ -283,12 +280,27 @@ class SarViewer extends Component {
         // }
     }
 
+    putOffSet = (item, position = 0) => {
+        let itemInTreeResult = _searchTree(this.state.dataTree, (node) => node.id === item.id && node.key === item.key)
+        if (itemInTreeResult.length > 0) {
+            var itemInTree = itemInTreeResult[0]
+            itemInTree.offSet = position
+        }
+    }
+
+    onLayout = event => {
+        let { width } = event.nativeEvent.layout
+        if (Math.floor(width) !== Math.floor(this.state.width)) {
+            this.setState({ treeWidth: width * 1 / 3, contentWidth: width * 2 / 3 })
+        }
+    }
+
     renderItem = (item, level) => {
         return (
             <View>
                 <Text
                     style={{
-                        marginLeft: 25 * level,
+                        marginLeft: 20 * level,
                     }}
                 >
                     {item.collapsed !== null ? (
@@ -296,7 +308,7 @@ class SarViewer extends Component {
                     ) : (
                             <Text> - </Text>
                         )}
-                    {item.name}
+                    {`${item.index}. ${item.name}`}
                 </Text>
             </View>
         )
@@ -310,10 +322,13 @@ class SarViewer extends Component {
                 <Text
                     ref={`${data.key}${data.id}`}
                     onLayout={({ nativeEvent }) => {
-                        this.refs[`${data.key}${data.id}`].measure((x, y, width, height, pageX, pageY) => {
-                            this.putOffSet(data)
-                            this.state.position += height
-                        })
+                        this.putOffSet(data)
+                        this.state.position += nativeEvent.layout.height
+                        // this.refs[`${data.key}${data.id}`].measure((x, y, width, height, pageX, pageY) => {
+                        //     this.putOffSet(data)
+                        //     console.log(`${data.key}${data.id}`, this.state.position)
+                        //     this.state.position += height
+                        // })
                     }}
                     style={{ fontSize: 25, alignSelf: 'center', fontWeight: 'bold' }}
                 >{data.name}</Text>
@@ -325,11 +340,8 @@ class SarViewer extends Component {
                             {item.name && <Text
                                 ref={`${item.key}${item.id}`}
                                 onLayout={({ nativeEvent }) => {
-                                    this.refs[`${item.key}${item.id}`].measure((x, y, width, height, pageX, pageY) => {
-                                        console.log(item.id, limitText(item.name || item.content), x, y, width, height, pageX, pageY);
-                                        this.putOffSet(item, this.state.position)
-                                        this.state.position += height
-                                    })
+                                    this.putOffSet(item, this.state.position)
+                                    this.state.position += nativeEvent.layout.height
                                 }}
                                 style={{ fontSize: 20, paddingLeft: 10, fontWeight: 'bold' }}>{`${data.id}.${index + 1}. ${item.name}`}</Text>}
                             {item.children && this.renderChildren(item.children, `${data.id}.${index + 1}`)}
@@ -340,14 +352,6 @@ class SarViewer extends Component {
         )
     }
 
-    putOffSet = (item, position = 0) => {
-        let itemInTreeResult = _searchTree(this.state.dataTree, (node) => node.id === item.id && node.key === item.key)
-        if (itemInTreeResult.length > 0) {
-            var itemInTree = itemInTreeResult[0]
-            itemInTree.offSet = position
-        }
-    }
-
     renderChildren = (items, rootIndex) => {
         return items.map((item, index) => (
             <View
@@ -356,24 +360,36 @@ class SarViewer extends Component {
                 {item.name && <Text
                     ref={`${item.key}${item.id}`}
                     onLayout={({ nativeEvent }) => {
-                        this.refs[`${item.key}${item.id}`].measure((x, y, width, height, pageX, pageY) => {
-                            console.log(item.id, limitText(item.name || item.content), x, y, width, height, pageX, pageY);
-                            this.putOffSet(item, this.state.position)
-                            this.state.position += height
-                        })
+                        this.putOffSet(item, this.state.position)
+                        this.state.position += nativeEvent.layout.height
                     }}
                     style={{ fontSize: 16, paddingLeft: 10 }}>{`${rootIndex}.${index + 1}. ${item.name}`}</Text>}
-                {item.key === 'subCriterion' && (item.commentCount > 0 || item.noteCount > 0) &&
-                    <TouchableOpacity activeOpacity={0.8} style={{ alignSelf: 'flex-end' }} onPress={() => Actions.comment({ subCriterionInfo: item })}>
-                        <Icon name={AppCommon.icon("chatboxes")}
-                            style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size - 10 }} />
+                {item.key === 'subCriterion' &&
+                    <TouchableOpacity
+                        activeOpacity={0.8}
+                        style={{ alignSelf: 'flex-end', flexDirection: 'row' }}
+                        onPress={() => Actions.comment({ subCriterionInfo: item })}
+                        onLayout={({ nativeEvent }) => {
+                            this.state.position += nativeEvent.layout.height
+                        }}
+                    >
+                        <Text style={{paddingHorizontal: 5, color: item.commentCount > 0 ? AppCommon.colors: '#cccccc'}}>{item.commentCount}</Text>
+                        <Icon name="comment" type="MaterialIcons" style={{ color: item.commentCount > 0 ? AppCommon.colors: '#cccccc', fontSize: 13 }} />
+                        <Text style={{paddingHorizontal: 5, color: item.noteCount > 0 ? AppCommon.colors: '#cccccc'}}>{item.noteCount}</Text>
+                        <Icon name="note" type="SimpleLineIcons" style={{ color: item.noteCount > 0 ? AppCommon.colors: '#cccccc', fontSize: 13 }} />
                     </TouchableOpacity>
                 }
-                {item.content && <HTML
-                    html={item.content}
-                    imagesMaxWidth={Dimensions.get('window').width}
-                    onLinkPress={(evt, href) => Linking.openURL(href)}
-                />}
+                {item.content &&
+                    <View onLayout={({ nativeEvent }) => {
+                        this.state.position += nativeEvent.layout.height
+                    }}>
+                        <HTML
+                            html={item.content}
+                            imagesMaxWidth={this.state.contentWidth}
+                            onLinkPress={(evt, href) => Linking.openURL(href)}
+                        />
+                    </View>
+                }
                 {item.children && this.renderChildren(item.children, `${rootIndex}.${index + 1}`)}
             </View>
         ))
@@ -391,7 +407,7 @@ class SarViewer extends Component {
             contentWidth
         } = this.state
         return (
-            <Container>
+            <Container onLayout={this.onLayout}>
                 <Header
                     androidStatusBarColor={AppCommon.colors}
                     iosBarStyle="light-content"
