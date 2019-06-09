@@ -41,7 +41,7 @@ class SarExplorer extends Component {
             currentItem: {}
         }
         this.sarCache = new Cache({
-            namespace: "sarCache",
+            namespace: "sarEditorCache",
             policy: {
                 maxEntries: 50000
             },
