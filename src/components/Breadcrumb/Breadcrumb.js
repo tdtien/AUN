@@ -30,7 +30,7 @@ export default class BreadCrumb extends Component {
                     }
                 }}
             >
-                <TouchableOpacity style={styles.rootItem} onPress={() => handlePress(0, true)}>
+                <TouchableOpacity style={styles.rootItem} onPress={() => handlePress && handlePress(0, true)}>
                     <Icon
                         name={AppCommon.icon(isConnected ? "cloud-outline" : "tv")}
                         type="Ionicons"
@@ -42,7 +42,7 @@ export default class BreadCrumb extends Component {
                         <TouchableOpacity
                             key={item.id + index}
                             style={styles.breadCrumbItem}
-                            onPress={() => handlePress(index)}
+                            onPress={() => handlePress && handlePress(index)}
                         >
                             <Icon name="right" type="AntDesign" style={styles.crumbArrow} />
                             <Text style={styles.crumbItem}>

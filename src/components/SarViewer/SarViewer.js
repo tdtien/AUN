@@ -14,6 +14,7 @@ import I18n from '../../i18n/i18n';
 import keys from '../../i18n/keys';
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
 import { Cache } from "react-native-cache";
+import SideMenu from "react-native-side-menu";
 
 const window = Dimensions.get('window');
 
@@ -31,7 +32,9 @@ class SarViewer extends Component {
             data: {},
             currentItem: {},
             previousItem: [],
-            position: 10
+            position: 10,
+            isTablet: window.height / window.width < 1.6,
+            width: window.width
         }
 
         this.sarCache = new Cache({
@@ -62,7 +65,11 @@ class SarViewer extends Component {
         );
     }
 
-    makeRemoteRequest = async (item) => {
+    componentWillReceiveProps(props) {
+        this.handleRefresh();
+    }
+
+    makeRemoteRequest = async (item, callback = {}) => {
         const { token } = this.props
         getContentSar(token, item.id)
             .then(response => {
@@ -70,14 +77,16 @@ class SarViewer extends Component {
                     this.setState({
                         isLoadingContent: false,
                         refreshing: false,
-                        data: response.data || [],
-                        dataTree: this.state.dataTree
+                        data: response.data || []
                     }, () => {
                         this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
                             if (error) {
                                 console.error(error)
                             }
                         })
+                        if (typeof callback === 'function') {
+                            setTimeout(callback, 100)
+                        }
                     })
                 } else {
                     this.setState({ isLoadingContent: false, refreshing: false, data: [] })
@@ -89,11 +98,12 @@ class SarViewer extends Component {
             })
     }
 
-    generateIndex = (item, rootIndex) => {
+    generateIndex = (item, rootIndex, rootId) => {
         return item.children && item.children.forEach((child, index) => {
             child.index = `${rootIndex}.${index + 1}`
             child.internalId = _.uniqueId('tree_')
-            this.generateIndex(child, child.index)
+            child.rootId = rootId
+            this.generateIndex(child, child.index, rootId)
         });
     }
 
@@ -106,11 +116,17 @@ class SarViewer extends Component {
                     responeJson.data.forEach((element) => {
                         element.index = element.id
                         element.internalId = _.uniqueId('tree_')
-                        this.generateIndex(element, element.id)
+                        this.generateIndex(element, element.index, element.id)
                     })
                     this.setState({
                         dataTree: responeJson.data || [],
                         isLoading: false,
+                    }, () => {
+                        this.sarCache.setItem('root', this.state.dataTree, (error) => {
+                            if (error) {
+                                console.error(error)
+                            }
+                        })
                     })
                 } else {
                     this.setState({
@@ -136,31 +152,51 @@ class SarViewer extends Component {
         this.setState({ refreshing: true }, () => this.handleRequest(this.state.currentItem, true));
     }
 
-    handleRequest = (item = {}, isRefresh = false) => {
+    handleRequest = (item = {}, isRefresh = false, callback = {}) => {
         if (this.state.isConnected) {
             if (isRefresh) {
-                this.makeRemoteRequest(item)
+                if (_.isEmpty(item)) {
+                    this.makeRemoteRequestTree()
+                } else {
+                    this.makeRemoteRequest(item)
+                }
             } else {
-                this.sarCache.getItem(`${item.key}${item.id}`, (error, value) => {
+                let key = _.isEmpty(item) ? 'root' : `${item.key}${item.id}`
+                this.sarCache.getItem(key, (error, value) => {
                     if (error) {
                         console.error(error)
                     }
                     if (value) {
-                        this.setState({ isLoadingContent: false, refreshing: false, data: value })
+                        this.setState({ isLoading: false, isLoadingContent: false })
+                        if (key === 'root') {
+                            this.setState({ dataTree: value })
+                        } else {
+                            this.setState({ data: value }, () => {
+                                if (typeof callback === 'function') {
+                                    setTimeout(callback, 100)
+                                }
+                            })
+                        }
                     } else {
-                        this.makeRemoteRequest(item)
+                        if (_.isEmpty(item)) {
+                            this.makeRemoteRequestTree()
+                        } else {
+                            this.makeRemoteRequest(item)
+                        }
                     }
                 })
             }
         } else {
-            this.sarCache.getItem(`${item.key}${item.id}`, (error, value) => {
+            let key = _.isEmpty(item) ? 'root' : `${item.key}${item.id}`
+            this.sarCache.getItem(key, (error, value) => {
                 if (error) {
                     console.error(error)
                 }
-                if (value) {
-                    this.setState({ isLoading: false, refreshing: false, data: value })
+                this.setState({ isLoading: false, isLoadingContent: false })
+                if (key === 'root') {
+                    this.setState({ dataTree: value || [] })
                 } else {
-                    this.makeRemoteRequest(item)
+                    this.setState({ data: value || [] })
                 }
             })
         }
@@ -172,49 +208,36 @@ class SarViewer extends Component {
             currentItem: {},
             previousItem: [],
             dataTree: []
-        }, () => {
-            if (this.state.isConnected) {
-                this.makeRemoteRequestTree()
-            } else {
-                if (isAlert) {
-                    Alert.alert(I18n.t(keys.Common.alertError), I18n.t(keys.Common.alertNetworkRequestFail),
-                        [
-                            {
-                                text: I18n.t(keys.Common.lblNo),
-                                style: 'cancel',
-                                onPress: () => {
-                                    this.setState({
-                                        isLoading: false,
-                                        refreshing: false,
-                                    })
-                                }
-                            },
-                            {
-                                text: I18n.t(keys.Common.lblYes),
-                                onPress: () => {
-                                    this.makeLocalRequest()
-                                }
-                            }
-                        ]
-                    );
-                } else {
-                    this.makeLocalRequest()
-                }
-            }
-        })
+        }, () => this.handleRequest({}, true))
     }
 
     handleClick = (item, level) => {
         const { currentItem } = this.state
         if (item.key === 'sar') {
-            if (!_.isEmpty(currentItem) && item.key !== currentItem.key && item.id !== currentItem.id) {
-                this.setState({ isLoadingContent: true, position: 10, currentItem: item }, () => this.handleRequest(item))
+            if (!_.isEmpty(currentItem)) {
+                if (item.id !== currentItem.id) {
+                    this.setState({ isLoadingContent: true, position: 10, currentItem: item }, () => this.handleRequest(item))
+                }
             } else {
                 this.setState({ isLoadingContent: true, position: 10, currentItem: item }, () => this.handleRequest(item))
             }
-        }
-        if (item.offSet) {
-            this.scrollView.scrollTo({ x: 0, y: item.offSet, animated: true })
+        } else {
+            if (item.rootId !== currentItem.id) {
+                let rootItemResult = _searchTree(this.state.dataTree, (node) => node.id === item.rootId)
+                if (rootItemResult.length > 0) {
+                    this.setState({
+                        isLoadingContent: true,
+                        position: 10,
+                        currentItem: rootItemResult[0]
+                    }, () => this.handleRequest(rootItemResult[0], false, () => {
+                        this.scrollView.scrollTo({ x: 0, y: item.offSet, animated: true })
+                    }))
+                }
+            } else {
+                if (item.offSet) {
+                    this.scrollView.scrollTo({ x: 0, y: item.offSet, animated: true })
+                }
+            }
         }
     }
 
@@ -227,9 +250,14 @@ class SarViewer extends Component {
     }
 
     onLayout = event => {
-        let { width } = event.nativeEvent.layout
+        let { width, height } = event.nativeEvent.layout
         if (Math.floor(width) !== Math.floor(this.state.width)) {
-            this.setState({ treeWidth: width * 1 / 3, contentWidth: width * 2 / 3 })
+            this.setState({
+                width: width,
+                treeWidth: width * 1 / 3,
+                contentWidth: width * 2 / 3,
+                isTablet: height / width < 1.6
+            })
         }
     }
 
@@ -334,8 +362,99 @@ class SarViewer extends Component {
             previousItem,
             treeWidth,
             contentWidth,
-            refreshing
+            refreshing,
+            isTablet
         } = this.state
+        if (!isTablet) {
+            return (
+                <SideMenu
+                    menu={
+                        <View style={styles.container}>
+                            <Header
+                                androidStatusBarColor={AppCommon.colors}
+                                iosBarStyle="light-content"
+                                style={{ backgroundColor: AppCommon.colors }}
+                            >
+                                <Body style={{ flex: 1 }}>
+                                    <Title style={styles.header}>Category</Title>
+                                </Body>
+                            </Header>
+                            <ScrollView
+                                style={styles.container}
+                                contentContainerStyle={styles.contentContainer}
+                            >
+                                <Placeholder
+                                    animation="shine"
+                                    isReady={!isLoading}
+                                    whenReadyRender={() => (
+                                        <TreeView
+                                            ref={ref => (this.treeView = ref)}
+                                            data={dataTree}
+                                            idKey="internalId"
+                                            renderItem={this.renderItem}
+                                            onItemPress={this.handleClick}
+                                        />
+                                    )}
+                                >
+                                    {Array.from({ length: _.random(5, 10) }, () => _.random(30, 100)).map((item) => (
+                                        <Line key={_.uniqueId('view')} width={`${item}%`} />
+                                    ))}
+                                </Placeholder>
+                            </ScrollView>
+                        </View>
+                    }
+                    edgeHitWidth={this.state.width}
+                >
+                    <Container onLayout={this.onLayout}>
+                        <Header
+                            androidStatusBarColor={AppCommon.colors}
+                            iosBarStyle="light-content"
+                            style={{ backgroundColor: AppCommon.colors }}
+                        >
+                            <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()}>
+                                <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            </TouchableOpacity>
+                            <Body style={{ flex: 1 }}>
+                                <Title style={styles.header}>Sar Viewer</Title>
+                            </Body>
+                        </Header>
+                        <BreadCrumb
+                            isConnected={isConnected}
+                            previousItem={previousItem}
+                            currentItem={currentItem}
+                        />
+                        {_.isEmpty(this.state.data) && !isLoadingContent ? (
+                            <View style={styles.centerView}>
+                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                            </View>
+                        ) : (
+                                <ScrollView
+                                    style={styles.container}
+                                    contentContainerStyle={styles.contentContainer}
+                                    ref={(ref) => this.scrollView = ref}
+                                    refreshControl={
+                                        <RefreshControl
+                                            style={{ backgroundColor: '#E0FFFF' }}
+                                            refreshing={this.state.refreshing}
+                                            onRefresh={this.handleRefresh}
+                                        />
+                                    }
+                                >
+                                    <Placeholder
+                                        animation="shine"
+                                        isReady={refreshing ? !refreshing : !isLoadingContent}
+                                        whenReadyRender={() => this.renderContent(this.state.data)}
+                                    >
+                                        {Array.from({ length: _.random(10, 15) }, () => _.random(30, 100)).map((item) => (
+                                            <Line key={_.uniqueId('view')} width={`${item}%`} />
+                                        ))}
+                                    </Placeholder>
+                                </ScrollView>
+                            )}
+                    </Container>
+                </SideMenu>
+            )
+        }
         return (
             <Container onLayout={this.onLayout}>
                 <Header
