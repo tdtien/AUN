@@ -91,6 +91,11 @@ export default {
     [keys.Merchant.Breadcrumb.lblConvertPDF]: 'Chuyển thành PDF',
     [keys.Merchant.Breadcrumb.lblUploadEvidence]: 'Tải lên',
 
+    [keys.Merchant.CameraButton.lblTitle]: 'Thêm ảnh',
+    [keys.Merchant.CameraButton.lblTakePhoto]: 'Chụp ảnh...',
+    [keys.Merchant.CameraButton.lblChooseImage]: 'Chọn từ bộ sưu tập...',
+    [keys.Merchant.CameraButton.lblChooseMultipleImages]: 'Chọn nhiều ảnh từ bộ sưu tập...',
+
     //PDFViewer
     [keys.PDFViewer.alertDeleteFolderImages]: 'Tải lên thành công.\r\nBạn có muốn xóa thư mục hình ảnh này?',
     [keys.PDFViewer.btnBack]: 'Trước',

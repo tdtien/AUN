@@ -5,17 +5,9 @@ import { showImagePicker } from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import { AppCommon } from "../../commons/commons";
 import { Icon } from "native-base";
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
-const options = {
-    title: 'Import photo',
-    mediaType: 'photo',
-    cameraType: 'back',
-    customButtons: [
-        { name: 'chooseMultipleImage', title: 'Choose multiple images from Library...' }
-    ],
-    noData: true,
-    quality: 1,
-}
 export default class CameraButton extends Component {
 
     constructor(props) {
@@ -23,6 +15,19 @@ export default class CameraButton extends Component {
     }
 
     handlePickImage = () => {
+        let options = {
+            title: I18n.t(keys.Merchant.CameraButton.lblTitle),
+            mediaType: 'photo',
+            cameraType: 'back',
+            takePhotoButtonTitle: I18n.t(keys.Merchant.CameraButton.lblTakePhoto),
+            chooseFromLibraryButtonTitle: I18n.t(keys.Merchant.CameraButton.lblChooseImage),
+            cancelButtonTitle: I18n.t(keys.Common.lblCancel),
+            customButtons: [
+                { name: 'chooseMultipleImage', title: I18n.t(keys.Merchant.CameraButton.lblChooseMultipleImages) }
+            ],
+            noData: true,
+            quality: 1,
+        }
         showImagePicker(options, (response) => {
             if (response.didCancel) {
                 console.log('User cancelled image picker');
@@ -37,7 +42,7 @@ export default class CameraButton extends Component {
                     images.forEach(image => {
                         imageModelProp.push({ url: image.path });
                     });
-                    Actions.imageModal({ images: imageModelProp, index: 0, directory: this.props.folderPath, mode: "save"});
+                    Actions.imageModal({ images: imageModelProp, index: 0, directory: this.props.folderPath, mode: "save" });
                 }).catch(error => {
                     console.log(error);
                 })

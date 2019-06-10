@@ -91,6 +91,11 @@ export default {
     [keys.Merchant.Breadcrumb.lblConvertPDF]: 'Convert to PDF',
     [keys.Merchant.Breadcrumb.lblUploadEvidence]: 'Upload evidence',
 
+    [keys.Merchant.CameraButton.lblTitle]: 'Import photo',
+    [keys.Merchant.CameraButton.lblTakePhoto]: 'Take Photo...',
+    [keys.Merchant.CameraButton.lblChooseImage]: 'Choose from Library...',
+    [keys.Merchant.CameraButton.lblChooseMultipleImages]: 'Choose multiple images from Library...',
+
     //PDFViewer
     [keys.PDFViewer.alertDeleteFolderImages]: 'Upload file successful.\r\nDo you want to delete the image folder?',
     [keys.PDFViewer.btnBack]: 'Back',

@@ -109,7 +109,13 @@ export default {
             lblSortImages: 'Breadcrumb_lblSortImages',
             lblConvertPDF: 'Breadcrumb_lblConvertPDF',
             lblUploadEvidence: 'Breadcrumb_lblUploadEvidence',
-        }
+        },
+        CameraButton: {
+            lblTitle: 'CameraButton_lblTitle',
+            lblTakePhoto: 'CameraButton_lblTakePhoto',
+            lblChooseImage: 'CameraButton_lblChooseImage',
+            lblChooseMultipleImages: 'CameraButton_lblChooseMultipleImages',
+        },
     },
     PDFViewer: {
         alertDeleteFolderImages: 'PDFViewer_alertDeleteFolderImages',
