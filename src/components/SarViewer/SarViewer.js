@@ -44,6 +44,8 @@ class SarViewer extends Component {
             },
             backend: AsyncStorage
         });
+
+        this.mounted = false
     }
 
     componentDidMount() {
@@ -56,6 +58,7 @@ class SarViewer extends Component {
                 isConnected: isConnected
             }, () => this.handleFetchData());
         });
+        this.mounted = true
     }
 
     componentWillUnmount() {
@@ -63,6 +66,7 @@ class SarViewer extends Component {
             'connectionChange',
             this.handleConnectivityChange
         );
+        this.mounted = false
     }
 
     componentWillReceiveProps(props) {
@@ -74,7 +78,7 @@ class SarViewer extends Component {
         getContentSar(token, item.id)
             .then(response => {
                 if (response && response.success) {
-                    this.setState({
+                    this.mounted && this.setState({
                         isLoadingContent: false,
                         refreshing: false,
                         data: response.data || []
@@ -89,11 +93,11 @@ class SarViewer extends Component {
                         }
                     })
                 } else {
-                    this.setState({ isLoadingContent: false, refreshing: false, data: [] })
+                    this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
                 }
             })
             .catch(error => {
-                this.setState({ isLoadingContent: false, refreshing: false, data: [] })
+                this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
                 console.error(error)
             })
     }
@@ -118,7 +122,7 @@ class SarViewer extends Component {
                         element.internalId = _.uniqueId('tree_')
                         this.generateIndex(element, element.index, element.id)
                     })
-                    this.setState({
+                    this.mounted && this.setState({
                         dataTree: responeJson.data || [],
                         isLoading: false,
                     }, () => {
@@ -129,14 +133,14 @@ class SarViewer extends Component {
                         })
                     })
                 } else {
-                    this.setState({
+                    this.mounted && this.setState({
                         isLoading: false,
                         dataTree: []
                     })
                 }
             })
             .catch(error => {
-                this.setState({
+                this.mounted && this.setState({
                     isLoading: false,
                     dataTree: []
                 })
@@ -272,7 +276,7 @@ class SarViewer extends Component {
                                 'information'
                             )
                     )} style={{ paddingRight: 5, color: item.commentCount > 0 ? AppCommon.colors : '#cccccc', fontSize: 20 }} />
-                    <Text style={{ color: 'black' , fontWeight: item.collapsed != null && !item.collapsed ? 'bold' : 'normal'}}>{`${item.index}. ${item.name}`}</Text>
+                    <Text style={{ color: 'black', fontWeight: item.collapsed != null && !item.collapsed ? 'bold' : 'normal' }}>{`${item.index}. ${item.name}`}</Text>
                 </View>
             </View>
         )

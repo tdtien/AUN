@@ -47,8 +47,7 @@ class SarExplorer extends Component {
             },
             backend: AsyncStorage
         });
-        // this.sarCache.clearAll(function (err) {
-        // });
+        this.mounted = false
     }
 
     componentDidMount() {
@@ -61,6 +60,7 @@ class SarExplorer extends Component {
                 isConnected: isConnected
             }, () => this.handleFetchData(false));
         });
+        this.mounted = true
     }
 
     componentWillReceiveProps(props) {
@@ -72,6 +72,7 @@ class SarExplorer extends Component {
             'connectionChange',
             this.handleConnectivityChange
         );
+        this.mounted = false
     }
 
     onLayout = event => {
@@ -216,7 +217,7 @@ class SarExplorer extends Component {
                                     data.forEach(element => {
                                         element.dataSuggestions = responseJson.data || []
                                     });
-                                    this.setState({
+                                    this.mounted && this.setState({
                                         isLoading: false,
                                         refreshing: false,
                                         data: data,
@@ -229,7 +230,7 @@ class SarExplorer extends Component {
                                     })
                                 })
                                 .catch((error) => {
-                                    this.setState({
+                                    this.mounted && this.setState({
                                         isLoading: false,
                                         refreshing: false,
                                         data: []
@@ -237,7 +238,7 @@ class SarExplorer extends Component {
                                     console.error(error)
                                 })
                         } else {
-                            this.setState({
+                            this.mounted && this.setState({
                                 isLoading: false,
                                 refreshing: false,
                                 data: responseJson.data || []
@@ -250,7 +251,7 @@ class SarExplorer extends Component {
                             })
                         }
                     } else {
-                        this.setState({
+                        this.mounted && this.setState({
                             isLoading: false,
                             refreshing: false,
                             data: []
@@ -258,7 +259,7 @@ class SarExplorer extends Component {
                     }
                 })
                 .catch(error => {
-                    this.setState({
+                    this.mounted && this.setState({
                         isLoading: false,
                         refreshing: false,
                         data: []
@@ -398,13 +399,15 @@ class SarExplorer extends Component {
             selectedData.forEach((selectedItem) => {
                 downloadSar(token, selectedItem.id)
                     .then((responseJson) => {
-                        let downloadFlow = {
-                            sarInfo: selectedItem
+                        if (responseJson && responseJson.success) {
+                            let downloadFlow = {
+                                sarInfo: selectedItem
+                            }
+                            this.downloadTree(email, 'sar', responseJson.data, downloadFlow);
                         }
-                        this.downloadTree(email, 'sar', responseJson.data, downloadFlow);
                     })
                     .catch((error) => {
-                        this.setState({
+                        this.mounted && this.setState({
                             isLoading: false,
                             refreshing: false,
                         })
@@ -416,14 +419,16 @@ class SarExplorer extends Component {
             selectedData.forEach((selectedItem) => {
                 downloadCriterion(token, selectedItem.id)
                     .then((responseJson) => {
-                        let downloadFlow = {
-                            sarInfo: currentItem,
-                            criterionInfo: selectedItem
+                        if (responseJson && responseJson.success) {
+                            let downloadFlow = {
+                                sarInfo: currentItem,
+                                criterionInfo: selectedItem
+                            }
+                            this.downloadTree(email, 'criterion', responseJson.data, downloadFlow);
                         }
-                        this.downloadTree(email, 'criterion', responseJson.data, downloadFlow);
                     })
                     .catch((error) => {
-                        this.setState({
+                        this.mounted && this.setState({
                             isLoading: false,
                             refreshing: false,
                         })
@@ -435,15 +440,17 @@ class SarExplorer extends Component {
             selectedData.forEach((selectedItem) => {
                 downloadSubCriterion(token, selectedItem.id)
                     .then((responseJson) => {
-                        let downloadFlow = {
-                            sarInfo: previousItem[0],
-                            criterionInfo: currentItem,
-                            subCriterionInfo: selectedItem
+                        if (responseJson && responseJson.success) {
+                            let downloadFlow = {
+                                sarInfo: previousItem[0],
+                                criterionInfo: currentItem,
+                                subCriterionInfo: selectedItem
+                            }
+                            this.downloadTree(email, 'subCriterion', responseJson.data, downloadFlow);
                         }
-                        this.downloadTree(email, 'subCriterion', responseJson.data, downloadFlow);
                     })
                     .catch((error) => {
-                        this.setState({
+                        this.mounted && this.setState({
                             isLoading: false,
                             refreshing: false,
                         })
@@ -456,30 +463,32 @@ class SarExplorer extends Component {
                 downloadCriterion(token, currentItem.id)
                     .then((responseJson) => {
                         // console.log('responseJson: ' + JSON.stringify(responseJson.data));
-                        let index = data.indexOf(selectedItem);
-                        let filterData = responseJson.data;
-                        if (index === 0) {
-                            filterData.suggestions = {
-                                'implications': filterData.suggestions.implications
-                            };
-                        } else if (index === 1) {
-                            filterData.suggestions = {
-                                'questions': filterData.suggestions.questions
-                            };
-                        } else {
-                            filterData.suggestions = {
-                                'evidences': filterData.suggestions.evidences
-                            };
+                        if (responseJson && responseJson.success) {
+                            let index = data.indexOf(selectedItem);
+                            let filterData = responseJson.data;
+                            if (index === 0) {
+                                filterData.suggestions = {
+                                    'implications': filterData.suggestions.implications
+                                };
+                            } else if (index === 1) {
+                                filterData.suggestions = {
+                                    'questions': filterData.suggestions.questions
+                                };
+                            } else {
+                                filterData.suggestions = {
+                                    'evidences': filterData.suggestions.evidences
+                                };
+                            }
+                            let downloadFlow = {
+                                sarInfo: previousItem[0],
+                                criterionInfo: currentItem,
+                                suggestionType: selectedItem.name === 'Evidence Types' ? 'evidences' : selectedItem.name.toLowerCase()
+                            }
+                            this.downloadTree(email, 'suggestionType', filterData, downloadFlow);
                         }
-                        let downloadFlow = {
-                            sarInfo: previousItem[0],
-                            criterionInfo: currentItem,
-                            suggestionType: selectedItem.name === 'Evidence Types' ? 'evidences' : selectedItem.name.toLowerCase()
-                        }
-                        this.downloadTree(email, 'suggestionType', filterData, downloadFlow);
                     })
                     .catch((error) => {
-                        this.setState({
+                        this.mounted && this.setState({
                             isLoading: false,
                             refreshing: false,
                         })
@@ -492,17 +501,19 @@ class SarExplorer extends Component {
                 downloadSuggestion(token, selectedItem.id)
                     .then((responseJson) => {
                         // console.log('responseJson: ' + JSON.stringify(responseJson.data));
-                        let downloadFlow = {
-                            sarInfo: previousItem[0],
-                            criterionInfo: previousItem[1],
-                            subCriterionInfo: previousItem[2],
-                            suggestionType: currentItem.id,
-                            suggestionInfo: selectedItem,
+                        if (responseJson && responseJson.success) {
+                            let downloadFlow = {
+                                sarInfo: previousItem[0],
+                                criterionInfo: previousItem[1],
+                                subCriterionInfo: previousItem[2],
+                                suggestionType: currentItem.id,
+                                suggestionInfo: selectedItem,
+                            }
+                            this.downloadTree(email, 'suggestion', responseJson.data, downloadFlow);
                         }
-                        this.downloadTree(email, 'suggestion', responseJson.data, downloadFlow);
                     })
                     .catch((error) => {
-                        this.setState({
+                        this.mounted && this.setState({
                             isLoading: false,
                             refreshing: false,
                         })
@@ -522,7 +533,7 @@ class SarExplorer extends Component {
                 this.downloadTree(email, 'evidence', selectedItem, downloadFlow);
             })
         } else {
-            this.setState({
+            this.mounted && this.setState({
                 isLoading: false,
                 refreshing: false,
                 downloadMode: false
@@ -535,22 +546,24 @@ class SarExplorer extends Component {
         let directoryTree = createDirectoryTreeWith(downloadFlow, data, type);
         downloadAllEvidences(directoryTree, pdfFolderPath)
             .then(response => {
-                this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    downloadMode: false
-                })
-                var directoryInfo = {
-                    email: email,
-                    directoryTree: response,
-                    downloadItemType: type,
-                    downloadFlow: downloadFlow
+                if (response && response.success) {
+                    this.mounted && this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                        downloadMode: false
+                    })
+                    var directoryInfo = {
+                        email: email,
+                        directoryTree: response,
+                        downloadItemType: type,
+                        downloadFlow: downloadFlow
+                    }
+                    // console.log('directoryInfo: ' + JSON.stringify(directoryInfo));
+                    this.props.setDirectoryInfo(directoryInfo);
+                    Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadSuccess));
                 }
-                // console.log('directoryInfo: ' + JSON.stringify(directoryInfo));
-                this.props.setDirectoryInfo(directoryInfo);
-                Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadSuccess));
             }).catch(error => {
-                this.setState({
+                this.mounted && this.setState({
                     isLoading: false,
                     refreshing: false,
                     downloadMode: false
