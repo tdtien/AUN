@@ -49,6 +49,7 @@ class Comment extends Component {
             comments: [],
             notes: [],
         };
+        this.mounted = false
     }
     componentDidMount() {
         NetInfo.isConnected.addEventListener(
@@ -60,6 +61,7 @@ class Comment extends Component {
                 isConnected: isConnected
             }, () => this.makeRemoteRequest());
         });
+        this.mounted = true
     }
 
     handleConnectivityChange = (isConnected) => {
@@ -71,19 +73,22 @@ class Comment extends Component {
             'connectionChange',
             this._handleConnectivityChange
         );
+        this.mounted = false
     }
 
     handleGetComments = (scrollToEnd = false, priority = true) => {
         const { token, subCriterionInfo } = this.props;
         getAllComments(token, subCriterionInfo.id)
             .then((responseJson) => {
-                this.setState({
-                    isLoading: priority ? false : this.state.isLoading,
-                    refreshing: priority ? false : this.state.refreshing,
-                    comments: responseJson.data
-                },
-                    () => { scrollToEnd ? setTimeout(() => this.refs.scrollView.scrollToEnd({ animated: true }), 100) : null }
-                )
+                if (this.mounted) {
+                    this.setState({
+                        isLoading: priority ? false : this.state.isLoading,
+                        refreshing: priority ? false : this.state.refreshing,
+                        comments: responseJson.data
+                    },
+                        () => { scrollToEnd ? setTimeout(() => this.refs.scrollView.scrollToEnd({ animated: true }), 100) : null }
+                    )
+                }
             })
             .catch((error) => {
                 this.setState({
@@ -99,13 +104,15 @@ class Comment extends Component {
         const { token, subCriterionInfo } = this.props;
         getAllNotes(token, subCriterionInfo.id)
             .then((responseJson) => {
-                this.setState({
-                    isLoading: priority ? false : this.state.isLoading,
-                    refreshing: priority ? false : this.state.refreshing,
-                    notes: responseJson.data
-                },
-                    () => { scrollToEnd ? setTimeout(() => this.refs.scrollView.scrollToEnd({ animated: true }), 100) : null }
-                )
+                if (this.mounted) {
+                    this.setState({
+                        isLoading: priority ? false : this.state.isLoading,
+                        refreshing: priority ? false : this.state.refreshing,
+                        notes: responseJson.data
+                    },
+                        () => { scrollToEnd ? setTimeout(() => this.refs.scrollView.scrollToEnd({ animated: true }), 100) : null }
+                    )
+                }
             })
             .catch((error) => {
                 this.setState({

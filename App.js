@@ -55,7 +55,7 @@ class App extends Component {
 
   render() {
     var backLoginScene = false;
-    let exitScene = ["login", "_merchant", "_sarExplorer"];
+    let exitScene = ["login", "_sarViewer", "_sarExplorer"];
     if (this.state.isSplashScreenVisible) {
       return (
         <View style={styles.splashScreenView}>

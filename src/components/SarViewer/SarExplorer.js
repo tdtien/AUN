@@ -345,17 +345,19 @@ class SarExplorer extends Component {
     }
 
     handlePush = (item) => {
-        if (this.state.currentIdx !== 0) {
-            this.state.previousItem.push(this.state.currentItem);
+        if (!this.state.isLoading) {
+            if (this.state.currentIdx !== 0) {
+                this.state.previousItem.push(this.state.currentItem);
+            }
+            if (item.id === 'subCriterions') {
+                this.setState({ subCriterionView: true })
+            }
+            this.state.currentIdx++;
+            this.setState({
+                isLoading: true,
+                currentItem: item
+            }, () => this.handleRequest(item));
         }
-        if (item.id === 'subCriterions') {
-            this.setState({ subCriterionView: true })
-        }
-        this.state.currentIdx++;
-        this.setState({
-            isLoading: true,
-            currentItem: item
-        }, () => this.handleRequest(item));
     }
 
     handleComment = (item) => {

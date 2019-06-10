@@ -271,8 +271,8 @@ class SarViewer extends Component {
                         ) : (
                                 'information'
                             )
-                    )} style={{ paddingRight: 5, color: item.commentCount > 0 ? AppCommon.colors : '#cccccc', fontSize: 13 }} />
-                    <Text style={{ color: 'black' }}>{`${item.index}. ${item.name}`}</Text>
+                    )} style={{ paddingRight: 5, color: item.commentCount > 0 ? AppCommon.colors : '#cccccc', fontSize: 20 }} />
+                    <Text style={{ color: 'black' , fontWeight: item.collapsed != null && !item.collapsed ? 'bold' : 'normal'}}>{`${item.index}. ${item.name}`}</Text>
                 </View>
             </View>
         )
