@@ -47,7 +47,7 @@ class SideMenu extends Component {
                                 <Icon name={AppCommon.icon("tv")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                             </Left>
                             <Body>
-                                <Text>SAR Explorer</Text>
+                                <Text>SAR Editor</Text>
                             </Body>
                         </ListItem>
                         <ListItem button onPress={() => Actions.currentScene == '_sarViewer' ? Actions.drawerClose() : Actions.sarViewer()} icon  >

@@ -8,7 +8,7 @@ import MerchantDetail from './src/components/Merchant/MerchantDetail';
 import SideMenu from './src/components/SideMenu/SideMenu';
 import PDFViewer from './src/components/PDFViewer/PDFViewer';
 import { connect } from "react-redux";
-import { ToastAndroid, BackHandler, Alert, View, StyleSheet, Image } from "react-native";
+import { ToastAndroid, BackHandler, Alert, View, StyleSheet, Image, StatusBar } from "react-native";
 import SortList from './src/components/Merchant/SortList';
 import { Root } from 'native-base';
 import { checkToken } from './src/api/accountApi';
@@ -59,6 +59,7 @@ class App extends Component {
     if (this.state.isSplashScreenVisible) {
       return (
         <View style={styles.splashScreenView}>
+          <StatusBar backgroundColor="#FFF"/>
           <Image source={Images.logo} resizeMode="contain" style={styles.splashImage} />
         </View>
       )
