@@ -393,7 +393,7 @@ class SarViewer extends Component {
                                 style={{ backgroundColor: AppCommon.colors }}
                             >
                                 <Body style={{ flex: 1 }}>
-                                    <Title style={styles.header}>Category</Title>
+                                    <Title style={styles.header}>{I18n.t(keys.SarViewer.Main.lblCategory)}</Title>
                                 </Body>
                             </Header>
                             <ScrollView
@@ -433,7 +433,7 @@ class SarViewer extends Component {
                                 <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                             <Body style={{ flex: 1 }}>
-                                <Title style={styles.header}>Sar Viewer</Title>
+                                <Title style={styles.header}>{I18n.t(keys.SarViewer.Main.lblTitle)}</Title>
                             </Body>
                         </Header>
                         <BreadCrumb
@@ -484,7 +484,7 @@ class SarViewer extends Component {
                         <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={styles.header}>Sar Viewer</Title>
+                        <Title style={styles.header}>{I18n.t(keys.SarViewer.Main.lblTitle)}</Title>
                     </Body>
                 </Header>
                 <BreadCrumb
@@ -538,7 +538,7 @@ class SarViewer extends Component {
 
                             {_.isEmpty(this.state.data) && !isLoadingContent ? (
                                 <View style={styles.centerView}>
-                                    <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                                    <Text style={{ color: '#BDBDBD' }}>{I18n.t(keys.Common.lblNoContent)}</Text>
                                 </View>
                             ) : (
 

@@ -25,9 +25,12 @@ export default {
     [keys.Login.toastEmptyPassword]: 'Please enter your password',
 
     //SideMenu
-    [keys.SideMenu.Main.btnLogout]: 'LOG OUT',
+    [keys.SideMenu.Main.lblSarEditor]: 'SAR Editor',
+    [keys.SideMenu.Main.lblSarViewer]: 'SAR Viewer',
     [keys.SideMenu.Main.btnSetting]: 'Setting',
+    [keys.SideMenu.Main.btnLogout]: 'LOG OUT',
     [keys.SideMenu.Setting.lblTitle]: 'Setting',
+    [keys.SideMenu.Setting.lblLanguage]: 'Language',
     [keys.SideMenu.Setting.lblLanguage]: 'Language',
 
     //SarExplorer
@@ -103,5 +106,7 @@ export default {
     [keys.PDFViewer.lblUploadDialogTitle]: 'Set name for doc to upload',
 
     //SarViewer
+    [keys.SarViewer.Main.lblTitle]: 'Sar Viewer',
+    [keys.SarViewer.Main.lblCategory]: 'Category',
 
 }

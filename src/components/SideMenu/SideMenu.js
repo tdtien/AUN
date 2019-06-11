@@ -47,7 +47,7 @@ class SideMenu extends Component {
                                 <Icon name={AppCommon.icon("tv")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                             </Left>
                             <Body>
-                                <Text>SAR Editor</Text>
+                                <Text>{I18n.t(keys.SideMenu.Main.lblSarEditor)}</Text>
                             </Body>
                         </ListItem>
                         <ListItem button onPress={() => Actions.currentScene == '_sarViewer' ? Actions.drawerClose() : Actions.sarViewer()} icon  >
@@ -55,7 +55,7 @@ class SideMenu extends Component {
                                 <Icon name={AppCommon.icon("book")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                             </Left>
                             <Body>
-                                <Text>SAR Viewer</Text>
+                                <Text>{I18n.t(keys.SideMenu.Main.lblSarViewer)}</Text>
                             </Body>
                         </ListItem>
                         <ListItem button icon onPress={() => Actions.setting()} >

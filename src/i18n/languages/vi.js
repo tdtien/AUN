@@ -25,6 +25,8 @@ export default {
     [keys.Login.toastEmptyPassword]: 'Vui lòng nhập mật khẩu của bạn',
 
     //SideMenu
+    [keys.SideMenu.Main.lblSarEditor]: 'Trình chỉnh sửa SAR',
+    [keys.SideMenu.Main.lblSarViewer]: 'Trình xem SAR',
     [keys.SideMenu.Main.btnLogout]: 'ĐĂNG XUẤT',
     [keys.SideMenu.Main.btnSetting]: 'Cấu hình',
     [keys.SideMenu.Setting.lblTitle]: 'Cấu hình',
@@ -103,5 +105,7 @@ export default {
     [keys.PDFViewer.lblUploadDialogTitle]: 'Đặt tên cho tập tin',
 
     //SarViewer
+    [keys.SarViewer.Main.lblTitle]: 'Trình xem SAR',
+    [keys.SarViewer.Main.lblCategory]: 'Loại',
 
 }

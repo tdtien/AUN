@@ -24,6 +24,8 @@ export default {
     },
     SideMenu: {
         Main: {
+            lblSarEditor: 'SideMenu_Main_lblSarEditor',
+            lblSarViewer: 'SideMenu_Main_lblSarViewer',
             btnLogout: 'SideMenu_Main_btnLogout',
             btnSetting: 'SideMenu_Main_btnSetting',
         },
@@ -124,6 +126,9 @@ export default {
         lblUploadDialogTitle: 'PDFViewer_lblUploadDialogTitle',
     },
     SarViewer: {
-
+        Main: {
+            lblTitle: 'SarViewer_Main_lblTitle',
+            lblCategory: 'SarViewer_Main_lblCategory',
+        }
     }
 }
