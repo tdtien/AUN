@@ -104,6 +104,7 @@ export default {
     [keys.PDFViewer.btnBack]: 'Back',
     [keys.PDFViewer.btnNext]: 'Next',
     [keys.PDFViewer.lblUploadDialogTitle]: 'Set name for doc to upload',
+    [keys.PDFViewer.btnDownload]: 'Download',
 
     //SarViewer
     [keys.SarViewer.Main.lblTitle]: 'Sar Viewer',

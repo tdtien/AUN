@@ -103,6 +103,7 @@ export default {
     [keys.PDFViewer.btnBack]: 'Trước',
     [keys.PDFViewer.btnNext]: 'Sau',
     [keys.PDFViewer.lblUploadDialogTitle]: 'Đặt tên cho tập tin',
+    [keys.PDFViewer.btnDownload]: 'Tải xuống',
 
     //SarViewer
     [keys.SarViewer.Main.lblTitle]: 'Trình xem SAR',

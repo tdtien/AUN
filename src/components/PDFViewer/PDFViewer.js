@@ -23,10 +23,12 @@ import { uploadEvidence } from '../../api/accountApi';
 import { AppCommon } from '../../commons/commons';
 import DialogInput from "react-native-dialog-input";
 import { validateFileName } from '../../commons/validation';
-import { deleteItem, popToSceneWithUpdate, cachePdf, findPdfCacheItem, getTextsFromUploadFlow } from '../../commons/utilitiesFunction';
+import { deleteItem, popToSceneWithUpdate, cachePdf, findPdfCacheItem, getTextsFromUploadFlow, createDirectoryTreeWith, downloadAllEvidences } from '../../commons/utilitiesFunction';
 import BreadCrumb from '../Breadcrumb/Breadcrumb';
 import I18n from '../../i18n/i18n';
 import keys from '../../i18n/keys';
+import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-menu";
+import { setDirectoryInfo } from '../../actions/directoryAction';
 
 class PDFViewer extends React.Component {
     constructor(props) {
@@ -150,6 +152,42 @@ class PDFViewer extends React.Component {
         });
     }
 
+    handleDownload = () => {
+        let { flow, email } = this.props;
+        let { currentEvidence } = this.state;
+        let type = 'evidence';
+        this.setState({
+            isLoading: true
+        })
+        let pdfFolderPath = AppCommon.directoryPath + AppCommon.pdf_dir + '/' + email;
+        let directoryTree = createDirectoryTreeWith(flow, currentEvidence, type);
+        downloadAllEvidences(directoryTree, pdfFolderPath)
+            .then(response => {
+                if (response) {
+                    this.setState({
+                        isLoading: false,
+                        refreshing: false,
+                    })
+                    var directoryInfo = {
+                        email: email,
+                        directoryTree: response,
+                        downloadItemType: type,
+                        downloadFlow: flow
+                    }
+                    // console.log('directoryInfo: ' + JSON.stringify(directoryInfo));
+                    this.props.setDirectoryInfo(directoryInfo);
+                    Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadSuccess));
+                }
+            }).catch(error => {
+                this.setState({
+                    isLoading: false,
+                    refreshing: false,
+                })
+                console.error('Error when download: ' + error);
+                Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
+            })
+    }
+
     handlePopTo = (index, isRoot = false) => {
         let sceneKey = '';
         if (isRoot) {
@@ -180,7 +218,7 @@ class PDFViewer extends React.Component {
                 uri = currentEvidence.link;
             }
         }
-        let pdfArrayView = (typeof evidenceArray !== 'undefined' && evidenceArray.length > 1) ? (
+        let pdfArrayView = (base64 === null && typeof evidenceArray !== 'undefined' && evidenceArray.length > 1) ? (
             <View
                 style={{
                     width: width == -1 ? screenWidth : width,
@@ -217,14 +255,26 @@ class PDFViewer extends React.Component {
                             <Title style={{ alignSelf: "center", color: "white" }}>{this.state.fileName}</Title>
                         </Body>
                         {
-                            (this.props.flow !== null) ? (
+                            (base64 !== null) ? (
                                 <TouchableOpacity style={styles.headerButton} onPress={() => this.setState({ isDialogVisible: true })} >
                                     <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
                             ) : (
-                                    <TouchableOpacity style={styles.headerButton} onPress={() => null} >
-                                        <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                                    </TouchableOpacity>
+                                    <View style={styles.headerMoreButton}>
+                                        <Menu>
+                                            <MenuTrigger customStyles={triggerStyles}>
+                                                <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                                            </MenuTrigger>
+                                            <MenuOptions>
+                                                <MenuOption onSelect={() => this.handleDownload()}>
+                                                    <View style={styles.popupItem}>
+                                                        <Icon name={AppCommon.icon("download")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
+                                                        <Text style={styles.popupItemText}>{I18n.t(keys.PDFViewer.btnDownload)}</Text>
+                                                    </View>
+                                                </MenuOption>
+                                            </MenuOptions>
+                                        </Menu>
+                                    </View>
                                 )
                         }
 
@@ -289,10 +339,27 @@ PDFViewer.defaultProps = {
 const mapStateToProps = state => {
     return {
         token: state.account.token,
+        email: state.account.email,
     };
 };
 
-export default connect(mapStateToProps)(PDFViewer);
+const mapDispatchToProps = dispatch => {
+    return {
+        setDirectoryInfo: item => {
+            dispatch(setDirectoryInfo(item));
+        }
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PDFViewer);
+
+const triggerStyles = {
+    triggerWrapper: {
+        padding: 10,
+    },
+    TriggerTouchableComponent: TouchableOpacity,
+};
+
 
 const styles = StyleSheet.create({
     container: {
@@ -307,5 +374,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 5,
         paddingRight: 10
+    },
+    headerMoreButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    popupItem: {
+        flex: 1,
+        flexDirection: 'row',
+        marginVertical: 10,
+        marginHorizontal: 20,
+        alignItems: 'center',
+    },
+    popupItemText: {
+        paddingLeft: 25,
+        fontSize: 17,
+        color: '#2F4F4F'
     }
 });

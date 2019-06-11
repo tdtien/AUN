@@ -4,11 +4,13 @@ import { Icon, CheckBox } from "native-base";
 import { Actions } from "react-native-router-flux";
 import moment from "moment";
 import { AppCommon } from '../../commons/commons';
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 export default class SarItem extends Component {
 
     handlePress = () => {
-        const { item, type, data } = this.props;
+        const { item, type, data, flow } = this.props;
         if (type !== 'FILE' && type !== 'LINK') {
             Actions.textViewer({ data: item.content, title: type.toLowerCase().charAt(0).toUpperCase() + type.toLowerCase().slice(1) })
         } else if (type === 'LINK') {
@@ -19,16 +21,16 @@ export default class SarItem extends Component {
                     } else {
                         let error = 'Invalid url: ' + item.link;
                         console.log(error);
-                        Alert.alert('Error', error);
+                        Alert.alert(I18n.t(keys.Common.lblError), error);
                     }
                 })
                 .catch((err) => {
                     let error = 'Error when check url: ' + err;
                     console.error(error);
-                    Alert.alert('Error', error);
+                    Alert.alert(I18n.t(keys.Common.lblError), error);
                 });
         } else {
-            Actions.pdfViewer({ fileName: item.name, base64: null, currentEvidence: item, flow: null, evidenceArray: data.filter(item => item.type === 'FILE') })
+            Actions.pdfViewer({ fileName: item.name, base64: null, currentEvidence: item, flow: flow, evidenceArray: data.filter(item => item.type === 'FILE') })
         }
     }
 

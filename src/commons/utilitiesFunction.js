@@ -78,7 +78,6 @@ export function downloadEvidence(url, filePath) {
                         connectionTimeout: 300 * 1000,
                         background: true,
                     }).promise.then(response => {
-                        console.log('123');
                         resolve(true);
                     }).catch(error => {
                         console.log('Error when download evidence:' + error);

@@ -124,6 +124,7 @@ export default {
         btnBack: 'PDFViewer_btnBack',
         btnNext: 'PDFViewer_btnNext',
         lblUploadDialogTitle: 'PDFViewer_lblUploadDialogTitle',
+        btnDownload: 'PDFViewer_btnDownload',
     },
     SarViewer: {
         Main: {

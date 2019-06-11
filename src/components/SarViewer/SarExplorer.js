@@ -546,7 +546,7 @@ class SarExplorer extends Component {
         let directoryTree = createDirectoryTreeWith(downloadFlow, data, type);
         downloadAllEvidences(directoryTree, pdfFolderPath)
             .then(response => {
-                if (response && response.success) {
+                if (response) {
                     this.mounted && this.setState({
                         isLoading: false,
                         refreshing: false,
@@ -587,6 +587,13 @@ class SarExplorer extends Component {
             rootIndex += `${currentItem.index + 1}.`
         }
         if (item.type && fileType.indexOf(item.type) >= 0) {
+            let flow = {
+                sarInfo: previousItem[0],
+                criterionInfo: previousItem[1],
+                subCriterionInfo: previousItem[2],
+                suggestionInfo: currentItem,
+                evidenceInfo: item
+            }
             return (
                 <Placeholder
                     style={{ paddingVertical: 10, paddingHorizontal: 20, flexDirection: 'row', flex: 1 }}
@@ -597,6 +604,7 @@ class SarExplorer extends Component {
                             item={item}
                             type={item.type}
                             data={data}
+                            flow={flow}
                             onLongPress={() => this.turnOnDownloadMode()}
                             downloadMode={downloadMode}
                             toggleChecked={() => this.toggleChecked(item)}
