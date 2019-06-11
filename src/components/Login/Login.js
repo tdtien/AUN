@@ -120,7 +120,7 @@ class Login extends Component {
               </TouchableOpacity>
             </Item>
           </Form>
-          <ListItem noBorder>
+          <ListItem noBorder style={{maxWidth: 600, alignSelf: 'center'}}>
             <Body>
               <Button block info onPress={() => this.handleLogin()}>
                 <Text>{I18n.t(keys.Login.btnSignIn)}</Text>
