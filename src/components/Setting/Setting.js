@@ -21,11 +21,15 @@ class Setting extends Component {
     }
 
     toggleSegment = (index) => {
-        this.setState({
-            segmentIndex: index
-        }, () => {
-            this.props.changeLanguage({ language: index === 0 ? 'en' : 'vi' })
-        })
+        if (index !== this.state.segmentIndex) {
+            this.setState({
+                segmentIndex: index
+            }, () => {
+                this.props.changeLanguage({ language: index === 0 ? 'en' : 'vi' });
+                AppCommon.sarCache.clearAll(function (err) {
+                });
+            })
+        }
     }
 
     render() {

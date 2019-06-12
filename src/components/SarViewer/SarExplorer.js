@@ -40,13 +40,14 @@ class SarExplorer extends Component {
             previousItem: [],
             currentItem: {}
         }
-        this.sarCache = new Cache({
+        AppCommon.sarCache = new Cache({
             namespace: "sarEditorCache",
             policy: {
                 maxEntries: 50000
             },
             backend: AsyncStorage
         });
+
         this.mounted = false
     }
 
@@ -222,7 +223,7 @@ class SarExplorer extends Component {
                                         refreshing: false,
                                         data: data,
                                     }, () => {
-                                        this.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
+                                        AppCommon.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
                                             if (error) {
                                                 console.error(error)
                                             }
@@ -243,7 +244,7 @@ class SarExplorer extends Component {
                                 refreshing: false,
                                 data: responseJson.data || []
                             }, () => {
-                                this.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
+                                AppCommon.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
                                     if (error) {
                                         console.error(error)
                                     }
@@ -283,7 +284,7 @@ class SarExplorer extends Component {
             if (isRefresh) {
                 this.makeRemoteRequest(item)
             } else {
-                this.sarCache.getItem(this.generateCacheKey(item), (error, value) => {
+                AppCommon.sarCache.getItem(this.generateCacheKey(item), (error, value) => {
                     if (error) {
                         console.error(error)
                     }

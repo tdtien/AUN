@@ -25,4 +25,5 @@ export class AppCommon {
         { scene: 'pdfViewer2', key: keys.Merchant.Breadcrumb.lblUploadEvidence }
     ]
     static pdf_caches = []
+    static sarCache = null
 }
