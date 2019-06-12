@@ -80,6 +80,9 @@ export default {
     [keys.Merchant.MerchantDetail.alertDeleteImages]: 'Bạn có chắc bạn muốn xóa các hình này?',
     [keys.Merchant.MerchantDetail.btnSelect]: 'Chọn',
     [keys.Merchant.MerchantDetail.btnExportPdf]: 'Xuất thành PDF',
+    [keys.Merchant.MerchantDetail.lblSelected]: 'lựa chọn',
+    [keys.Merchant.MerchantDetail.btnSelectAll]: 'Chọn tất cả',
+    [keys.Merchant.MerchantDetail.btnDeselectAll]: 'Bỏ chọn tất cả',
 
     [keys.Merchant.SortList.lblTitle]: 'Sắp xếp ảnh',
     [keys.Merchant.SortList.alertExportPdfFail]: 'Không thể xuất thành file PDF!\r\n Xin vui lòng thử lại.',

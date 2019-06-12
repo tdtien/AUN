@@ -96,6 +96,9 @@ export default {
             alertDeleteImages: 'MerchantDetail_alertDeleteImages',
             btnSelect: 'MerchantDetail_btnSelect',
             btnExportPdf: 'MerchantDetail_btnExportPdf',
+            lblSelected: 'MerchantDetail_lblSelected',
+            btnSelectAll: 'MerchantDetail_btnSelectAll',
+            btnDeselectAll: 'MerchantDetail_btnDeselectAll',
         },
         SortList: {
             lblTitle: 'SortList_lblTitle',

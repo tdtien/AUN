@@ -303,7 +303,8 @@ class MerchantDetail extends Component {
 
     render() {
         let uploadFlow = getTextsFromUploadFlow();
-        let selectImageTitle = (!this.state.isSelectAll) ? 'Select All' : 'Deselect All'
+        let selectImageTitle = (!this.state.isSelectAll) ? I18n.t(keys.Merchant.MerchantDetail.btnSelectAll) : I18n.t(keys.Merchant.MerchantDetail.btnDeselectAll);
+        let isDisable = this.state.selectedCheckList.length === 0;
         let header = (!this.state.isCheckBoxVisible) ? (
             <Header
                 androidStatusBarColor={AppCommon.colors}
@@ -345,14 +346,16 @@ class MerchantDetail extends Component {
                         <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                     <Body style={{ flex: 1 }}>
-                        <Title style={{ alignSelf: "center", color: 'white' }}>{`${this.state.selectedCheckList.length} selected`}</Title>
+                        <Title style={{ alignSelf: "center", color: 'white' }}>{`${this.state.selectedCheckList.length} ${I18n.t(keys.Merchant.MerchantDetail.lblSelected)}`}</Title>
                     </Body>
-                    <TouchableOpacity style={styles.headerButton} onPress={() => this.handleCheckAllCheckbox()} >
-                        <Text style={{ fontSize: 20, color: '#fff' }}>{selectImageTitle}</Text>
+                    <TouchableOpacity disabled={isDisable} style={styles.headerButton} onPress={() => Actions.sortList({ data: this.processData(), folderName: this.props.folderName, folderPath: this.props.folderPath, flow: this.props.flow })} >
+                        <Icon name="sort" type="MaterialCommunityIcons" style={{ color: isDisable ? '#bfbfbf' : 'white', fontSize: AppCommon.icon_size }} />
+                    </TouchableOpacity>
+                    <TouchableOpacity disabled={isDisable} style={styles.headerButton} onPress={() => isDisable ? null : this.handleDeleteMultipleImages()} >
+                        <Icon name={AppCommon.icon("trash")} style={{ color: isDisable ? '#bfbfbf' : 'white', fontSize: AppCommon.icon_size }} />
                     </TouchableOpacity>
                 </Header>
             )
-        let isDisable = this.state.selectedCheckList.length === 0;
         let footer = (this.state.isCheckBoxVisible) ?
             (
                 <Footer
@@ -360,12 +363,15 @@ class MerchantDetail extends Component {
                 >
                     <Right>
                         <View style={styles.footerButton}>
-                            <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : Actions.sortList({ data: this.processData(), folderName: this.props.folderName, folderPath: this.props.folderPath, flow: this.props.flow })} >
+                            <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => this.handleCheckAllCheckbox()} >
+                                <Text style={{ fontSize: 20, color: '#fff' }}>{selectImageTitle}</Text>
+                            </TouchableOpacity>
+                            {/* <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : Actions.sortList({ data: this.processData(), folderName: this.props.folderName, folderPath: this.props.folderPath, flow: this.props.flow })} >
                                 <Icon name="sort" type="MaterialCommunityIcons" style={{ color: isDisable ? '#bfbfbf' : 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                             <TouchableOpacity disabled={isDisable} style={{ marginLeft: 20 }} onPress={() => isDisable ? null : this.handleDeleteMultipleImages()} >
                                 <Icon name={AppCommon.icon("trash")} style={{ color: isDisable ? '#bfbfbf' : 'white', fontSize: AppCommon.icon_size }} />
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                         </View>
                     </Right>
                 </Footer>

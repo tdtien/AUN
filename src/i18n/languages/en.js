@@ -81,6 +81,9 @@ export default {
     [keys.Merchant.MerchantDetail.alertDeleteImages]: 'Are you sure you want to delete these images?',
     [keys.Merchant.MerchantDetail.btnSelect]: 'Select',
     [keys.Merchant.MerchantDetail.btnExportPdf]: 'Export to PDF',
+    [keys.Merchant.MerchantDetail.lblSelected]: 'selected',
+    [keys.Merchant.MerchantDetail.btnSelectAll]: 'Select All',
+    [keys.Merchant.MerchantDetail.btnDeselectAll]: 'Deselect All',
 
     [keys.Merchant.SortList.lblTitle]: 'Sort image to export PDF',
     [keys.Merchant.SortList.alertExportPdfFail]: 'Cannot convert to pdf. Please try again!',
