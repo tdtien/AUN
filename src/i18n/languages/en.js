@@ -11,9 +11,11 @@ export default {
     [keys.Common.lblSuccess]: 'Success',
     [keys.Common.lblSet]: 'Set',
     [keys.Common.lblUpload]: 'Upload',
+    [keys.Common.lblNotification]: 'Notification',
     [keys.Common.lblNoContent]: 'There is no content.',
     [keys.Common.lblReloadRequest]: 'Pull to refresh.',
     [keys.Common.alertNetworkRequestFail]: 'Connection has been interrupted. Do you want to view offline mode?',
+    [keys.Common.alertNetworkRequestSuccess]: 'Connection is ready. Do you want to view online mode?',
     [keys.Common.alertInvalidFileName]: 'Your file name just use alphabet, numbers and underscore.',
 
     //Login

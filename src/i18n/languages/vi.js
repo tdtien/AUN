@@ -11,9 +11,11 @@ export default {
     [keys.Common.lblSuccess]: 'Thành công',
     [keys.Common.lblSet]: 'Xong',
     [keys.Common.lblUpload]: 'Tải lên',
+    [keys.Common.lblNotification]: 'Thông báo',
     [keys.Common.lblNoContent]: 'Chưa có dữ liệu.',
     [keys.Common.lblReloadRequest]: 'Kéo xuống để tải lại.',
     [keys.Common.alertNetworkRequestFail]: 'Kết nối bị gián đoạn. Bạn có muốn xem chế độ ngoại tuyến?',
+    [keys.Common.alertNetworkRequestFail]: 'Kết nối đã sẵn sàng. Bạn có muốn xem chế độ trực tuyến?',
     [keys.Common.alertInvalidFileName]: 'Tên tập tin chỉ được dùng bảng chữ cái, số và dấu gạch dưới.',
 
     //Login

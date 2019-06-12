@@ -96,7 +96,8 @@ class SarExplorer extends Component {
             previousItem: []
         }, () => {
             if (isAlert) {
-                Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.Common.alertNetworkRequestFail),
+                let messageKey = this.state.isConnected ? keys.Common.alertNetworkRequestSuccess : keys.Common.alertNetworkRequestFail;
+                Alert.alert(I18n.t(keys.Common.lblNotification), I18n.t(messageKey),
                     [
                         {
                             text: I18n.t(keys.Common.lblNo),

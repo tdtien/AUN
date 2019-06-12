@@ -9,9 +9,11 @@ export default {
         lblSuccess: 'Common_lblSuccess',
         lblSet: 'Common_lblSet',
         lblUpload: 'Common_lblUpload',
+        lblNotification: 'Common_lblNotification',
         lblNoContent: 'Common_lblNoContent',
         lblReloadRequest: 'Common_lblReloadRequest',
         alertNetworkRequestFail: 'Common_alertNetworkRequestFail',
+        alertNetworkRequestSuccess: 'Common_alertNetworkRequestSuccess',
         alertInvalidFileName: 'Common_alertInvalidFileName',
     },
     Login: {
