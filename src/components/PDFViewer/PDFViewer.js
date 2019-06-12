@@ -7,6 +7,7 @@ import {
     Alert,
     View,
     Text,
+    NetInfo
 } from 'react-native';
 import {
     Header,
@@ -34,6 +35,7 @@ class PDFViewer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            isConnected: false,
             isLoading: false,
             isDialogVisible: false,
             isShowPdfView: false,
@@ -50,6 +52,15 @@ class PDFViewer extends React.Component {
             'change',
             this._handleUpdateScreenSize
         );
+        NetInfo.isConnected.addEventListener(
+            'connectionChange',
+            this.handleConnectivityChange
+        );
+        NetInfo.isConnected.fetch().done((isConnected) => {
+            this.setState({
+                isConnected: isConnected
+            });
+        });
     }
 
     componentWillUnmount() {
@@ -57,7 +68,36 @@ class PDFViewer extends React.Component {
             'change',
             this._handleUpdateScreenSize
         );
+        NetInfo.isConnected.removeEventListener(
+            'connectionChange',
+            this.handleConnectivityChange
+        );
     }
+
+    handleConnectionAlready = () => {
+        let messageKey = this.state.isConnected ? keys.Common.alertNetworkRequestSuccess : keys.Common.alertNetworkRequestFail;
+        Alert.alert(I18n.t(keys.Common.lblNotification), I18n.t(messageKey),
+            [
+                {
+                    text: I18n.t(keys.Common.lblNo),
+                    style: 'cancel',
+                },
+                {
+                    text: I18n.t(keys.Common.lblYes),
+                    onPress: () => {
+                        popToSceneWithUpdate('_sarExplorer');
+                    }
+                }
+            ])
+    }
+
+    handleConnectivityChange = (isConnected) => {
+        this.setState({
+            isConnected: isConnected
+        },
+            () => this.handleConnectionAlready()
+        )
+    };
 
     componentWillUpdate(nextProps, nextState) {
         if (nextState.evidenceArray !== nextProps.evidenceArray) {
@@ -85,8 +125,7 @@ class PDFViewer extends React.Component {
         var data = {
             type: 'FILE',
             file: this.props.base64,
-            // suggestionId: this.props.flow.suggestionInfo.id,
-            suggestionId: 18,
+            suggestionId: this.props.flow.suggestionInfo.id,
             name: fileName
         }
         uploadEvidence(this.props.token, data)
@@ -205,7 +244,7 @@ class PDFViewer extends React.Component {
 
     render() {
         let { evidenceArray, base64, hasHeader, width } = this.props;
-        let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading, breadcrumbIndex } = this.state
+        let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading, breadcrumbIndex, isConnected } = this.state
         let uploadFlow = getTextsFromUploadFlow();
         let uri = '';
         if (base64 !== null) {
@@ -259,25 +298,24 @@ class PDFViewer extends React.Component {
                                 <TouchableOpacity style={styles.headerButton} onPress={() => this.setState({ isDialogVisible: true })} >
                                     <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                                 </TouchableOpacity>
-                            ) : (
-                                    <View style={styles.headerMoreButton}>
-                                        <Menu>
-                                            <MenuTrigger customStyles={triggerStyles}>
-                                                <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                                            </MenuTrigger>
-                                            <MenuOptions>
-                                                <MenuOption onSelect={() => this.handleDownload()}>
-                                                    <View style={styles.popupItem}>
-                                                        <Icon name={AppCommon.icon("download")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
-                                                        <Text style={styles.popupItemText}>{I18n.t(keys.PDFViewer.btnDownload)}</Text>
-                                                    </View>
-                                                </MenuOption>
-                                            </MenuOptions>
-                                        </Menu>
-                                    </View>
-                                )
+                            ) : (isConnected ? (
+                                <View style={styles.headerMoreButton}>
+                                    <Menu>
+                                        <MenuTrigger customStyles={triggerStyles}>
+                                            <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                                        </MenuTrigger>
+                                        <MenuOptions>
+                                            <MenuOption onSelect={() => this.handleDownload()}>
+                                                <View style={styles.popupItem}>
+                                                    <Icon name={AppCommon.icon("download")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
+                                                    <Text style={styles.popupItemText}>{I18n.t(keys.PDFViewer.btnDownload)}</Text>
+                                                </View>
+                                            </MenuOption>
+                                        </MenuOptions>
+                                    </Menu>
+                                </View>
+                            ) : <View />)
                         }
-
                     </Header>
                 ) : <View />}
                 {base64 === null ? <View /> :

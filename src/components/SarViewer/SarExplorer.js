@@ -95,7 +95,7 @@ class SarExplorer extends Component {
             currentItem: {},
             previousItem: []
         }, () => {
-            if (isAlert) {
+            if (isAlert && Actions.currentScene === '_sarExplorer') {
                 let messageKey = this.state.isConnected ? keys.Common.alertNetworkRequestSuccess : keys.Common.alertNetworkRequestFail;
                 Alert.alert(I18n.t(keys.Common.lblNotification), I18n.t(messageKey),
                     [
@@ -683,21 +683,23 @@ class SarExplorer extends Component {
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: 'white' }}>{title}</Title>
                     </Body>
-                    <View style={styles.headerMoreButton}>
-                        <Menu>
-                            <MenuTrigger customStyles={triggerStyles}>
-                                <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                            </MenuTrigger>
-                            <MenuOptions>
-                                <MenuOption onSelect={() => this.state.downloadMode ? this.turnOffDownloadMode() : this.turnOnDownloadMode()}>
-                                    <View style={styles.popupItem}>
-                                        <Icon name={AppCommon.icon("download")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
-                                        <Text style={styles.popupItemText}>{I18n.t(keys.SarExplorer.Main.lblDownloadOption)}</Text>
-                                    </View>
-                                </MenuOption>
-                            </MenuOptions>
-                        </Menu>
-                    </View>
+                    {isConnected ?
+                        <View style={styles.headerMoreButton}>
+                            <Menu>
+                                <MenuTrigger customStyles={triggerStyles}>
+                                    <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                                </MenuTrigger>
+                                <MenuOptions>
+                                    <MenuOption onSelect={() => this.state.downloadMode ? this.turnOffDownloadMode() : this.turnOnDownloadMode()}>
+                                        <View style={styles.popupItem}>
+                                            <Icon name={AppCommon.icon("download")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} />
+                                            <Text style={styles.popupItemText}>{I18n.t(keys.SarExplorer.Main.lblDownloadOption)}</Text>
+                                        </View>
+                                    </MenuOption>
+                                </MenuOptions>
+                            </Menu>
+                        </View> : <View />
+                    }
                 </Header>
                 <BreadCrumb
                     isConnected={isConnected}
