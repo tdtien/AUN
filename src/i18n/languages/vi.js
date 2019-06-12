@@ -18,6 +18,9 @@ export default {
     [keys.Common.alertNetworkRequestSuccess]: 'Kết nối đã sẵn sàng. Bạn có muốn xem SAR ở chế độ trực tuyến?',
     [keys.Common.alertInvalidFileName]: 'Tên tập tin chỉ được dùng bảng chữ cái, số và dấu gạch dưới.',
 
+    //App
+    [keys.App.alertExitApp]: 'Nhấn back thêm một lần nữa để thoát.',
+
     //Login
     [keys.Login.lblTitle]: 'Hệ thống kiểm định AUN',
     [keys.Login.lblEmail]: 'Email',

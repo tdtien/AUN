@@ -18,6 +18,9 @@ export default {
     [keys.Common.alertNetworkRequestSuccess]: 'Connection is ready. Do you want to view SAR online mode?',
     [keys.Common.alertInvalidFileName]: 'Your file name just use alphabet, numbers and underscore.',
 
+    //App
+    [keys.App.alertExitApp]: 'Click back again to exit.',
+
     //Login
     [keys.Login.lblTitle]: 'AUN Inspection System',
     [keys.Login.lblEmail]: 'Email',

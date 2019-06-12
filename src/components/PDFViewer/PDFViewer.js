@@ -120,12 +120,13 @@ class PDFViewer extends React.Component {
         }
         this.setState({
             isDialogVisible: false,
-            isLoading: true
+            // isLoading: true
         })
         var data = {
             type: 'FILE',
             file: this.props.base64,
             suggestionId: this.props.flow.suggestionInfo.id,
+            // suggestionId: 18,
             name: fileName
         }
         uploadEvidence(this.props.token, data)
@@ -133,7 +134,7 @@ class PDFViewer extends React.Component {
                 console.log('responseJson: ' + responseJson.msg);
                 if (responseJson.success === true) {
                     this.setState({
-                        isLoading: false,
+                        // isLoading: false,
                         breadcrumbIndex: 4,
                     })
                     Alert.alert(
@@ -203,10 +204,10 @@ class PDFViewer extends React.Component {
         downloadAllEvidences(directoryTree, pdfFolderPath)
             .then(response => {
                 if (response) {
-                    this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                    })
+                    // this.setState({
+                    //     isLoading: false,
+                    //     refreshing: false,
+                    // })
                     var directoryInfo = {
                         email: email,
                         directoryTree: response,
@@ -215,7 +216,13 @@ class PDFViewer extends React.Component {
                     }
                     // console.log('directoryInfo: ' + JSON.stringify(directoryInfo));
                     this.props.setDirectoryInfo(directoryInfo);
-                    Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadSuccess));
+                    Alert.alert(
+                        I18n.t(keys.SarExplorer.Main.lblDownloadOption), 
+                        I18n.t(keys.SarExplorer.Main.alertDownloadSuccess), 
+                        [{
+                            text: "OK", onPress: () => { this.setState({ isLoading: false, refreshing: false })}
+                        }]
+                    );
                 }
             }).catch(error => {
                 this.setState({

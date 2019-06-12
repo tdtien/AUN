@@ -16,6 +16,9 @@ export default {
         alertNetworkRequestSuccess: 'Common_alertNetworkRequestSuccess',
         alertInvalidFileName: 'Common_alertInvalidFileName',
     },
+    App:{
+        alertExitApp: 'App_alertExitApp',
+    },
     Login: {
         lblTitle: 'Login_lblTitle',
         lblEmail: 'Login_lblEmail',

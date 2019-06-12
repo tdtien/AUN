@@ -27,7 +27,7 @@ export default class ImageModal extends Component {
     }
 
     handleSave = (name, index) => {
-        this.setState({ isLoading: true });
+        // this.setState({ isLoading: true });
         let mainPath = AppCommon.directoryPath + AppCommon.root_dir;
         let currentMilis = moment().valueOf();
         fileToBase64(this.state.images[index].url).then(data => {
@@ -44,12 +44,12 @@ export default class ImageModal extends Component {
                             if (++index < that.state.images.length) {
                                 that.handleSave(name, index);
                             } else {
-                                that.setState({ isLoading: false });
+                                // that.setState({ isLoading: false });
                                 popWithUpdate();
                             }
                         }).catch(error => {
                             console.log(error);
-                            that.setState({ isLoading: false });
+                            // that.setState({ isLoading: false });
                             popWithUpdate();
                         })
                 }).catch(error => {

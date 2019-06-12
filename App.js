@@ -19,6 +19,7 @@ import Images from './src/assets/images';
 import TextViewer from './src/components/TextViewer/TextViewer';
 import SarViewer from './src/components/SarViewer/SarViewer';
 import I18n from './src/i18n/i18n';
+import keys from './src/i18n/keys';
 import Setting from './src/components/Setting/Setting';
 
 class App extends Component {
@@ -38,10 +39,10 @@ class App extends Component {
           if (response.hasOwnProperty('expire_time')) {
             if (response.expire_time) {
               Alert.alert(
-                'Error!',
+                I18n.t(keys.Common.lblError),
                 response.msg,
                 [
-                  { text: 'OK', onPress: () => this.props.logout() }
+                  { text: I18n.t(keys.Common.lblOK), onPress: () => this.props.logout() }
                 ]
               );
             }
@@ -70,7 +71,7 @@ class App extends Component {
           backAndroidHandler={() => {
             if (exitScene.includes(Actions.currentScene)) {
               if (backLoginScene == false) {
-                ToastAndroid.show("Click back again to exit.", ToastAndroid.SHORT);
+                ToastAndroid.show(I18n.t(keys.App.alertExitApp), ToastAndroid.SHORT);
                 backLoginScene = !backLoginScene;
                 setTimeout(function () {
                   backLoginScene = !backLoginScene;
