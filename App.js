@@ -21,6 +21,7 @@ import SarViewer from './src/components/SarViewer/SarViewer';
 import I18n from './src/i18n/i18n';
 import keys from './src/i18n/keys';
 import Setting from './src/components/Setting/Setting';
+import Welcome from './src/components/Welcome/Welcome';
 
 class App extends Component {
 
@@ -127,6 +128,11 @@ class App extends Component {
                 component={Setting}
               />
             </Drawer>
+            <Scene
+              hideNavBar
+              key="welcome"
+              component={Welcome}
+            />
             <Scene
               hideNavBar
               key="merchant"

@@ -62,6 +62,7 @@ class SarViewer extends Component {
         this.mounted = true
         setTimeout(() => {
             this.mounted && this.setState({ isOpenMenu: true })
+            Actions.welcome()
         }, 1000)
     }
 

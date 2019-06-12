@@ -12,6 +12,7 @@
     "native-base": "^2.12.0",
     "react": "16.6.3",
     "react-native": "^0.58.5",
+    "react-native-app-intro-slider": "^2.0.1",
     "react-native-cache": "^1.1.7",
     "react-native-dialog-input": "^1.0.7",
     "react-native-document-picker": "^2.3.0",
