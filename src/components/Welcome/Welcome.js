@@ -5,35 +5,36 @@ import { Actions } from 'react-native-router-flux';
 
 const slides = [
     {
-        key: 'somethun',
-        title: 'Title 1',
-        text: 'Description.\nSay something cool',
-        image: require('../../assets/img/logo.jpg'),
+        key: '1',
+        title: 'Welcome to AUN Inspection System',
+        text: 'This is a tool to view and edit Self-Assessment Report',
+        image: require('../../assets/img/1.jpg'),
         backgroundColor: '#59b2ab',
     },
     {
         key: 'somethun-dos',
         title: 'Title 2',
         text: 'Other cool stuff',
-        image: require('../../assets/img/logo.jpg'),
+        image: require('../../assets/img/2.jpeg'),
         backgroundColor: '#febe29',
     },
     {
         key: 'somethun1',
         title: 'Rocket guy',
         text: 'I\'m already out of descriptions\n\nLorem ipsum bla bla bla',
-        image: require('../../assets/img/logo.jpg'),
+        image: require('../../assets/img/3.jpeg'),
         backgroundColor: '#22bcb5',
     }
 ];
 
-
 export class Welcome extends Component {
     _renderItem = (item) => {
         return (
-            <View style={styles.mainContent}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Image source={item.image} />
+            <View style={[styles.mainContent, { backgroundColor: item.backgroundColor }]}>
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={styles.title}>{item.title}</Text>
+                    <Image source={item.image} style={styles.image} />
+                </View>
                 <Text style={styles.text}>{item.text}</Text>
             </View>
         );
@@ -69,6 +70,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         textAlign: 'center',
         paddingHorizontal: 16,
+        marginBottom: 25
     },
     title: {
         fontSize: 22,
