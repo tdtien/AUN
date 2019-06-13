@@ -15,3 +15,10 @@ export const logoutAccount = () => {
         type: LOGOUT
     }
 }
+
+export const setFirstTime = (toogle) => {
+    return {
+        type: SET_FIRST_TIME,
+        isFirstTime: toggle
+    }
+}

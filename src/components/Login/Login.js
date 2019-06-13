@@ -69,7 +69,11 @@ class Login extends Component {
         console.log('res', res)
         if (res.hasOwnProperty('token')) {
           this.props.login({ id: res.id, token: res.token, email: res.email, admin: res.admin });
-          Actions.drawerMenu();
+          if (this.props.isFirstTime) {
+            Actions.welcome();
+          } else {
+            Actions.drawerMenu();
+          }
         } else {
           Toast.show({
             text: res.msg,
@@ -183,7 +187,7 @@ const mapStateToProps = state => {
   return {
     id: state.account.id,
     token: state.account.token,
-    isLoggedIn: state.account.isLoggedIn
+    isFirstTime: state.account.isFirstTime
   };
 };
 

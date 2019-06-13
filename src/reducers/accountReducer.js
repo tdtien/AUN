@@ -1,11 +1,12 @@
-import { LOGIN, LOGOUT } from "../actions/types";
+import { LOGIN, LOGOUT, SET_FIRST_TIME } from "../actions/types";
 
 const initialState = {
   id: '',
   token: '',
   isLoggedIn: false,
   email: '',
-  admin: ''
+  admin: '',
+  isFirstTime: true
 };
 
 const accountReducer = (state = initialState, action) => {
@@ -15,7 +16,11 @@ const accountReducer = (state = initialState, action) => {
       return state;
     }
     case LOGOUT: {
-      state = Object.assign({}, state, initialState);
+      state = Object.assign({}, state, { ...initialState, isFirstTime: false });
+      return state;
+    }
+    case SET_FIRST_TIME: {
+      state = Object.assign({}, state, { ...state, isFirstTime: action.isFirstTime });
       return state;
     }
     default:

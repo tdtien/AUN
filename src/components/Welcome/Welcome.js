@@ -1,29 +1,24 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, Image } from 'react-native'
+import { Text, View, StyleSheet, Image, Platform, StatusBar } from 'react-native'
 import AppIntroSlider from 'react-native-app-intro-slider';
 import { Actions } from 'react-native-router-flux';
+import { connect } from 'react-redux';
+import { setFirstTime } from '../../actions/account';
 
 const slides = [
     {
-        key: '1',
-        title: 'Welcome to AUN Inspection System',
-        text: 'This is a tool to view and edit Self-Assessment Report',
-        image: require('../../assets/img/1.jpg'),
-        backgroundColor: '#59b2ab',
+        key: '2',
+        title: 'SAR Editor',
+        text: 'Upload/download file and manage criterion, implications, questions, evidences and more....',
+        image: require('../../assets/img/3.png'),
+        backgroundColor: '#60B0AF',
     },
     {
-        key: 'somethun-dos',
-        title: 'Title 2',
-        text: 'Other cool stuff',
-        image: require('../../assets/img/2.jpeg'),
-        backgroundColor: '#febe29',
-    },
-    {
-        key: 'somethun1',
-        title: 'Rocket guy',
-        text: 'I\'m already out of descriptions\n\nLorem ipsum bla bla bla',
-        image: require('../../assets/img/3.jpeg'),
-        backgroundColor: '#22bcb5',
+        key: '3',
+        title: 'SAR Viewer',
+        text: 'You can review Self-Assessment Report and comment, note in criteria',
+        image: require('../../assets/img/2.png'),
+        backgroundColor: '#19D7CD',
     }
 ];
 
@@ -33,16 +28,15 @@ export class Welcome extends Component {
             <View style={[styles.mainContent, { backgroundColor: item.backgroundColor }]}>
                 <View style={{ alignItems: 'center' }}>
                     <Text style={styles.title}>{item.title}</Text>
-                    <Image source={item.image} style={styles.image} />
+                    <Image source={item.image} style={[styles.image]} />
                 </View>
                 <Text style={styles.text}>{item.text}</Text>
             </View>
         );
     }
     _onDone = () => {
-        // User finished the introduction. Show real app through
-        // navigation or simply by controlling state
-        Actions.pop()
+        this.props.setFirstTime(false)
+        Actions.replace('drawerMenu')
     }
     render() {
         return (
@@ -50,6 +44,7 @@ export class Welcome extends Component {
                 renderItem={this._renderItem}
                 slides={slides}
                 onDone={this._onDone}
+                showSkipButton={true}
             />
         )
     }
@@ -64,6 +59,7 @@ const styles = StyleSheet.create({
     image: {
         width: 320,
         height: 320,
+        resizeMode: 'contain',
     },
     text: {
         color: 'rgba(255, 255, 255, 0.8)',
@@ -78,7 +74,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         textAlign: 'center',
         marginBottom: 16,
-    },
+    }
 });
 
-export default Welcome
+const mapDispatchToProps = dispatch => {
+    return {
+        setFirstTime: toggle => {
+            dispatch(setFirstTime(toggle));
+        }
+    };
+};
+
+export default connect(mapDispatchToProps)(Welcome)
