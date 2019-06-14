@@ -19,6 +19,15 @@ export default {
     App:{
         alertExitApp: 'App_alertExitApp',
     },
+    Welcome: {
+        lblSarEditor: 'Welcome_lblSarEditor',
+        lblSarViewer: 'Welcome_lblSarViewer',
+        lblSarEditorDescription: 'Welcome_lblSarEditorDescription',
+        lblSarViewerDescription: 'Welcome_lblSarViewerDescription',
+        btnSkip: 'Welcome_btnSkip',
+        btnNext: 'Welcome_btnNext',
+        btnDone: 'Welcome_btnDone',
+    },
     Login: {
         lblTitle: 'Login_lblTitle',
         lblEmail: 'Login_lblEmail',

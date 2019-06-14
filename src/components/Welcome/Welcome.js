@@ -4,23 +4,8 @@ import AppIntroSlider from 'react-native-app-intro-slider';
 import { Actions } from 'react-native-router-flux';
 import { connect } from 'react-redux';
 import { setFirstTime } from '../../actions/account';
-
-const slides = [
-    {
-        key: '2',
-        title: 'SAR Editor',
-        text: 'Upload/download file and manage criterion, implications, questions, evidences and more....',
-        image: require('../../assets/img/3.png'),
-        backgroundColor: '#60B0AF',
-    },
-    {
-        key: '3',
-        title: 'SAR Viewer',
-        text: 'You can review Self-Assessment Report and comment, note in criteria',
-        image: require('../../assets/img/2.png'),
-        backgroundColor: '#19D7CD',
-    }
-];
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 export class Welcome extends Component {
     _renderItem = (item) => {
@@ -39,12 +24,31 @@ export class Welcome extends Component {
         Actions.replace('drawerMenu')
     }
     render() {
+        let slides = [
+            {
+                key: '2',
+                title: I18n.t(keys.Welcome.lblSarEditor),
+                text: I18n.t(keys.Welcome.lblSarEditorDescription),
+                image: require('../../assets/img/3.png'),
+                backgroundColor: '#60B0AF',
+            },
+            {
+                key: '3',
+                title: I18n.t(keys.Welcome.lblSarViewer),
+                text: I18n.t(keys.Welcome.lblSarViewerDescription),
+                image: require('../../assets/img/2.png'),
+                backgroundColor: '#19D7CD',
+            }
+        ];
         return (
             <AppIntroSlider
                 renderItem={this._renderItem}
                 slides={slides}
                 onDone={this._onDone}
                 showSkipButton={true}
+                skipLabel={I18n.t(keys.Welcome.btnSkip)}
+                nextLabel={I18n.t(keys.Welcome.btnNext)}
+                doneLabel={I18n.t(keys.Welcome.btnDone)}
             />
         )
     }

@@ -21,6 +21,15 @@ export default {
     //App
     [keys.App.alertExitApp]: 'Nhấn back thêm một lần nữa để thoát.',
 
+    //Welcome
+    [keys.Welcome.lblSarEditor]: 'Trình chỉnh sửa SAR',
+    [keys.Welcome.lblSarViewer]: 'Trình xem SAR',
+    [keys.Welcome.lblSarEditorDescription]: 'Tải lên / tải xuống các tập tin và quản lý các tiêu chí, nội hàm, câu hỏi, minh chứng....',
+    [keys.Welcome.lblSarViewerDescription]: 'Bạn có thể xem lại Báo cáo tự đánh giá và bình luận, ghi chú trong các tiêu chí',
+    [keys.Welcome.btnSkip]: 'Bỏ qua',
+    [keys.Welcome.btnNext]: 'Tiếp',
+    [keys.Welcome.btnDone]: 'Xong',
+
     //Login
     [keys.Login.lblTitle]: 'Hệ thống kiểm định AUN',
     [keys.Login.lblEmail]: 'Email',

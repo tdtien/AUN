@@ -21,6 +21,15 @@ export default {
     //App
     [keys.App.alertExitApp]: 'Click back again to exit.',
 
+    //Welcome
+    [keys.Welcome.lblSarEditor]: 'SAR Editor',
+    [keys.Welcome.lblSarViewer]: 'SAR Viewer',
+    [keys.Welcome.lblSarEditorDescription]: 'Upload/download file and manage criterion, implications, questions, evidences and more....',
+    [keys.Welcome.lblSarViewerDescription]: 'You can review Self-Assessment Report and comment, note in criteria',
+    [keys.Welcome.btnSkip]: 'Skip',
+    [keys.Welcome.btnNext]: 'Next',
+    [keys.Welcome.btnDone]: 'Done',
+
     //Login
     [keys.Login.lblTitle]: 'AUN Inspection System',
     [keys.Login.lblEmail]: 'Email',
