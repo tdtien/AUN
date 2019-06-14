@@ -7,7 +7,7 @@ import {
     Alert,
     View,
     Text,
-    NetInfo
+    NetInfo,
 } from 'react-native';
 import {
     Header,
@@ -44,6 +44,7 @@ class PDFViewer extends React.Component {
             evidenceArray: this.props.evidenceArray,
             fileName: this.props.fileName,
             breadcrumbIndex: 3,
+            isUploading: false,
         }
     }
 
@@ -120,6 +121,7 @@ class PDFViewer extends React.Component {
         }
         this.setState({
             isDialogVisible: false,
+            isUploading: true,
             // isLoading: true
         })
         var data = {
@@ -136,6 +138,7 @@ class PDFViewer extends React.Component {
                     this.setState({
                         // isLoading: false,
                         breadcrumbIndex: 4,
+                        isUploading: false,
                     })
                     Alert.alert(
                         I18n.t(keys.Common.lblSuccess),
@@ -167,12 +170,16 @@ class PDFViewer extends React.Component {
                     );
                 }
                 else {
+                    this.setState({
+                        isUploading: false,
+                    })
                     Alert.alert(I18n.t(keys.Common.lblError), responseJson.msg);
                 }
             })
             .catch((error) => {
                 this.setState({
-                    isLoading: false
+                    isLoading: false,
+                    isUploading: false,
                 })
                 console.error('Error: ' + error);
                 Alert.alert(I18n.t(keys.Common.lblError), error);
@@ -217,10 +224,10 @@ class PDFViewer extends React.Component {
                     // console.log('directoryInfo: ' + JSON.stringify(directoryInfo));
                     this.props.setDirectoryInfo(directoryInfo);
                     Alert.alert(
-                        I18n.t(keys.SarExplorer.Main.lblDownloadOption), 
-                        I18n.t(keys.SarExplorer.Main.alertDownloadSuccess), 
+                        I18n.t(keys.SarExplorer.Main.lblDownloadOption),
+                        I18n.t(keys.SarExplorer.Main.alertDownloadSuccess),
                         [{
-                            text: "OK", onPress: () => { this.setState({ isLoading: false, refreshing: false })}
+                            text: "OK", onPress: () => { this.setState({ isLoading: false, refreshing: false }) }
                         }]
                     );
                 }
@@ -251,7 +258,7 @@ class PDFViewer extends React.Component {
 
     render() {
         let { evidenceArray, base64, hasHeader, width } = this.props;
-        let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading, breadcrumbIndex, isConnected } = this.state
+        let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading, breadcrumbIndex, isConnected, isUploading } = this.state
         let uploadFlow = getTextsFromUploadFlow();
         let uri = '';
         if (base64 !== null) {
@@ -302,9 +309,13 @@ class PDFViewer extends React.Component {
                         </Body>
                         {
                             (base64 !== null) ? (
-                                <TouchableOpacity style={styles.headerButton} onPress={() => this.setState({ isDialogVisible: true })} >
-                                    <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                                </TouchableOpacity>
+                                isUploading ? (
+                                    <ActivityIndicator animating color="#FFF" size="large" />
+                                ) : (
+                                        <TouchableOpacity style={styles.headerButton} onPress={() => this.setState({ isDialogVisible: true })} >
+                                            <Icon name={AppCommon.icon("cloud-upload")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                                        </TouchableOpacity>
+                                    )
                             ) : (isConnected ? (
                                 <View style={styles.headerMoreButton}>
                                     <Menu>
@@ -324,15 +335,17 @@ class PDFViewer extends React.Component {
                             ) : <View />)
                         }
                     </Header>
-                ) : <View />}
-                {base64 === null ? <View /> :
-                    <BreadCrumb
-                        isConnected={false}
-                        handlePress={this.handlePopTo}
-                        previousItem={uploadFlow.slice(0, breadcrumbIndex)}
-                        currentItem={uploadFlow[breadcrumbIndex]}
-                        nextItem={uploadFlow.slice(breadcrumbIndex + 1, uploadFlow.length)}
-                    />
+                ) : <View />
+                }
+                {
+                    base64 === null ? <View /> :
+                        <BreadCrumb
+                            isConnected={false}
+                            handlePress={this.handlePopTo}
+                            previousItem={uploadFlow.slice(0, breadcrumbIndex)}
+                            currentItem={uploadFlow[breadcrumbIndex]}
+                            nextItem={uploadFlow.slice(breadcrumbIndex + 1, uploadFlow.length)}
+                        />
                 }
                 {(isShowPdfView) ? pdfArrayView : null}
                 <View style={styles.container}>
