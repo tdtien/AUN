@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
-import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
 import com.imagepicker.ImagePickerPackage;
 import org.wonday.pdf.RCTPdfView;
@@ -34,7 +33,6 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new RNI18nPackage(),
-            new RNCWebViewPackage(),
             new ReactNativeDocumentPicker(),
             new ImagePickerPackage(),
             new RCTPdfView(),

@@ -68,6 +68,7 @@ class Login extends Component {
         this.mounted && this.setState({ isLoading: false });
         console.log('res', res)
         if (res.hasOwnProperty('token')) {
+          console.log('res.token', res.token)
           this.props.login({ id: res.id, token: res.token, email: res.email, admin: res.admin });
           if (this.props.isFirstTime) {
             Actions.welcome();

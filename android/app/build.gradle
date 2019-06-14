@@ -146,7 +146,6 @@ android {
 
 dependencies {
     implementation project(':react-native-i18n')
-    implementation project(':react-native-webview')
     implementation project(':react-native-document-picker')
     implementation project(':react-native-image-picker')
     implementation project(':react-native-pdf')
