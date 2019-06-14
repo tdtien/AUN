@@ -1,4 +1,4 @@
-import { LOGIN, LOGOUT } from './types'
+import { LOGIN, LOGOUT, SET_FIRST_TIME } from './types'
 
 export const loginAccount = item => {
     return {
@@ -16,7 +16,7 @@ export const logoutAccount = () => {
     }
 }
 
-export const setFirstTime = (toogle) => {
+export const setFirstTime = (toggle) => {
     return {
         type: SET_FIRST_TIME,
         isFirstTime: toggle

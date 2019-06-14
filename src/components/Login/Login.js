@@ -151,8 +151,9 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   logo: {
-    width: 125,
-    height: 100
+    width: 150,
+    height: 100,
+    resizeMode: 'contain'
   },
   title: {
     color: "#424242",

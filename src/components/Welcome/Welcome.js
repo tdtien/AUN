@@ -35,7 +35,7 @@ export class Welcome extends Component {
         );
     }
     _onDone = () => {
-        this.props.setFirstTime(false)
+        this.props.toggleFirstTime(false)
         Actions.replace('drawerMenu')
     }
     render() {
@@ -79,10 +79,18 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = dispatch => {
     return {
-        setFirstTime: toggle => {
+        toggleFirstTime: toggle => {
             dispatch(setFirstTime(toggle));
         }
     };
 };
 
-export default connect(mapDispatchToProps)(Welcome)
+const mapStateToProps = state => {
+    return {
+        id: state.account.id,
+        token: state.account.token,
+        isFirstTime: state.account.isFirstTime
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Welcome)
