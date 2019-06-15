@@ -545,7 +545,7 @@ class SarExplorer extends Component {
                 if (response) {
                     this.mounted && this.setState({
                         isDownloading: false
-                    })
+                    }, () => this.turnOffDownloadMode())
                     var directoryInfo = {
                         email: email,
                         directoryTree: response,
@@ -559,7 +559,7 @@ class SarExplorer extends Component {
             }).catch(error => {
                 this.mounted && this.setState({
                     isDownloading: false
-                })
+                }, () => this.turnOffDownloadMode())
                 console.error('Error when download: ' + error);
                 Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
             })
@@ -755,7 +755,7 @@ class SarExplorer extends Component {
                             </View>
                         </Right>
                     </Footer>
-                ) : (currentScene.key === 'evidences' && previousItem[0].role !== 'REVIEWER' ? (
+                ) : (currentScene.key === 'evidences' && previousItem[0].role !== 'REVIEWER' && isConnected ? (
                     <AddButton
                         sarInfo={previousItem[0]}
                         criterionInfo={previousItem[1]}
