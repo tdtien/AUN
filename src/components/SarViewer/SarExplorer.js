@@ -1,6 +1,6 @@
 import { Body, Container, Content, Footer, Header, Icon, Right, Text, Title } from "native-base";
 import React, { Component } from "react";
-import { Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View, AsyncStorage } from "react-native";
+import { Alert, Dimensions, FlatList, NetInfo, RefreshControl, StyleSheet, TouchableOpacity, View, AsyncStorage, ActivityIndicator } from "react-native";
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import { setDirectoryInfo } from "../../actions/directoryAction";
@@ -26,6 +26,7 @@ class SarExplorer extends Component {
             isLoading: false,
             refreshing: false,
             downloadMode: false,
+            isDownloading: false,
             width: window.width,
             subCriterionView: false,
             currentIdx: 0,
@@ -396,7 +397,7 @@ class SarExplorer extends Component {
             Alert.alert(I18n.t(keys.Common.lblError), I18n.t(keys.SarExplorer.Main.alertNoItemDownload))
             return
         }
-        this.setState({ isLoading: true })
+        this.setState({ isDownloading: true })
         if (scene[currentIdx].key === 'sars') {
             selectedData.forEach((selectedItem) => {
                 downloadSar(token, selectedItem.id)
@@ -410,8 +411,7 @@ class SarExplorer extends Component {
                     })
                     .catch((error) => {
                         this.mounted && this.setState({
-                            isLoading: false,
-                            refreshing: false,
+                            isDownloading: false
                         })
                         console.error('Error when download: ' + error);
                         Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
@@ -431,8 +431,7 @@ class SarExplorer extends Component {
                     })
                     .catch((error) => {
                         this.mounted && this.setState({
-                            isLoading: false,
-                            refreshing: false,
+                            isDownloading: false
                         })
                         console.error('Error when download: ' + error);
                         Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
@@ -453,8 +452,7 @@ class SarExplorer extends Component {
                     })
                     .catch((error) => {
                         this.mounted && this.setState({
-                            isLoading: false,
-                            refreshing: false,
+                            isDownloading: false
                         })
                         console.error('Error when download: ' + error);
                         Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
@@ -491,8 +489,7 @@ class SarExplorer extends Component {
                     })
                     .catch((error) => {
                         this.mounted && this.setState({
-                            isLoading: false,
-                            refreshing: false,
+                            isDownloading: false
                         })
                         console.error('Error when download: ' + error);
                         Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
@@ -516,8 +513,7 @@ class SarExplorer extends Component {
                     })
                     .catch((error) => {
                         this.mounted && this.setState({
-                            isLoading: false,
-                            refreshing: false,
+                            isDownloading: false
                         })
                         console.error('Error when download: ' + error);
                         Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
@@ -536,9 +532,7 @@ class SarExplorer extends Component {
             })
         } else {
             this.mounted && this.setState({
-                isLoading: false,
-                refreshing: false,
-                downloadMode: false
+                isDownloading: false
             })
         }
     }
@@ -550,9 +544,7 @@ class SarExplorer extends Component {
             .then(response => {
                 if (response) {
                     this.mounted && this.setState({
-                        isLoading: false,
-                        refreshing: false,
-                        downloadMode: false
+                        isDownloading: false
                     })
                     var directoryInfo = {
                         email: email,
@@ -566,9 +558,7 @@ class SarExplorer extends Component {
                 }
             }).catch(error => {
                 this.mounted && this.setState({
-                    isLoading: false,
-                    refreshing: false,
-                    downloadMode: false
+                    isDownloading: false
                 })
                 console.error('Error when download: ' + error);
                 Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
@@ -650,7 +640,7 @@ class SarExplorer extends Component {
         const {
             currentItem, scene, currentIdx, previousItem,
             downloadMode, isConnected, isLoading, data,
-            subCriterionView
+            subCriterionView, isDownloading
         } = this.state;
         let currentScene = scene[currentIdx]
         let title = downloadMode ? I18n.t(keys.SarExplorer.Main.Title.download) : I18n.t(keys.SarExplorer.Main.Title.editor);
@@ -743,7 +733,11 @@ class SarExplorer extends Component {
                         <Right>
                             <View style={styles.footerButton}>
                                 <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => this.handleDownloadOffline()} >
-                                    <Icon name={AppCommon.icon("cloud-download")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                                    {isDownloading ? (
+                                        <ActivityIndicator animating color="#fff" />
+                                    ) : (
+                                            <Icon name={AppCommon.icon("cloud-download")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                                        )}
                                 </TouchableOpacity>
                             </View>
                         </Right>

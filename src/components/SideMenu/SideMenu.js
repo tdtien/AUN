@@ -30,6 +30,7 @@ class SideMenu extends Component {
                             alignSelf: "stretch",
                             justifyContent: "center",
                             alignItems: "center",
+                            resizeMode: 'contain'
                         }}
                     >
                     </ImageBackground>
@@ -42,7 +43,7 @@ class SideMenu extends Component {
                                 <Text>{email}</Text>
                             </Body>
                         </ListItem>
-                        <ListItem button onPress={() => Actions.currentScene == '_sarExplorer' ? Actions.drawerClose() : Actions.sarExplorer()} icon noBorder >
+                        <ListItem button onPress={() => Actions.currentScene == '_sarExplorer' ? Actions.drawerClose() : Actions.sarExplorer()} icon >
                             <Left>
                                 <Icon name={AppCommon.icon("tv")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                             </Left>

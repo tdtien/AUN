@@ -35,7 +35,6 @@ class SarViewer extends Component {
             position: 10,
             isTablet: window.height / window.width < 1.6,
             width: window.width,
-            isOpenMenu: false
         }
 
         this.sarCache = new Cache({
@@ -60,9 +59,6 @@ class SarViewer extends Component {
             }, () => this.handleFetchData());
         });
         this.mounted = true
-        setTimeout(() => {
-            this.mounted && this.setState({ isOpenMenu: true })
-        }, 1000)
     }
 
     componentWillUnmount() {
@@ -421,7 +417,6 @@ class SarViewer extends Component {
                         </View>
                     }
                     edgeHitWidth={this.state.width}
-                    isOpen={this.state.isOpenMenu}
                 >
                     <Container onLayout={this.onLayout}>
                         <Header
