@@ -67,11 +67,11 @@ export function checkEvidenceExistence(filePath) {
 }
 
 export function downloadEvidence(url, filePath) {
-    checkEvidenceExistence(filePath)
-        .then(response => {
-            console.log('response: ' + JSON.stringify(response));
-            if (response === 'non-existence') {
-                return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+        checkEvidenceExistence(filePath)
+            .then(response => {
+                console.log('response: ' + JSON.stringify(response));
+                if (response === 'non-existence') {
                     RNFS.downloadFile({
                         fromUrl: url,
                         toFile: filePath,
@@ -83,13 +83,12 @@ export function downloadEvidence(url, filePath) {
                         console.log('Error when download evidence:' + error);
                         reject(error);
                     })
-                })
-            }
-        }).catch(error => {
-            console.log('Error when download evidence:' + error);
-            reject(error);
-        })
-
+                }
+            }).catch(error => {
+                console.log('Error when download evidence:' + error);
+                reject(error);
+            })
+    })
 }
 
 export function downloadAllEvidences(directoryTree, pdfFolderPath) {
