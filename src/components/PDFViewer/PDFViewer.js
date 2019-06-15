@@ -45,6 +45,8 @@ class PDFViewer extends React.Component {
             fileName: this.props.fileName,
             breadcrumbIndex: 3,
             isUploading: false,
+            backButtonDisabled: true,
+            nextButtonDisabled: false,
         }
     }
 
@@ -196,6 +198,8 @@ class PDFViewer extends React.Component {
         this.setState({
             currentEvidence: this.state.evidenceArray[newIndex],
             fileName: this.state.evidenceArray[newIndex].name,
+            backButtonDisabled: newIndex === 0 ? true : false,
+            nextButtonDisabled: newIndex === (length -1) ? true : false,
         });
     }
 
@@ -258,7 +262,7 @@ class PDFViewer extends React.Component {
 
     render() {
         let { evidenceArray, base64, hasHeader, width } = this.props;
-        let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading, breadcrumbIndex, isConnected, isUploading } = this.state
+        let { currentEvidence, screenWidth, isShowPdfView, isDialogVisible, fileName, isLoading, breadcrumbIndex, isConnected, isUploading, backButtonDisabled, nextButtonDisabled } = this.state;
         let uploadFlow = getTextsFromUploadFlow();
         let uri = '';
         if (base64 !== null) {
@@ -284,11 +288,11 @@ class PDFViewer extends React.Component {
                     opacity: 0.5,
                 }}
             >
-                <TouchableOpacity onPress={() => this.handleViewEvidences('back')}>
-                    <Text style={{ fontSize: 17, color: 'black' }}>{I18n.t(keys.PDFViewer.btnBack)}</Text>
+                <TouchableOpacity disabled={backButtonDisabled} onPress={() => this.handleViewEvidences('back')}>
+                    <Text style={{ fontSize: 17, color: backButtonDisabled ? '#a9a9a9' : 'black' }}>{I18n.t(keys.PDFViewer.btnBack)}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => this.handleViewEvidences('next')}>
-                    <Text style={{ fontSize: 17, color: 'black' }}>{I18n.t(keys.PDFViewer.btnNext)}</Text>
+                <TouchableOpacity disabled={nextButtonDisabled} onPress={() => this.handleViewEvidences('next')}>
+                    <Text style={{ fontSize: 17, color: nextButtonDisabled ? '#a9a9a9' : 'black' }}>{I18n.t(keys.PDFViewer.btnNext)}</Text>
                 </TouchableOpacity>
             </View>
         ) : null
