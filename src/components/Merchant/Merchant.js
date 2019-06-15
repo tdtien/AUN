@@ -236,6 +236,7 @@ export default class Merchant extends Component {
                             returnKeyType="search"
                             clearButtonMode="unless-editing"
                             clearTextOnFocus
+                            style={{paddingVertical: 0}}
                         />
                     </Item>
                 </Header>

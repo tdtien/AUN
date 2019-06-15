@@ -279,9 +279,9 @@ class Comment extends Component {
                         <Footer
                             style={{ backgroundColor: 'white', borderTopWidth: 1, borderColor: '#d9d9d9' }}
                         >
-                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginHorizontal: marginHorizontal, paddingVertical: 6 }}>
+                            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', textAlign: 'center', marginHorizontal: marginHorizontal, paddingVertical: 6, }}>
                                 <TextInput
-                                    style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, height: 40, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15 }}
+                                    style={{ borderColor: 'gray', borderWidth: 1, width: messageWidth, height: 40, marginRight: marginHorizontal, borderRadius: 20, paddingHorizontal: 15, paddingVertical: 0 }}
                                     placeholder={activeTabIndex === 0 ? I18n.t(keys.SarExplorer.Comment.lblCommentPlaceholder) : I18n.t(keys.SarExplorer.Comment.lblNotePlaceholder)}
                                     onChangeText={(message) => this.setState({ message: message })}
                                     value={this.state.message}

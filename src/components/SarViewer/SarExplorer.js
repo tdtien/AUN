@@ -673,7 +673,7 @@ class SarExplorer extends Component {
                     <Body style={{ flex: 1 }}>
                         <Title style={{ alignSelf: "center", color: 'white' }}>{title}</Title>
                     </Body>
-                    {isConnected ?
+                    {isConnected && !downloadMode ?
                         <View style={styles.headerMoreButton}>
                             <Menu>
                                 <MenuTrigger customStyles={triggerStyles}>
