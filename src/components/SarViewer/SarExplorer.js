@@ -504,7 +504,6 @@ class SarExplorer extends Component {
                             let downloadFlow = {
                                 sarInfo: previousItem[0],
                                 criterionInfo: previousItem[1],
-                                subCriterionInfo: previousItem[2],
                                 suggestionType: currentItem.id,
                                 suggestionInfo: selectedItem,
                             }
@@ -524,7 +523,6 @@ class SarExplorer extends Component {
                 let downloadFlow = {
                     sarInfo: previousItem[0],
                     criterionInfo: previousItem[1],
-                    subCriterionInfo: previousItem[2],
                     suggestionInfo: currentItem,
                     evidenceInfo: selectedItem
                 }
