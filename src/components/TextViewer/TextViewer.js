@@ -41,9 +41,6 @@ export default class TextViewer extends Component {
                         <Body style={{ flex: 1 }}>
                             <Title style={styles.title}>{titleHeader}</Title>
                         </Body>
-                        <TouchableOpacity style={styles.menuButton} onPress={() => null} >
-                            <Icon name={AppCommon.icon("more")} style={styles.icon} />
-                        </TouchableOpacity>
                     </Header>
                 ) : <View />}
                 <Content
