@@ -60,6 +60,7 @@ export default {
 
     [keys.SarExplorer.Comment.alertEmptyComment]: 'Bình luận trống!',
     [keys.SarExplorer.Comment.alertEmptyNote]: 'Ghi chú trống!',
+    [keys.SarExplorer.Comment.alertReloadCommentNote]: 'Kết nối đã sẵn sàng. Bạn có muốn tải lại bình luận và ghi chú?',
     [keys.SarExplorer.Comment.lblTitle]: 'Nội dung',
     [keys.SarExplorer.Comment.btnSeeMore]: 'Xem thêm',
     [keys.SarExplorer.Comment.lblComment]: 'Bình luận',

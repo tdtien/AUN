@@ -66,6 +66,7 @@ export default {
         Comment: {
             alertEmptyComment: 'Comment_alertEmptyComment',
             alertEmptyNote: 'Comment_alertEmptyNote',
+            alertReloadCommentNote:'Comment_alertReloadCommentNote',
             lblTitle: 'Comment_lblTitle',
             btnSeeMore: 'Comment_btnSeeMore',
             lblComment: 'Comment_lblComment',

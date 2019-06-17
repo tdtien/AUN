@@ -61,6 +61,7 @@ export default {
 
     [keys.SarExplorer.Comment.alertEmptyComment]: 'Empty comment!',
     [keys.SarExplorer.Comment.alertEmptyNote]: 'Empty note!',
+    [keys.SarExplorer.Comment.alertReloadCommentNote]: 'Connection is ready. Do you want to reload comments and notes',
     [keys.SarExplorer.Comment.lblTitle]: 'Content',
     [keys.SarExplorer.Comment.btnSeeMore]: 'See more',
     [keys.SarExplorer.Comment.lblComment]: 'Comment',

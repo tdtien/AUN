@@ -65,13 +65,14 @@ class Comment extends Component {
     }
 
     handleConnectivityChange = (isConnected) => {
-        this.setState({ isConnected: isConnected })
+        let isAlert = (this.state.isConnected !== isConnected && isConnected === true) ? true : false;
+        this.setState({ isConnected: isConnected }, () => this.makeRemoteRequest(isAlert))
     };
 
     componentWillUnmount() {
         NetInfo.isConnected.removeEventListener(
             'connectionChange',
-            this._handleConnectivityChange
+            this.handleConnectivityChange
         );
         this.mounted = false
     }
@@ -124,14 +125,44 @@ class Comment extends Component {
             });
     }
 
-    makeRemoteRequest = () => {
+    makeRemoteRequest = (isAlert = false) => {
         if (this.state.isConnected) {
             const { token, subCriterionInfo } = this.props;
-            this.handleGetComments(false, true);
-            this.handleGetNotes(false, false);
+            if (isAlert) {
+                Alert.alert(
+                    I18n.t(keys.Common.lblNotification),
+                    I18n.t(keys.SarExplorer.Comment.alertReloadCommentNote),
+                    [
+                        {
+                            text: I18n.t(keys.Common.lblNo),
+                            style: 'cancel',
+                            onPress: () => {
+                                this.setState({
+                                    isLoading: false,
+                                    refreshing: false,
+                                })
+                            }
+                        },
+                        {
+                            text: I18n.t(keys.Common.lblYes),
+                            onPress: () => {
+                                this.setState({
+                                    isLoading: true,
+                                })
+                                this.handleGetComments(false, true);
+                                this.handleGetNotes(false, false);
+                            }
+                        }
+                    ]
+                )
+            } else {
+                this.handleGetComments(false, true);
+                this.handleGetNotes(false, false);
+            }
         } else {
             this.setState({
-                isLoading: false
+                isLoading: false,
+                refreshing: false
             })
         }
     }

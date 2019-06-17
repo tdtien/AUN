@@ -22,7 +22,7 @@ class SarExplorer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isConnected: false,
+            isConnected: true,
             isLoading: false,
             refreshing: false,
             downloadMode: false,
@@ -85,7 +85,8 @@ class SarExplorer extends Component {
     }
 
     handleConnectivityChange = (isConnected) => {
-        this.setState({ isConnected: isConnected }, () => this.handleFetchData())
+        let isAlert = this.state.isConnected !== isConnected ? true : false;
+        this.setState({ isConnected: isConnected }, () => this.handleFetchData(isAlert))
     };
 
     handleFetchData = (isAlert = true) => {
