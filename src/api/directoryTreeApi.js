@@ -1,5 +1,5 @@
 // const userAPI = 'http://172.29.64.131:8080/user';
-const userAPI = 'http://3.18.106.12:8080/user';
+const userAPI = 'http://13.71.85.20:8080/user';
 
 export async function getDataSar(token, type = '', id = 0) {
     switch (type) {
