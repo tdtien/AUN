@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, ImageBackground, Image } from "react-native";
+import { StyleSheet, ImageBackground, Image, Platform } from "react-native";
 import { Container, Content, List, ListItem, Footer, FooterTab, Button, Icon, Text, Left, Body, Right, Thumbnail, } from "native-base";
 import Images from "../../assets/images";
 import { AppCommon } from "../../commons/commons";
@@ -22,7 +22,7 @@ class SideMenu extends Component {
         const { email, language } = this.props;
         return (
             <Container>
-                <Content>
+                <Content style={{ paddingTop: Platform.OS === 'ios' ? 20 : 0 }}>
                     <ImageBackground
                         source={Images.logo}
                         style={{
