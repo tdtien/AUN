@@ -40,7 +40,7 @@ class SarViewer extends Component {
         this.sarCache = new Cache({
             namespace: "sarViewerCache",
             policy: {
-                maxEntries: 50000
+                maxEntries: 1000
             },
             backend: AsyncStorage
         });
@@ -398,7 +398,7 @@ class SarViewer extends Component {
                                 contentContainerStyle={styles.contentContainer}
                             >
                                 <Placeholder
-                                    animation="shine"
+                                    animation="fade"
                                     isReady={!isLoading}
                                     whenReadyRender={() => (
                                         <TreeView
@@ -455,7 +455,7 @@ class SarViewer extends Component {
                                     }
                                 >
                                     <Placeholder
-                                        animation="shine"
+                                        animation="fade"
                                         isReady={refreshing ? !refreshing : !isLoadingContent}
                                         whenReadyRender={() => this.renderContent(this.state.data)}
                                     >
@@ -505,7 +505,7 @@ class SarViewer extends Component {
                                 contentContainerStyle={styles.contentContainer}
                             >
                                 <Placeholder
-                                    animation="shine"
+                                    animation="fade"
                                     isReady={!isLoading}
                                     whenReadyRender={() => (
                                         <TreeView
@@ -551,7 +551,7 @@ class SarViewer extends Component {
                                         }
                                     >
                                         <Placeholder
-                                            animation="shine"
+                                            animation="fade"
                                             isReady={refreshing ? !refreshing : !isLoadingContent}
                                             whenReadyRender={() => this.renderContent(this.state.data)}
                                         >

@@ -44,7 +44,7 @@ class SarExplorer extends Component {
         AppCommon.sarCache = new Cache({
             namespace: "sarEditorCache",
             policy: {
-                maxEntries: 50000
+                maxEntries: 1000
             },
             backend: AsyncStorage
         });
@@ -589,7 +589,7 @@ class SarExplorer extends Component {
                 <Placeholder
                     style={{ paddingVertical: 10, paddingHorizontal: 20, flexDirection: 'row', flex: 1 }}
                     isReady={refreshing ? !refreshing : !isLoading}
-                    animation="shine"
+                    animation="fade"
                     whenReadyRender={() => (
                         <SarItem
                             item={item}
@@ -613,7 +613,7 @@ class SarExplorer extends Component {
             <Placeholder
                 style={{ paddingVertical: 10, paddingHorizontal: 20, flexDirection: 'row', flex: 1 }}
                 isReady={refreshing ? !refreshing : !isLoading}
-                animation="shine"
+                animation="fade"
                 whenReadyRender={() => (
                     <SarFolder
                         item={item}
