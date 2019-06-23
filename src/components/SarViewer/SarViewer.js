@@ -381,6 +381,7 @@ class SarViewer extends Component {
                             percentage = 0
                         }
                     }}
+                    autoClosing={false}
                     menu={
                         <View style={styles.container}>
                             <Header
