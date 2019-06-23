@@ -183,7 +183,7 @@ class PDFViewer extends React.Component {
                     isLoading: false,
                     isUploading: false,
                 })
-                console.error('Error: ' + error);
+                console.log('Error: ' + error);
                 Alert.alert(I18n.t(keys.Common.lblError), error);
             });
     }
@@ -240,7 +240,7 @@ class PDFViewer extends React.Component {
                     isLoading: false,
                     refreshing: false,
                 })
-                console.error('Error when download: ' + error);
+                console.log('Error when download: ' + error);
                 Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
             })
     }

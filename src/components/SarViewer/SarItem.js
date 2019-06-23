@@ -26,7 +26,7 @@ export default class SarItem extends Component {
                 })
                 .catch((err) => {
                     let error = 'Error when check url: ' + err;
-                    console.error(error);
+                    console.log(error);
                     Alert.alert(I18n.t(keys.Common.lblError), error);
                 });
         } else {

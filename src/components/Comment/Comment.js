@@ -96,7 +96,7 @@ class Comment extends Component {
                     isLoading: false,
                     refreshing: false,
                 })
-                console.error('Error when get comments: ' + error);
+                console.log('Error when get comments: ' + error);
                 Alert.alert(I18n.t(keys.Common.lblError), error);
             });
     }
@@ -120,7 +120,7 @@ class Comment extends Component {
                     isLoading: false,
                     refreshing: false,
                 })
-                console.error('Error when get notes: ' + error);
+                console.log('Error when get notes: ' + error);
                 Alert.alert(I18n.t(keys.Common.lblError), error);
             });
     }

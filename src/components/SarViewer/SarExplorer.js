@@ -228,7 +228,7 @@ class SarExplorer extends Component {
                                     }, () => {
                                         AppCommon.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
                                             if (error) {
-                                                console.error(error)
+                                                console.log(error)
                                             }
                                         })
                                     })
@@ -239,7 +239,7 @@ class SarExplorer extends Component {
                                         refreshing: false,
                                         data: []
                                     })
-                                    console.error(error)
+                                    console.log(error)
                                 })
                         } else {
                             this.mounted && this.setState({
@@ -249,7 +249,7 @@ class SarExplorer extends Component {
                             }, () => {
                                 AppCommon.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
                                     if (error) {
-                                        console.error(error)
+                                        console.log(error)
                                     }
                                 })
                             })
@@ -268,7 +268,7 @@ class SarExplorer extends Component {
                         refreshing: false,
                         data: []
                     })
-                    console.error(error)
+                    console.log(error)
                 })
         })
     }
@@ -289,7 +289,7 @@ class SarExplorer extends Component {
             } else {
                 AppCommon.sarCache.getItem(this.generateCacheKey(item), (error, value) => {
                     if (error) {
-                        console.error(error)
+                        console.log(error)
                     }
                     if (value) {
                         this.setState({ isLoading: false, refreshing: false, data: value })
@@ -414,7 +414,7 @@ class SarExplorer extends Component {
                         this.mounted && this.setState({
                             isDownloading: false
                         })
-                        console.error('Error when download: ' + error);
+                        console.log('Error when download: ' + error);
                         Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
                     });
             })
@@ -434,7 +434,7 @@ class SarExplorer extends Component {
                         this.mounted && this.setState({
                             isDownloading: false
                         })
-                        console.error('Error when download: ' + error);
+                        console.log('Error when download: ' + error);
                         Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
                     });
             })
@@ -455,7 +455,7 @@ class SarExplorer extends Component {
                         this.mounted && this.setState({
                             isDownloading: false
                         })
-                        console.error('Error when download: ' + error);
+                        console.log('Error when download: ' + error);
                         Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
                     });
             })
@@ -463,7 +463,6 @@ class SarExplorer extends Component {
             selectedData.forEach((selectedItem) => {
                 downloadCriterion(token, currentItem.id)
                     .then((responseJson) => {
-                        // console.log('responseJson: ' + JSON.stringify(responseJson.data));
                         if (responseJson && responseJson.success) {
                             let index = data.indexOf(selectedItem);
                             let filterData = responseJson.data;
@@ -492,7 +491,7 @@ class SarExplorer extends Component {
                         this.mounted && this.setState({
                             isDownloading: false
                         })
-                        console.error('Error when download: ' + error);
+                        console.log('Error when download: ' + error);
                         Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
                     });
             })
@@ -500,7 +499,6 @@ class SarExplorer extends Component {
             selectedData.forEach((selectedItem) => {
                 downloadSuggestion(token, selectedItem.id)
                     .then((responseJson) => {
-                        // console.log('responseJson: ' + JSON.stringify(responseJson.data));
                         if (responseJson && responseJson.success) {
                             let downloadFlow = {
                                 sarInfo: previousItem[0],
@@ -515,7 +513,7 @@ class SarExplorer extends Component {
                         this.mounted && this.setState({
                             isDownloading: false
                         })
-                        console.error('Error when download: ' + error);
+                        console.log('Error when download: ' + error);
                         Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
                     });
             })
@@ -551,7 +549,6 @@ class SarExplorer extends Component {
                         downloadItemType: type,
                         downloadFlow: downloadFlow
                     }
-                    // console.log('directoryInfo: ' + JSON.stringify(directoryInfo));
                     this.props.setDirectoryInfo(directoryInfo);
                     Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadSuccess));
                 }
@@ -559,7 +556,7 @@ class SarExplorer extends Component {
                 this.mounted && this.setState({
                     isDownloading: false
                 }, () => this.turnOffDownloadMode())
-                console.error('Error when download: ' + error);
+                console.log('Error when download: ' + error);
                 Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
             })
     }

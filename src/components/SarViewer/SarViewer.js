@@ -85,7 +85,7 @@ class SarViewer extends Component {
                     }, () => {
                         this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
                             if (error) {
-                                console.error(error)
+                                console.log(error)
                             }
                         })
                         if (typeof callback === 'function') {
@@ -98,7 +98,7 @@ class SarViewer extends Component {
             })
             .catch(error => {
                 this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
-                console.error(error)
+                console.log(error)
             })
     }
 
@@ -116,7 +116,6 @@ class SarViewer extends Component {
         getContentAllSar(token)
             .then(responeJson => {
                 if (responeJson && responeJson.success) {
-                    // console.log(responeJson.data)
                     responeJson.data.forEach((element) => {
                         element.index = element.id
                         element.internalId = _.uniqueId('tree_')
@@ -128,7 +127,7 @@ class SarViewer extends Component {
                     }, () => {
                         this.sarCache.setItem('root', this.state.dataTree, (error) => {
                             if (error) {
-                                console.error(error)
+                                console.log(error)
                             }
                         })
                     })
@@ -144,7 +143,7 @@ class SarViewer extends Component {
                     isLoading: false,
                     dataTree: []
                 })
-                console.error(error)
+                console.log(error)
             })
     }
 
@@ -168,7 +167,7 @@ class SarViewer extends Component {
                 let key = _.isEmpty(item) ? 'root' : `${item.key}${item.id}`
                 this.sarCache.getItem(key, (error, value) => {
                     if (error) {
-                        console.error(error)
+                        console.log(error)
                     }
                     if (value) {
                         this.setState({ isLoading: false, isLoadingContent: false })
@@ -194,7 +193,7 @@ class SarViewer extends Component {
             let key = _.isEmpty(item) ? 'root' : `${item.key}${item.id}`
             this.sarCache.getItem(key, (error, value) => {
                 if (error) {
-                    console.error(error)
+                    console.log(error)
                 }
                 this.setState({ isLoading: false, isLoadingContent: false })
                 if (key === 'root') {

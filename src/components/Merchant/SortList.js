@@ -111,7 +111,7 @@ class SortList extends Component {
                     })
                     .catch((error) => {
                         this.setState({ isLoading: false })
-                        console.error(error);
+                        console.log(error);
                     });
             }).catch(error => {
                 this.setState({ isLoading: false })
