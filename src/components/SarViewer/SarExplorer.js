@@ -49,6 +49,14 @@ class SarExplorer extends Component {
             backend: AsyncStorage
         });
 
+        if (AppCommon.sarCache) {
+            AppCommon.sarCache.clearAll(function(err) {
+                if (err) {
+                    console.log(err)
+                }
+            })
+        }
+
         this.mounted = false
     }
 
@@ -242,10 +250,14 @@ class SarExplorer extends Component {
                                     console.log(error)
                                 })
                         } else {
+                            var data = responseJson.data || [];
+                            if (type === 'sars' && !this.props.admin) {
+                                data = responseJson.data.filter(item => item.role !== 'REVIEWER')
+                            }
                             this.mounted && this.setState({
                                 isLoading: false,
                                 refreshing: false,
-                                data: responseJson.data || []
+                                data: data
                             }, () => {
                                 AppCommon.sarCache.setItem(this.generateCacheKey(item), this.state.data || [], (error) => {
                                     if (error) {
