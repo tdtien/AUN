@@ -152,7 +152,7 @@ class SarViewer extends Component {
     };
 
     handleRefresh = () => {
-        this.setState({ refreshing: true }, () => this.handleRequest(this.state.currentItem, true));
+        this.setState({ refreshing: true, position: 10 }, () => this.handleRequest(this.state.currentItem, true));
     }
 
     handleRequest = (item = {}, isRefresh = false, callback = {}) => {
