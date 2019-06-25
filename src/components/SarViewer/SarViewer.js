@@ -29,6 +29,7 @@ class SarViewer extends Component {
             isLoadingContent: false,
             isConnected: true,
             refreshing: false,
+            refreshingTree: false,
             data: {},
             currentItem: {},
             previousItem: [],
@@ -124,6 +125,7 @@ class SarViewer extends Component {
                     this.mounted && this.setState({
                         dataTree: responeJson.data || [],
                         isLoading: false,
+                        refreshingTree: false
                     }, () => {
                         this.sarCache.setItem('root', this.state.dataTree, (error) => {
                             if (error) {
@@ -134,14 +136,16 @@ class SarViewer extends Component {
                 } else {
                     this.mounted && this.setState({
                         isLoading: false,
-                        dataTree: []
+                        dataTree: [],
+                        refreshingTree: false
                     })
                 }
             })
             .catch(error => {
                 this.mounted && this.setState({
                     isLoading: false,
-                    dataTree: []
+                    dataTree: [],
+                    refreshingTree: false
                 })
                 console.log(error)
             })
@@ -153,6 +157,10 @@ class SarViewer extends Component {
 
     handleRefresh = () => {
         this.setState({ refreshing: true, position: 10 }, () => this.handleRequest(this.state.currentItem, true));
+    }
+
+    handleRefreshTree = () => {
+        this.setState({ refreshingTree: true }, () => this.handleRequest({}, true));
     }
 
     handleRequest = (item = {}, isRefresh = false, callback = {}) => {
@@ -366,7 +374,8 @@ class SarViewer extends Component {
             treeWidth,
             contentWidth,
             refreshing,
-            isTablet
+            isTablet,
+            refreshingTree
         } = this.state
         if (!isTablet) {
             return (
@@ -395,10 +404,17 @@ class SarViewer extends Component {
                             <ScrollView
                                 style={styles.container}
                                 contentContainerStyle={styles.contentContainer}
+                                refreshControl={
+                                    <RefreshControl
+                                        style={{ backgroundColor: '#E0FFFF' }}
+                                        refreshing={refreshingTree}
+                                        onRefresh={this.handleRefreshTree}
+                                    />
+                                }
                             >
                                 <Placeholder
                                     animation="fade"
-                                    isReady={!isLoading}
+                                    isReady={refreshingTree ? !refreshingTree : !isLoading}
                                     whenReadyRender={() => (
                                         <TreeView
                                             ref={ref => (this.treeView = ref)}
@@ -502,10 +518,17 @@ class SarViewer extends Component {
                             <ScrollView
                                 style={styles.container}
                                 contentContainerStyle={styles.contentContainer}
+                                refreshControl={
+                                    <RefreshControl
+                                        style={{ backgroundColor: '#E0FFFF' }}
+                                        refreshing={refreshingTree}
+                                        onRefresh={this.handleRefreshTree}
+                                    />
+                                }
                             >
                                 <Placeholder
                                     animation="fade"
-                                    isReady={!isLoading}
+                                    isReady={refreshingTree ? !refreshingTree : !isLoading}
                                     whenReadyRender={() => (
                                         <TreeView
                                             ref={ref => (this.treeView = ref)}

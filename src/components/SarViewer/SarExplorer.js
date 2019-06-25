@@ -251,7 +251,7 @@ class SarExplorer extends Component {
                                 })
                         } else {
                             var data = responseJson.data || [];
-                            if (type === 'sars' && !this.props.admin) {
+                            if (type === 'sars') {
                                 data = responseJson.data.filter(item => item.role !== 'REVIEWER')
                             }
                             this.mounted && this.setState({
