@@ -79,7 +79,7 @@ class Comment extends Component {
 
     handleGetComments = (scrollToEnd = false, priority = true) => {
         const { token, subCriterionInfo } = this.props;
-        getAllComments(token, subCriterionInfo.id)
+        getAllComments(token, subCriterionInfo.id, this.props.isEditor)
             .then((responseJson) => {
                 if (this.mounted) {
                     this.setState({
@@ -103,7 +103,7 @@ class Comment extends Component {
 
     handleGetNotes = (scrollToEnd = false, priority = false) => {
         const { token, subCriterionInfo } = this.props;
-        getAllNotes(token, subCriterionInfo.id)
+        getAllNotes(token, subCriterionInfo.id, this.props.isEditor)
             .then((responseJson) => {
                 if (this.mounted) {
                     this.setState({
@@ -207,6 +207,7 @@ class Comment extends Component {
             "isNote": activeTabIndex,
             "subCriterionId": this.props.subCriterionInfo.id,
             "email": this.props.email,
+            "isEditor": this.props.isEditor,
         }
         addComment(this.props.token, data)
             .then((result) => {

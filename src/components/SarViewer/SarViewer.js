@@ -335,7 +335,7 @@ class SarViewer extends Component {
                     <TouchableOpacity
                         activeOpacity={0.8}
                         style={{ alignSelf: 'flex-end', flexDirection: 'row' }}
-                        onPress={() => Actions.comment({ subCriterionInfo: item })}
+                        onPress={() => Actions.comment({ subCriterionInfo: item, isEditor: 0 })}
                         onLayout={({ nativeEvent }) => {
                             this.state.position += nativeEvent.layout.height
                         }}

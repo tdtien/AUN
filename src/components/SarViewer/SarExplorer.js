@@ -378,7 +378,7 @@ class SarExplorer extends Component {
     }
 
     handleComment = (item) => {
-        Actions.comment({ subCriterionInfo: item })
+        Actions.comment({ subCriterionInfo: item, isEditor: 1 })
     }
 
     turnOnDownloadMode = () => {

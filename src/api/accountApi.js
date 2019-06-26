@@ -84,9 +84,10 @@ export async function convert2Pdf(token, data) {
 }
 
 
-export async function getAllComments(token, subCriterionId) {
+export async function getAllComments(token, subCriterionId, isEditor) {
+    let commentApi = isEditor === 1 ? `${userAPI}/editor/comments/subcriterions/${subCriterionId}` : `${userAPI}/reviewer/comments/subcriterions/${subCriterionId}`
     return new Promise((resolve, reject) => {
-        fetch(`${userAPI}/comments/subcriterions/${subCriterionId}`, {
+        fetch(commentApi, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -98,9 +99,10 @@ export async function getAllComments(token, subCriterionId) {
     });
 }
 
-export async function getAllNotes(token, subCriterionId) {
+export async function getAllNotes(token, subCriterionId, isEditor) {
+    let noteApi = isEditor === 1 ? `${userAPI}/editor/notes/subcriterions/${subCriterionId}` : `${userAPI}/reviewer/notes/subcriterions/${subCriterionId}`
     return new Promise((resolve, reject) => {
-        fetch(`${userAPI}/notes/subcriterions/${subCriterionId}`, {
+        fetch(noteApi, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

@@ -58,9 +58,9 @@ export async function getContentSar(token, id) {
     })
 }
 
-export async function getAllCriterions(token, sarId) {
+export async function getAllCriterions(token, reversionId) {
     return new Promise((resolve, reject) => {
-        fetch(`${userAPI}/sars/${sarId}/criterions`, {
+        fetch(`${userAPI}/sars/versions/${reversionId}/criterions`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
