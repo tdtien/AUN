@@ -28,9 +28,9 @@ export async function getAllSars(token) {
     });
 }
 
-export async function getContentAllSar(token) {
+export async function getAllAvailableSar(token) {
     return new Promise((resolve, reject) => {
-        fetch(`${userAPI}/sars/content`, {
+        fetch(`${userAPI}/reviewer/sars`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -43,9 +43,24 @@ export async function getContentAllSar(token) {
     })
 }
 
-export async function getContentSar(token, id) {
+export async function getAllVersionSar(token, id) {
     return new Promise((resolve, reject) => {
-        fetch(`${userAPI}/sars/${id}/content`, {
+        fetch(`${userAPI}/reviewer/sars/${id}/versions`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    })
+}
+
+export async function getContentSar(token, id, ver) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/reviewer/sars/${id}/versions/${ver}/content`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

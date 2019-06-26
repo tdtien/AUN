@@ -7,7 +7,7 @@ import HTML from 'react-native-render-html';
 import { Actions } from "react-native-router-flux";
 import { connect } from 'react-redux';
 import Placeholder, { Line } from "rn-placeholder";
-import { getContentAllSar, getContentSar } from "../../api/directoryTreeApi";
+import { getAllAvailableSar, getContentSar, getAllVersionSar } from "../../api/directoryTreeApi";
 import { AppCommon } from "../../commons/commons";
 import { _searchTree } from "../../commons/utilitiesFunction";
 import I18n from '../../i18n/i18n';
@@ -15,16 +15,32 @@ import keys from '../../i18n/keys';
 import BreadCrumb from "../Breadcrumb/Breadcrumb";
 import { Cache } from "react-native-cache";
 import SideMenu from "react-native-side-menu";
+import { IGNORED_TAGS, alterNode, makeCustomTableRenderer } from 'react-native-render-html-table-bridge';
+import ClickTable from './ClickTable';
+import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-menu";
 
 const window = Dimensions.get('window');
+
+const renderers = {
+    table: makeCustomTableRenderer(ClickTable)
+};
+
+const htmlConfig = {
+    alterNode,
+    renderers,
+    ignoredTags: IGNORED_TAGS,
+    onLinkPress: (e, href) => {
+        Linking.openURL(href)
+    }
+};
 
 class SarViewer extends Component {
     constructor(props) {
         super(props)
         this.state = {
             dataTree: [],
-            treeWidth: window.width * 1 / 3,
-            contentWidth: window.width * 2 / 3,
+            treeWidth: window.width * 1 / 4,
+            contentWidth: window.width * 3 / 4,
             isLoading: false,
             isLoadingContent: false,
             isConnected: true,
@@ -36,6 +52,7 @@ class SarViewer extends Component {
             position: 10,
             isTablet: window.height / window.width < 1.6,
             width: window.width,
+            versionList: []
         }
 
         this.sarCache = new Cache({
@@ -45,6 +62,12 @@ class SarViewer extends Component {
             },
             backend: AsyncStorage
         });
+
+        this.sarCache.clearAll(err => {
+            if (err) {
+                console.log(err)
+            }
+        })
 
         this.mounted = false
     }
@@ -76,25 +99,48 @@ class SarViewer extends Component {
 
     makeRemoteRequest = async (item, callback = {}) => {
         const { token } = this.props
-        getContentSar(token, item.id)
-            .then(response => {
-                if (response && response.success) {
-                    this.mounted && this.setState({
-                        isLoadingContent: false,
-                        refreshing: false,
-                        data: response.data || []
-                    }, () => {
-                        this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
-                            if (error) {
+        getAllVersionSar(token, item.id)
+            .then(responseVersion => {
+                if (responseVersion && responseVersion.success) {
+                    let versionList = responseVersion.data.filter(version => version.release === true)
+                    if (versionList.length > 0) {
+                        let lastVersion = versionList[0].version
+                        getContentSar(token, item.id, lastVersion)
+                            .then(response => {
+                                if (response && response.success) {
+                                    response.data.index = response.data.id
+                                    response.data.internalId = _.uniqueId('tree_')
+                                    this.generateIndex(response.data, response.data.index, response.data.id)
+                                    let foundIndex = this.state.dataTree.findIndex((value) => value === item)
+                                    if (foundIndex >= 0) {
+                                        this.state.dataTree[foundIndex] = response.data
+                                    }
+                                    this.mounted && this.setState({
+                                        isLoadingContent: false,
+                                        refreshing: false,
+                                        data: response.data || [],
+                                        versionList: versionList
+                                    }, () => {
+                                        this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
+                                            if (error) {
+                                                console.log(error)
+                                            }
+                                        })
+                                        if (typeof callback === 'function') {
+                                            setTimeout(callback, 100)
+                                        }
+                                    })
+                                } else {
+                                    this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
+                                }
+                            })
+                            .catch(error => {
+                                this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
                                 console.log(error)
-                            }
-                        })
-                        if (typeof callback === 'function') {
-                            setTimeout(callback, 100)
-                        }
-                    })
-                } else {
-                    this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
+                            })
+                    } else {
+                        this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
+                    }
                 }
             })
             .catch(error => {
@@ -114,7 +160,7 @@ class SarViewer extends Component {
 
     makeRemoteRequestTree = async () => {
         const { token } = this.props;
-        getContentAllSar(token)
+        getAllAvailableSar(token)
             .then(responeJson => {
                 if (responeJson && responeJson.success) {
                     responeJson.data.forEach((element) => {
@@ -227,10 +273,10 @@ class SarViewer extends Component {
         if (item.key === 'sar') {
             if (!_.isEmpty(currentItem)) {
                 if (item.id !== currentItem.id) {
-                    this.setState({ isLoadingContent: true, position: 10, currentItem: item }, () => this.handleRequest(item))
+                    this.setState({ isLoadingContent: true, position: 10, currentItem: item, versionList: [] }, () => this.handleRequest(item))
                 }
             } else {
-                this.setState({ isLoadingContent: true, position: 10, currentItem: item }, () => this.handleRequest(item))
+                this.setState({ isLoadingContent: true, position: 10, currentItem: item, versionList: [] }, () => this.handleRequest(item))
             }
         } else {
             if (item.rootId !== currentItem.id) {
@@ -252,6 +298,43 @@ class SarViewer extends Component {
         }
     }
 
+    changeVersionContent = (item) => {
+        const { token } = this.props
+        this.setState({ isLoadingContent: true, position: 10 })
+        getContentSar(token, item.sarId, item.version)
+            .then(response => {
+                if (response && response.success) {
+                    response.data.index = response.data.id
+                    response.data.internalId = _.uniqueId('tree_')
+                    this.generateIndex(response.data, response.data.index, response.data.id)
+                    let foundIndex = this.state.dataTree.findIndex((value) => value.id === item.id)
+                    if (foundIndex >= 0) {
+                        this.state.dataTree[foundIndex] = response.data
+                    }
+                    this.mounted && this.setState({
+                        isLoadingContent: false,
+                        refreshing: false,
+                        data: response.data || [],
+                    }, () => {
+                        this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
+                            if (error) {
+                                console.log(error)
+                            }
+                        })
+                        if (typeof callback === 'function') {
+                            setTimeout(callback, 100)
+                        }
+                    })
+                } else {
+                    this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
+                }
+            })
+            .catch(error => {
+                this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
+                console.log(error)
+            })
+    }
+
     putOffSet = (item, position = 0) => {
         let itemInTreeResult = _searchTree(this.state.dataTree, (node) => node.id === item.id && node.key === item.key)
         if (itemInTreeResult.length > 0) {
@@ -265,9 +348,10 @@ class SarViewer extends Component {
         if (Math.floor(width) !== Math.floor(this.state.width)) {
             this.setState({
                 width: width,
-                treeWidth: width * 1 / 3,
-                contentWidth: width * 2 / 3,
-                isTablet: height / width < 1.6
+                treeWidth: width * 1 / 4,
+                contentWidth: width * 3 / 4,
+                isTablet: height / width < 1.6,
+                position: 10
             })
         }
     }
@@ -282,7 +366,7 @@ class SarViewer extends Component {
                         ) : (
                                 'information'
                             )
-                    )} style={{ paddingRight: 5, color: item.commentCount > 0 ? AppCommon.colors : '#cccccc', fontSize: 20 }} />
+                    )} style={{ paddingRight: 5, color: item.commentCount > 0 || item.noteCount > 0 ? AppCommon.colors : '#cccccc', fontSize: item.commentCount > 0 || item.noteCount > 0 ? 25 : 20 }} />
                     <Text style={{ color: 'black', fontWeight: item.collapsed != null && !item.collapsed ? 'bold' : 'normal' }}>{`${item.index}. ${item.name}`}</Text>
                 </View>
             </View>
@@ -321,46 +405,55 @@ class SarViewer extends Component {
     }
 
     renderChildren = (items, rootIndex) => {
-        return items.map((item, index) => (
-            <View
-                key={_.uniqueId()}
-            >
-                {item.name && <Text
-                    onLayout={({ nativeEvent }) => {
-                        this.putOffSet(item, this.state.position)
-                        this.state.position += nativeEvent.layout.height
-                    }}
-                    style={{ fontSize: 16, paddingLeft: 10, fontWeight: 'bold', color: 'black' }}>{`${rootIndex}.${index + 1}. ${item.name}`}</Text>}
-                {item.key === 'subCriterion' &&
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        style={{ alignSelf: 'flex-end', flexDirection: 'row' }}
-                        onPress={() => Actions.comment({ subCriterionInfo: item, isEditor: 0 })}
+        return items.map((item, index) => {
+            if (item.content) {
+                item.content = item.content.replace(/windowtext/g, '#000000');
+            }
+            return (
+                <View
+                    key={_.uniqueId()}
+                >
+                    {item.name && <Text
                         onLayout={({ nativeEvent }) => {
+                            this.putOffSet(item, this.state.position)
                             this.state.position += nativeEvent.layout.height
                         }}
-                    >
-                        <Text style={{ paddingHorizontal: 5, color: item.commentCount > 0 ? AppCommon.colors : '#cccccc' }}>{item.commentCount}</Text>
-                        <Icon name="comment" type="MaterialIcons" style={{ color: item.commentCount > 0 ? AppCommon.colors : '#cccccc', fontSize: 13 }} />
-                        <Text style={{ paddingHorizontal: 5, color: item.noteCount > 0 ? AppCommon.colors : '#cccccc' }}>{item.noteCount}</Text>
-                        <Icon name="note" type="SimpleLineIcons" style={{ color: item.noteCount > 0 ? AppCommon.colors : '#cccccc', fontSize: 13 }} />
-                    </TouchableOpacity>
-                }
-                {item.content &&
-                    <View onLayout={({ nativeEvent }) => {
-                        this.state.position += nativeEvent.layout.height
-                    }}>
-                        <HTML
-                            html={item.content}
-                            imagesMaxWidth={this.state.contentWidth}
-                            onLinkPress={(evt, href) => Linking.openURL(href)}
-                            baseFontStyle={{ color: 'black' }}
-                        />
-                    </View>
-                }
-                {item.children && this.renderChildren(item.children, `${rootIndex}.${index + 1}`)}
-            </View>
-        ))
+                        style={{ fontSize: 16, paddingLeft: 10, fontWeight: 'bold', color: 'black' }}>{`${rootIndex}.${index + 1}. ${item.name}`}</Text>}
+                    {item.key === 'subCriterion' &&
+                        <TouchableOpacity
+                            activeOpacity={0.8}
+                            style={{ alignSelf: 'flex-end', flexDirection: 'row' }}
+                            onPress={() => Actions.comment({ subCriterionInfo: item })}
+                            onLayout={({ nativeEvent }) => {
+                                this.state.position += nativeEvent.layout.height
+                            }}
+                        >
+                            <Text style={{ paddingHorizontal: 5, color: item.commentCount > 0 ? AppCommon.colors : '#cccccc' }}>{item.commentCount}</Text>
+                            <Icon name="comment" type="MaterialIcons" style={{ color: item.commentCount > 0 ? AppCommon.colors : '#cccccc', fontSize: 13 }} />
+                            <Text style={{ paddingHorizontal: 5, color: item.noteCount > 0 ? AppCommon.colors : '#cccccc' }}>{item.noteCount}</Text>
+                            <Icon name="note" type="SimpleLineIcons" style={{ color: item.noteCount > 0 ? AppCommon.colors : '#cccccc', fontSize: 13 }} />
+                        </TouchableOpacity>
+                    }
+                    {item.content &&
+                        <View
+                            onLayout={({ nativeEvent }) => {
+                                this.state.position += nativeEvent.layout.height
+                            }}
+                            style={{ flex: 1 }}
+                        >
+                            <HTML
+                                html={`${item.content}`}
+                                imagesMaxWidth={this.state.isTablet ? this.state.contentWidth : this.state.width}
+                                onLinkPress={(evt, href) => Linking.openURL(href)}
+                                baseFontStyle={{ color: 'black' }}
+                                {...htmlConfig}
+                            />
+                        </View>
+                    }
+                    {item.children && this.renderChildren(item.children, `${rootIndex}.${index + 1}`)}
+                </View>
+            )
+        })
     }
 
     render() {
@@ -432,7 +525,7 @@ class SarViewer extends Component {
                             </ScrollView>
                         </View>
                     }
-                    edgeHitWidth={this.state.width}
+                    edgeHitWidth={this.state.width / 2}
                 >
                     <Container onLayout={this.onLayout}>
                         <Header
@@ -446,6 +539,22 @@ class SarViewer extends Component {
                             <Body style={{ flex: 1 }}>
                                 <Title style={styles.header}>{I18n.t(keys.SarViewer.Main.lblTitle)}</Title>
                             </Body>
+                            {!_.isEmpty(currentItem) && !_.isEmpty(this.state.data) ? <View style={styles.headerMoreButton}>
+                                <Menu>
+                                    <MenuTrigger customStyles={triggerStyles}>
+                                        <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                                    </MenuTrigger>
+                                    <MenuOptions>
+                                        {this.state.versionList.map((item) => (
+                                            <MenuOption onSelect={() => this.changeVersionContent(item)} key={_.uniqueId()}>
+                                                <View style={styles.popupItem}>
+                                                    <Text style={styles.popupItemText}>{`Version ${item.version}`}</Text>
+                                                </View>
+                                            </MenuOption>
+                                        ))}
+                                    </MenuOptions>
+                                </Menu>
+                            </View> : <View />}
                         </Header>
                         <BreadCrumb
                             isConnected={isConnected}
@@ -497,6 +606,22 @@ class SarViewer extends Component {
                     <Body style={{ flex: 1 }}>
                         <Title style={styles.header}>{I18n.t(keys.SarViewer.Main.lblTitle)}</Title>
                     </Body>
+                    {!_.isEmpty(currentItem) && !_.isEmpty(this.state.data) ? <View style={styles.headerMoreButton}>
+                        <Menu>
+                            <MenuTrigger customStyles={triggerStyles}>
+                                <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+                            </MenuTrigger>
+                            <MenuOptions>
+                                {this.state.versionList.map((item) => (
+                                    <MenuOption onSelect={() => this.changeVersionContent(item)} key={_.uniqueId()}>
+                                        <View style={styles.popupItem}>
+                                            <Text style={styles.popupItemText}>{`Version ${item.version}`}</Text>
+                                        </View>
+                                    </MenuOption>
+                                ))}
+                            </MenuOptions>
+                        </Menu>
+                    </View> : <View />}
                 </Header>
                 <BreadCrumb
                     isConnected={isConnected}
@@ -591,6 +716,13 @@ class SarViewer extends Component {
     }
 }
 
+const triggerStyles = {
+    triggerWrapper: {
+        padding: 10,
+    },
+    TriggerTouchableComponent: TouchableOpacity,
+};
+
 const styles = StyleSheet.create({
     centerView: {
         flex: 1,
@@ -600,6 +732,10 @@ const styles = StyleSheet.create({
     header: {
         alignSelf: 'center',
         color: 'white'
+    },
+    headerMoreButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     container: {
         flex: 1,
@@ -615,6 +751,18 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 10
     },
+    popupItem: {
+        flex: 1,
+        flexDirection: 'row',
+        marginVertical: 10,
+        marginHorizontal: 20,
+        alignItems: 'center',
+    },
+    popupItemText: {
+        paddingLeft: 25,
+        fontSize: 17,
+        color: '#2F4F4F'
+    }
 })
 
 const mapDispatchToProps = dispatch => {

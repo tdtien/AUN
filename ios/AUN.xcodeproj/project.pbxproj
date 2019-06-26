@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -88,6 +87,7 @@
 		F7D1C478540544249F717AEA /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C373520587EC48139AC0844D /* FontAwesome.ttf */; };
 		FBCE3DD0F35E4CF0AFC78910 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F342551F630A4883BE468DE9 /* FontAwesome5_Solid.ttf */; };
 		FDB3D71B0A2E4B0681FDE902 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 13EC82A0AE824FCB90FBC8E5 /* SimpleLineIcons.ttf */; };
+		DF604BA045A74BC38C882C2D /* libRNCWebView.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9F761BF52E9415DA2CCAE8D /* libRNCWebView.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -549,6 +549,8 @@
 		EF9011A7710946DDBD607556 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/native-base/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		F342551F630A4883BE468DE9 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		F9EBA08AC740448697F169B0 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
+		FB1882FB4C2345639EBE6CF9 /* RNCWebView.xcodeproj */ = {isa = PBXFileReference; name = "RNCWebView.xcodeproj"; path = "../node_modules/react-native-webview/ios/RNCWebView.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		D9F761BF52E9415DA2CCAE8D /* libRNCWebView.a */ = {isa = PBXFileReference; name = "libRNCWebView.a"; path = "libRNCWebView.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -588,6 +590,7 @@
 				768434B987F8434B8B86500A /* libRNImagePicker.a in Frameworks */,
 				363B18E1E68246BA976C48E9 /* libRNDocumentPicker.a in Frameworks */,
 				561F1C91425941EF9A7200E4 /* libRNI18n.a in Frameworks */,
+				DF604BA045A74BC38C882C2D /* libRNCWebView.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -828,6 +831,7 @@
 				98A077364E8B4B6CB105D8C6 /* RNImagePicker.xcodeproj */,
 				AAB4A879161F4B9FB15AE495 /* RNDocumentPicker.xcodeproj */,
 				11E3A88BEDE3490291380A26 /* RNI18n.xcodeproj */,
+				FB1882FB4C2345639EBE6CF9 /* RNCWebView.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1711,11 +1715,15 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 				);
 				INFOPLIST_FILE = AUNTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1744,11 +1752,15 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 				);
 				INFOPLIST_FILE = AUNTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1778,6 +1790,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 				);
 				INFOPLIST_FILE = AUN/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1811,6 +1824,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 				);
 				INFOPLIST_FILE = AUN/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1850,10 +1864,14 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 				);
 				INFOPLIST_FILE = "AUN-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1890,10 +1908,14 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 				);
 				INFOPLIST_FILE = "AUN-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1929,10 +1951,14 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 				);
 				INFOPLIST_FILE = "AUN-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1968,10 +1994,14 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
+					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
 				);
 				INFOPLIST_FILE = "AUN-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
