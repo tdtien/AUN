@@ -52,8 +52,6 @@ class SarViewer extends Component {
             position: 10,
             isTablet: window.height / window.width < 1.6,
             width: window.width,
-            versionList: [],
-            currentVersion: 0
         }
 
         this.sarCache = new Cache({
@@ -114,8 +112,6 @@ class SarViewer extends Component {
                                         isLoadingContent: false,
                                         refreshing: false,
                                         data: response.data || [],
-                                        versionList: versionList,
-                                        currentVersion: lastVersion
                                     }, () => {
                                         this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
                                             if (error) {
@@ -275,10 +271,10 @@ class SarViewer extends Component {
         if (item.key === 'sar') {
             if (!_.isEmpty(currentItem)) {
                 if (item.id !== currentItem.id) {
-                    this.setState({ isLoadingContent: true, position: 10, currentItem: item, versionList: [] }, () => this.handleRequest(item))
+                    this.setState({ isLoadingContent: true, position: 10, currentItem: item }, () => this.handleRequest(item))
                 }
             } else {
-                this.setState({ isLoadingContent: true, position: 10, currentItem: item, versionList: [] }, () => this.handleRequest(item))
+                this.setState({ isLoadingContent: true, position: 10, currentItem: item }, () => this.handleRequest(item))
             }
         } else {
             if (item.rootId !== currentItem.id) {
@@ -300,43 +296,43 @@ class SarViewer extends Component {
         }
     }
 
-    changeVersionContent = (item) => {
-        const { token } = this.props
-        this.setState({ isLoadingContent: true, position: 10 })
-        getContentSar(token, item.sarId, item.version)
-            .then(response => {
-                if (response && response.success) {
-                    response.data.index = response.data.id
-                    response.data.internalId = _.uniqueId('tree_')
-                    this.generateIndex(response.data, response.data.index, response.data.id)
-                    let foundIndex = this.state.dataTree.findIndex((value) => value.id === item.id)
-                    if (foundIndex >= 0) {
-                        this.state.dataTree[foundIndex] = response.data
-                    }
-                    this.mounted && this.setState({
-                        isLoadingContent: false,
-                        refreshing: false,
-                        data: response.data || [],
-                        currentVersion: item.version
-                    }, () => {
-                        this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
-                            if (error) {
-                                console.log(error)
-                            }
-                        })
-                        if (typeof callback === 'function') {
-                            setTimeout(callback, 100)
-                        }
-                    })
-                } else {
-                    this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
-                }
-            })
-            .catch(error => {
-                this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
-                console.log(error)
-            })
-    }
+    // changeVersionContent = (item) => {
+    //     const { token } = this.props
+    //     this.setState({ isLoadingContent: true, position: 10 })
+    //     getContentSar(token, item.sarId, item.version)
+    //         .then(response => {
+    //             if (response && response.success) {
+    //                 response.data.index = response.data.id
+    //                 response.data.internalId = _.uniqueId('tree_')
+    //                 this.generateIndex(response.data, response.data.index, response.data.id)
+    //                 let foundIndex = this.state.dataTree.findIndex((value) => value.id === item.id)
+    //                 if (foundIndex >= 0) {
+    //                     this.state.dataTree[foundIndex] = response.data
+    //                 }
+    //                 this.mounted && this.setState({
+    //                     isLoadingContent: false,
+    //                     refreshing: false,
+    //                     data: response.data || [],
+    //                     currentVersion: item.version
+    //                 }, () => {
+    //                     this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
+    //                         if (error) {
+    //                             console.log(error)
+    //                         }
+    //                     })
+    //                     if (typeof callback === 'function') {
+    //                         setTimeout(callback, 100)
+    //                     }
+    //                 })
+    //             } else {
+    //                 this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
+    //             }
+    //         })
+    //         .catch(error => {
+    //             this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
+    //             console.log(error)
+    //         })
+    // }
 
     putOffSet = (item, position = 0) => {
         let itemInTreeResult = _searchTree(this.state.dataTree, (node) => node.id === item.id && node.key === item.key)
@@ -471,8 +467,7 @@ class SarViewer extends Component {
             contentWidth,
             refreshing,
             isTablet,
-            refreshingTree,
-            currentVersion
+            refreshingTree
         } = this.state
         if (!isTablet) {
             return (
@@ -543,25 +538,6 @@ class SarViewer extends Component {
                             <Body style={{ flex: 1 }}>
                                 <Title style={styles.header}>{I18n.t(keys.SarViewer.Main.lblTitle)}</Title>
                             </Body>
-                            {!_.isEmpty(currentItem) && !_.isEmpty(this.state.data) ? <View style={styles.headerMoreButton}>
-                                <Menu>
-                                    <MenuTrigger customStyles={triggerStyles}>
-                                        <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                                    </MenuTrigger>
-                                    <MenuOptions>
-                                        {this.state.versionList.map((item) => (
-                                            <MenuOption onSelect={() => this.changeVersionContent(item)} key={_.uniqueId()}>
-                                                <View style={styles.popupItem}>
-                                                    {item.version === currentVersion ?
-                                                        <Icon name={AppCommon.icon("checkmark")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} /> :
-                                                        <View />}
-                                                    <Text style={styles.popupItemText}>{`Version ${item.version}`}</Text>
-                                                </View>
-                                            </MenuOption>
-                                        ))}
-                                    </MenuOptions>
-                                </Menu>
-                            </View> : <View />}
                         </Header>
                         <BreadCrumb
                             isConnected={isConnected}
@@ -613,25 +589,6 @@ class SarViewer extends Component {
                     <Body style={{ flex: 1 }}>
                         <Title style={styles.header}>{I18n.t(keys.SarViewer.Main.lblTitle)}</Title>
                     </Body>
-                    {!_.isEmpty(currentItem) && !_.isEmpty(this.state.data) ? <View style={styles.headerMoreButton}>
-                        <Menu>
-                            <MenuTrigger customStyles={triggerStyles}>
-                                <Icon name={AppCommon.icon("more")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                            </MenuTrigger>
-                            <MenuOptions>
-                                {this.state.versionList.map((item) => (
-                                    <MenuOption onSelect={() => this.changeVersionContent(item)} key={_.uniqueId()}>
-                                        <View style={styles.popupItem}>
-                                            {item.version === currentVersion ?
-                                                <Icon name={AppCommon.icon("checkmark")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} /> :
-                                                <View />}
-                                            <Text style={styles.popupItemText}>{`Version ${item.version}`}</Text>
-                                        </View>
-                                    </MenuOption>
-                                ))}
-                            </MenuOptions>
-                        </Menu>
-                    </View> : <View />}
                 </Header>
                 <BreadCrumb
                     isConnected={isConnected}
