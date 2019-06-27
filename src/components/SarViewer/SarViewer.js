@@ -52,7 +52,8 @@ class SarViewer extends Component {
             position: 10,
             isTablet: window.height / window.width < 1.6,
             width: window.width,
-            versionList: []
+            versionList: [],
+            currentVersion: 0
         }
 
         this.sarCache = new Cache({
@@ -62,12 +63,6 @@ class SarViewer extends Component {
             },
             backend: AsyncStorage
         });
-
-        this.sarCache.clearAll(err => {
-            if (err) {
-                console.log(err)
-            }
-        })
 
         this.mounted = false
     }
@@ -119,7 +114,8 @@ class SarViewer extends Component {
                                         isLoadingContent: false,
                                         refreshing: false,
                                         data: response.data || [],
-                                        versionList: versionList
+                                        versionList: versionList,
+                                        currentVersion: lastVersion
                                     }, () => {
                                         this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
                                             if (error) {
@@ -228,7 +224,13 @@ class SarViewer extends Component {
                         if (key === 'root') {
                             this.setState({ dataTree: value })
                         } else {
-                            this.setState({ data: value }, () => {
+                            let foundIndex = this.state.dataTree.findIndex((value) => value === item)
+                            if (foundIndex >= 0) {
+                                this.state.dataTree[foundIndex] = response.data
+                            }
+                            this.setState({
+                                data: value,
+                            }, () => {
                                 if (typeof callback === 'function') {
                                     setTimeout(callback, 100)
                                 }
@@ -315,6 +317,7 @@ class SarViewer extends Component {
                         isLoadingContent: false,
                         refreshing: false,
                         data: response.data || [],
+                        currentVersion: item.version
                     }, () => {
                         this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
                             if (error) {
@@ -423,7 +426,7 @@ class SarViewer extends Component {
                         <TouchableOpacity
                             activeOpacity={0.8}
                             style={{ alignSelf: 'flex-end', flexDirection: 'row' }}
-                            onPress={() => Actions.comment({ subCriterionInfo: item })}
+                            onPress={() => Actions.comment({ subCriterionInfo: item, isEditor: 0 })}
                             onLayout={({ nativeEvent }) => {
                                 this.state.position += nativeEvent.layout.height
                             }}
@@ -468,7 +471,8 @@ class SarViewer extends Component {
             contentWidth,
             refreshing,
             isTablet,
-            refreshingTree
+            refreshingTree,
+            currentVersion
         } = this.state
         if (!isTablet) {
             return (
@@ -548,6 +552,9 @@ class SarViewer extends Component {
                                         {this.state.versionList.map((item) => (
                                             <MenuOption onSelect={() => this.changeVersionContent(item)} key={_.uniqueId()}>
                                                 <View style={styles.popupItem}>
+                                                    {item.version === currentVersion ?
+                                                        <Icon name={AppCommon.icon("checkmark")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} /> :
+                                                        <View />}
                                                     <Text style={styles.popupItemText}>{`Version ${item.version}`}</Text>
                                                 </View>
                                             </MenuOption>
@@ -615,6 +622,9 @@ class SarViewer extends Component {
                                 {this.state.versionList.map((item) => (
                                     <MenuOption onSelect={() => this.changeVersionContent(item)} key={_.uniqueId()}>
                                         <View style={styles.popupItem}>
+                                            {item.version === currentVersion ?
+                                                <Icon name={AppCommon.icon("checkmark")} style={{ color: AppCommon.colors, fontSize: AppCommon.icon_size }} /> :
+                                                <View />}
                                             <Text style={styles.popupItemText}>{`Version ${item.version}`}</Text>
                                         </View>
                                     </MenuOption>
