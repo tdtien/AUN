@@ -224,9 +224,9 @@ class SarViewer extends Component {
                         if (key === 'root') {
                             this.setState({ dataTree: value })
                         } else {
-                            let foundIndex = this.state.dataTree.findIndex((value) => value === item)
+                            let foundIndex = this.state.dataTree.findIndex((value) => value.id === item.id)
                             if (foundIndex >= 0) {
-                                this.state.dataTree[foundIndex] = response.data
+                                this.state.dataTree[foundIndex] = value
                             }
                             this.setState({
                                 data: value,
