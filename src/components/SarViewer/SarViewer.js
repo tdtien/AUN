@@ -296,44 +296,6 @@ class SarViewer extends Component {
         }
     }
 
-    // changeVersionContent = (item) => {
-    //     const { token } = this.props
-    //     this.setState({ isLoadingContent: true, position: 10 })
-    //     getContentSar(token, item.sarId, item.version)
-    //         .then(response => {
-    //             if (response && response.success) {
-    //                 response.data.index = response.data.id
-    //                 response.data.internalId = _.uniqueId('tree_')
-    //                 this.generateIndex(response.data, response.data.index, response.data.id)
-    //                 let foundIndex = this.state.dataTree.findIndex((value) => value.id === item.id)
-    //                 if (foundIndex >= 0) {
-    //                     this.state.dataTree[foundIndex] = response.data
-    //                 }
-    //                 this.mounted && this.setState({
-    //                     isLoadingContent: false,
-    //                     refreshing: false,
-    //                     data: response.data || [],
-    //                     currentVersion: item.version
-    //                 }, () => {
-    //                     this.sarCache.setItem(`${item.key}${item.id}`, this.state.data, (error) => {
-    //                         if (error) {
-    //                             console.log(error)
-    //                         }
-    //                     })
-    //                     if (typeof callback === 'function') {
-    //                         setTimeout(callback, 100)
-    //                     }
-    //                 })
-    //             } else {
-    //                 this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
-    //             }
-    //         })
-    //         .catch(error => {
-    //             this.mounted && this.setState({ isLoadingContent: false, refreshing: false, data: [] })
-    //             console.log(error)
-    //         })
-    // }
-
     putOffSet = (item, position = 0) => {
         let itemInTreeResult = _searchTree(this.state.dataTree, (node) => node.id === item.id && node.key === item.key)
         if (itemInTreeResult.length > 0) {

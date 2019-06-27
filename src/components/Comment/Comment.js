@@ -35,6 +35,7 @@ import { getAllComments, getAllNotes, addComment } from '../../api/accountApi';
 import HTML from 'react-native-render-html';
 import I18n from '../../i18n/i18n';
 import keys from '../../i18n/keys';
+import { popWithUpdate } from '../../commons/utilitiesFunction';
 
 class Comment extends Component {
     constructor(props) {
@@ -248,7 +249,7 @@ class Comment extends Component {
                             iosBarStyle="light-content"
                             style={{ backgroundColor: AppCommon.colors }}
                         >
-                            <TouchableOpacity style={styles.menuButton} onPress={() => Actions.pop()} >
+                            <TouchableOpacity style={styles.menuButton} onPress={() => popWithUpdate()} >
                                 <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                             <Body style={{ flex: 1 }}>
