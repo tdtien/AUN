@@ -11,7 +11,7 @@ import { AppCommon } from "../../commons/commons";
 export default class SarFolder extends Component {
     render() {
         const { item, type, downloadMode, sceneKey, rootIndex, isConnected } = this.props;
-        let isCommentVisible = (isConnected && (sceneKey === 'sars' || sceneKey === 'criterions' || item.key === 'subCriterion')) ? true : false;
+        let isCommentVisible = (isConnected && (sceneKey === 'sars' || sceneKey === 'sarVersions' || sceneKey === 'criterions' || item.key === 'subCriterion')) ? true : false;
         let isSarVersion = item.key === 'sarVersion';
         if (item.disable) {
             return <View />

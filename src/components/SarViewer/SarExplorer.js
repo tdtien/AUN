@@ -256,7 +256,7 @@ class SarExplorer extends Component {
                                 data = responseJson.data.filter(item => item.role !== 'REVIEWER')
                             }
                             if (type === 'sarVersions') {
-                                data = responseJson.data.reverse();
+                                data = responseJson.data.sort((a, b) => parseInt(b.version) - parseInt(a.version))
                             }
                             this.mounted && this.setState({
                                 isLoading: false,
