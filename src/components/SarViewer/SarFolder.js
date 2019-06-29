@@ -12,8 +12,9 @@ export default class SarFolder extends Component {
     render() {
         const { item, type, downloadMode, sceneKey, rootIndex, isConnected } = this.props;
         let isCommentVisible = (isConnected && (sceneKey === 'sars' || sceneKey === 'criterions' || item.key === 'subCriterion')) ? true : false;
+        let isSarVersion = item.key === 'sarVersion';
         if (item.disable) {
-            return <View/>
+            return <View />
         }
         return (
             <TouchableOpacity
@@ -24,9 +25,17 @@ export default class SarFolder extends Component {
                 <View style={styles.item}>
                     <View style={isCommentVisible ? styles.leftItemV2 : styles.leftItem} >
                         <Icon name={AppCommon.icon("folder")} style={styles.icon} />
-                        <Text style={isCommentVisible ? styles.nameV2 : styles.name} numberOfLines={3}>
-                            {`${rootIndex}${item.index + 1}. ${typeof type === 'string' && type === 'evidences' ? item.content : item.name}`}
-                        </Text>
+                        <View style={{ flexDirection: 'column' }}>
+                            <Text style={isCommentVisible ? styles.nameV2 : styles.name} numberOfLines={3}>
+                                {`${rootIndex}${item.index + 1}. ${typeof type === 'string' && type === 'evidences' ? item.content : item.name}`}
+                            </Text>
+                            {isSarVersion ? (
+                                <Text style={{ color: 'gray', paddingLeft: 15, fontSize: 15 }}>
+                                {item.release ? `Released - Version ${item.version}` : 'Editing...'}
+                                </Text>
+                            ) : <View />
+                            }
+                        </View>
                     </View>
                     {isCommentVisible ? (
                         <View style={styles.commentArea}>
@@ -64,8 +73,9 @@ const styles = StyleSheet.create({
     leftItemV2: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginRight: 25,
         width: 0,
-        flexGrow: 1
+        flexGrow: 1,
     },
     name: {
         color: 'black',
@@ -76,12 +86,12 @@ const styles = StyleSheet.create({
         color: 'black',
         flexShrink: 1,
         paddingHorizontal: 15,
-        fontSize: AppCommon.font_size
+        fontSize: AppCommon.font_size,
     },
     commentArea: {
+        right: 0,
         flexDirection: 'row',
         alignItems: 'center',
-        right: 0
     },
     comment: {
         color: '#cccccc',

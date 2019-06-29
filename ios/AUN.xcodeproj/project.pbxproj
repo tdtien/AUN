@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -79,6 +80,7 @@
 		CCA66F1F6D914E4685E14AE9 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0810B454454A49E8B2DEE766 /* MaterialIcons.ttf */; };
 		D87398162D894055AF71BC42 /* Roboto_medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B20EF487A94945F3A0F6EFB6 /* Roboto_medium.ttf */; };
 		D9ECED32373C43C8929FEABE /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E2B83B13B1C949F2BA9E173A /* Feather.ttf */; };
+		DF604BA045A74BC38C882C2D /* libRNCWebView.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9F761BF52E9415DA2CCAE8D /* libRNCWebView.a */; };
 		E01683215087452E8C891DAA /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B1557AF336114815BC172415 /* Entypo.ttf */; };
 		ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED297162215061F000B7C4FE /* JavaScriptCore.framework */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
@@ -87,7 +89,6 @@
 		F7D1C478540544249F717AEA /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C373520587EC48139AC0844D /* FontAwesome.ttf */; };
 		FBCE3DD0F35E4CF0AFC78910 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F342551F630A4883BE468DE9 /* FontAwesome5_Solid.ttf */; };
 		FDB3D71B0A2E4B0681FDE902 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 13EC82A0AE824FCB90FBC8E5 /* SimpleLineIcons.ttf */; };
-		DF604BA045A74BC38C882C2D /* libRNCWebView.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9F761BF52E9415DA2CCAE8D /* libRNCWebView.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -434,6 +435,13 @@
 			remoteGlobalIDString = E01DD9DB1D2311A600C39062;
 			remoteInfo = RNDocumentPicker;
 		};
+		E8D55C1B22C7736C00CAB619 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FB1882FB4C2345639EBE6CF9 /* RNCWebView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNCWebView;
+		};
 		E8FCE20222B7D51F007B8BAA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 11E3A88BEDE3490291380A26 /* RNI18n.xcodeproj */;
@@ -538,6 +546,7 @@
 		D42CD89CFD764CBAAD2B6E86 /* imageCropPicker.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = imageCropPicker.xcodeproj; path = "../node_modules/react-native-image-crop-picker/ios/imageCropPicker.xcodeproj"; sourceTree = "<group>"; };
 		D4404CD1D13C4A769C460B76 /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		D74A7EFB92D14B8382683E03 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
+		D9F761BF52E9415DA2CCAE8D /* libRNCWebView.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNCWebView.a; sourceTree = "<group>"; };
 		DA0C5BA888084526B0B76801 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		DA1933ABDF874E3A98701250 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/native-base/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		E00DAD6AFECF43739E9DEFF1 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/native-base/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
@@ -549,8 +558,7 @@
 		EF9011A7710946DDBD607556 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/native-base/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		F342551F630A4883BE468DE9 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		F9EBA08AC740448697F169B0 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
-		FB1882FB4C2345639EBE6CF9 /* RNCWebView.xcodeproj */ = {isa = PBXFileReference; name = "RNCWebView.xcodeproj"; path = "../node_modules/react-native-webview/ios/RNCWebView.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		D9F761BF52E9415DA2CCAE8D /* libRNCWebView.a */ = {isa = PBXFileReference; name = "libRNCWebView.a"; path = "libRNCWebView.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		FB1882FB4C2345639EBE6CF9 /* RNCWebView.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNCWebView.xcodeproj; path = "../node_modules/react-native-webview/ios/RNCWebView.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -897,6 +905,7 @@
 				461B2E935F174764A41EDB2B /* libRNDocumentPicker.a */,
 				CFDDCBAC8D7B461BB19088C8 /* libRNI18n.a */,
 				6D20A946BC7C45E6A2D41F4A /* libRNI18n-tvOS.a */,
+				D9F761BF52E9415DA2CCAE8D /* libRNCWebView.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -963,6 +972,14 @@
 			isa = PBXGroup;
 			children = (
 				B57CEB3822A0FD67004380B7 /* libRNDocumentPicker.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E8D55C1822C7736C00CAB619 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E8D55C1C22C7736C00CAB619 /* libRNCWebView.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1085,6 +1102,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -1151,6 +1169,10 @@
 				{
 					ProductGroup = B51465BA225A503100B77CD0 /* Products */;
 					ProjectRef = 0F8D5E9C7D8644A08C279E10 /* ReactNativePermissions.xcodeproj */;
+				},
+				{
+					ProductGroup = E8D55C1822C7736C00CAB619 /* Products */;
+					ProjectRef = FB1882FB4C2345639EBE6CF9 /* RNCWebView.xcodeproj */;
 				},
 				{
 					ProductGroup = B57CEB3422A0FD67004380B7 /* Products */;
@@ -1517,6 +1539,13 @@
 			remoteRef = B57CEB3722A0FD67004380B7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		E8D55C1C22C7736C00CAB619 /* libRNCWebView.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNCWebView.a;
+			remoteRef = E8D55C1B22C7736C00CAB619 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		E8FCE20322B7D51F007B8BAA /* libRNI18n.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1715,7 +1744,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
-					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)..\node_modules\neact-native-webviewios",
 				);
 				INFOPLIST_FILE = AUNTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -1752,7 +1781,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
-					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)..\node_modules\neact-native-webviewios",
 				);
 				INFOPLIST_FILE = AUNTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -1790,7 +1819,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
-					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)..\node_modules\neact-native-webviewios",
 				);
 				INFOPLIST_FILE = AUN/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1824,7 +1853,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
-					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)..\node_modules\neact-native-webviewios",
 				);
 				INFOPLIST_FILE = AUN/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1864,7 +1893,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
-					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)..\node_modules\neact-native-webviewios",
 				);
 				INFOPLIST_FILE = "AUN-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1908,7 +1937,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
-					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)..\node_modules\neact-native-webviewios",
 				);
 				INFOPLIST_FILE = "AUN-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1951,7 +1980,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
-					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)..\node_modules\neact-native-webviewios",
 				);
 				INFOPLIST_FILE = "AUN-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1994,7 +2023,7 @@
 					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
 					"$(SRCROOT)..\node_modules\neact-native-document-pickeriosRNDocumentPicker",
 					"$(SRCROOT)..\node_modules\neact-native-i18nios",
-					"$(SRCROOT)\..\node_modules\react-native-webview\ios",
+					"$(SRCROOT)..\node_modules\neact-native-webviewios",
 				);
 				INFOPLIST_FILE = "AUN-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

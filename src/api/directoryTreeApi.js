@@ -4,6 +4,7 @@ const userAPI = 'http://13.71.85.20:8080/user';
 export async function getDataSar(token, type = '', id = 0) {
     switch (type) {
         case 'sars': return getAllSars(token)
+        case 'sarVersions': return getAllSarVersions(token, id)
         case 'criterions': return getAllCriterions(token, id)
         case 'subCriterions': return getAllSubCriterions(token, id)
         case 'suggestionTypes':
@@ -28,6 +29,21 @@ export async function getAllSars(token) {
     });
 }
 
+export async function getAllSarVersions(token, id) {
+    return new Promise((resolve, reject) => {
+        fetch(`${userAPI}/sars/${id}/versions`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'authorization': token
+            },
+        }).then(response => response.json())
+            .then(responseJson => resolve(responseJson))
+            .catch(error => reject(error));
+    })
+}
+
 export async function getAllAvailableSar(token) {
     return new Promise((resolve, reject) => {
         fetch(`${userAPI}/reviewer/sars`, {
@@ -43,7 +59,7 @@ export async function getAllAvailableSar(token) {
     })
 }
 
-export async function getAllVersionSar(token, id) {
+export async function getAllSarVewe(token, id) {
     return new Promise((resolve, reject) => {
         fetch(`${userAPI}/reviewer/sars/${id}/versions`, {
             method: 'GET',

@@ -32,6 +32,7 @@ class SarExplorer extends Component {
             currentIdx: 0,
             scene: [
                 { key: 'sars' },
+                { key: 'sarVersions' },
                 { key: 'criterions' },
                 { key: 'suggestionTypes' },
                 { key: 'suggestions' },
@@ -50,7 +51,7 @@ class SarExplorer extends Component {
         });
 
         if (AppCommon.sarCache) {
-            AppCommon.sarCache.clearAll(function(err) {
+            AppCommon.sarCache.clearAll(function (err) {
                 if (err) {
                     console.log(err)
                 }
@@ -253,6 +254,9 @@ class SarExplorer extends Component {
                             var data = responseJson.data || [];
                             if (type === 'sars') {
                                 data = responseJson.data.filter(item => item.role !== 'REVIEWER')
+                            }
+                            if (type === 'sarVersions') {
+                                data = responseJson.data.reverse();
                             }
                             this.mounted && this.setState({
                                 isLoading: false,
@@ -586,6 +590,10 @@ class SarExplorer extends Component {
         if (!isEmptyJson(currentItem)) {
             rootIndex += `${currentItem.index + 1}.`
         }
+        //Add name for version
+        if (item.key === 'sarVersion') {
+            item.name = currentItem.name;
+        }
         if (item.type && fileType.indexOf(item.type) >= 0) {
             let flow = {
                 sarInfo: previousItem[0],
@@ -763,7 +771,7 @@ class SarExplorer extends Component {
                             </View>
                         </Right>
                     </Footer>
-                ) : (currentScene.key === 'evidences' && previousItem[0].role !== 'REVIEWER' && isConnected ? (
+                ) : (currentScene.key === 'evidences' && previousItem[1].release === false && isConnected ? (
                     <AddButton
                         sarInfo={previousItem[0]}
                         criterionInfo={previousItem[1]}
