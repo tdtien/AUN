@@ -181,7 +181,8 @@ export default class ImageModal extends Component {
                         <TouchableOpacity
                             onPress={() => {
                                 if (this.props.directory === (undefined || null)) {
-                                    this.setState({ isDialogVisible: true });
+                                    this.handleSave('', 0);
+                                    // this.setState({ isDialogVisible: true });
                                 } else {
                                     let name = this.props.directory.substring(this.props.directory.lastIndexOf('/'), this.props.directory.length);
                                     this.handleSave(name, 0);

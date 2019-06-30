@@ -28,30 +28,25 @@ export default class AddButton extends Component {
     }
 
     handleShowFilePicker = () => {
-        if (Platform.OS === 'ios') {
-            let message = 'Your development team cannot be a Personal team.\r\nPlease use an actual account with the developer program in order to use the iOS document picker.'
-            Alert.alert('Notification', message);
-        } else {
-            DocumentPicker.show(
-                {
-                    filetype: [DocumentPickerUtil.pdf()],
-                },
-                (error, response) => {
-                    if (response !== null) {
-                        // console.log('URI : ' + response.uri);
-                        fileToBase64(response.uri)
-                            .then(database64 => {
-                                // console.log('database64 : ' + JSON.stringify(database64));
-                                this.setState({
-                                    database64Upload: database64,
-                                    fileNameUpload: response.fileName,
-                                    isShowFileUploadDialog: true
-                                })
+        DocumentPicker.show(
+            {
+                filetype: [DocumentPickerUtil.pdf()],
+            },
+            (error, response) => {
+                if (response !== null) {
+                    // console.log('URI : ' + response.uri);
+                    fileToBase64(response.uri)
+                        .then(database64 => {
+                            // console.log('database64 : ' + JSON.stringify(database64));
+                            this.setState({
+                                database64Upload: database64,
+                                fileNameUpload: response.fileName,
+                                isShowFileUploadDialog: true
                             })
-                    }
+                        })
                 }
-            )
-        }
+            }
+        )
     }
 
     handlePickerValue = (item) => {
@@ -156,11 +151,14 @@ export default class AddButton extends Component {
                 key: 'link',
                 title: I18n.t(keys.SarExplorer.AddButton.Main.lblOptionLink),
             },
-            {
+        ]
+        if (Platform.OS === 'android') {
+            let uploadByEvidence = {
                 key: 'evidence',
                 title: I18n.t(keys.SarExplorer.AddButton.Main.lblOptionEvidence),
             }
-        ]
+            pickerOptions.push(uploadByEvidence);
+        }
         return (
             <View>
                 <TouchableOpacity style={styles.addButton} onPress={() => isLoading ? null : this.toggleUploadPicker()}>
