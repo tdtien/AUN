@@ -277,7 +277,6 @@ export default class Merchant extends Component {
                 <CameraButton
                     folderPath={null}
                 />
-                <Loader loading={this.state.isLoading} />
             </Container>
         );
     }
