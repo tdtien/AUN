@@ -18,16 +18,23 @@ const directoryReducer = (state = initialState, action) => {
 
             let flow = action.data.downloadFlow;
             let sarArray = newState.directoryInfo[action.data.email];
+            // console.log('flow: ' + JSON.stringify(flow));
             let directoryTree = action.data.directoryTree
             console.log('old state: ' + JSON.stringify(newState.directoryInfo));
             switch (action.data.downloadItemType) {
-                case 'sar':
+                case 'sarVersion':
                     {
-                        let index = sarArray.findIndex(item => item.id === flow.sarInfo.id);
-                        if (index !== -1) {
-                            sarArray[index] = directoryTree
-                        } else {
+                        let sarItem = sarArray.find(item => item.id === flow.sarInfo.id);
+                        if (sarItem === undefined) {
                             sarArray.push(directoryTree);
+                            break;
+                        } 
+                        let sarVersionIndex = sarItem.versions.findIndex(item => item.id === flow.sarVersion.id);
+                        let newSarVersion = directoryTree.versions[0];
+                        if (sarVersionIndex !== -1) {
+                            sarItem.versions[sarVersionIndex] = newSarVersion;
+                        } else {
+                            sarItem.versions.push(newSarVersion);
                         }
                         break;
                     }
@@ -37,13 +44,18 @@ const directoryReducer = (state = initialState, action) => {
                         if (sarItem === undefined) {
                             sarArray.push(directoryTree);
                             break;
+                        } 
+                        let sarVersionItem = sarItem.versions.find(item => item.id === flow.sarVersion.id);
+                        if (sarVersionItem === undefined) {
+                            sarItem.versions.push(directoryTree.versions[0]);
+                            break;
                         }
-                        let criterionIndex = sarItem.criterions.findIndex(item => item.id === flow.criterionInfo.id);
-                        let criterionItem = directoryTree.criterions[0];
+                        let criterionIndex = sarVersionItem.criterions.findIndex(item => item.id === flow.criterionInfo.id);
+                        let newCriterion = directoryTree.versions[0].criterions[0];
                         if (criterionIndex !== -1) {
-                            sarItem.criterions[criterionIndex] = criterionItem;
+                            sarVersionItem.criterions[criterionIndex] = newCriterion;
                         } else {
-                            sarItem.criterions.push(criterionItem);
+                            sarVersionItem.criterions.push(newCriterion);
                         }
                         break;
                     }
@@ -54,19 +66,25 @@ const directoryReducer = (state = initialState, action) => {
                             sarArray.push(directoryTree);
                             break;
                         }
-                        let criterionItem = sarItem.criterions.find(item => item.id === flow.criterionInfo.id);
+                        let sarVersionItem = sarItem.versions.find(item => item.id === flow.sarVersion.id);
+                        if (sarVersionItem === undefined) {
+                            sarItem.versions.push(directoryTree.versions[0]);
+                            break;
+                        }
+                        let criterionItem = sarVersionItem.criterions.find(item => item.id === flow.criterionInfo.id);
                         if (criterionItem === undefined) {
-                            sarItem.criterions.push(directoryTree.criterions[0]);
+                            sarVersionItem.criterions.push(directoryTree.versions[0].criterions[0]);
                             break;
                         }
                         let subCriterionIndex = criterionItem.subCriterions.findIndex(item => item.id === flow.subCriterionInfo.id);
-                        let subCriterionNewItem = directoryTree.criterions[0].subCriterions[0];
+                        let newSubCriterionItem = directoryTree.versions[0].criterions[0].subCriterions[0];
                         if (subCriterionIndex !== -1) {
-                            criterionItem.subCriterions[subCriterionIndex] = subCriterionNewItem;
+                            criterionItem.subCriterions[subCriterionIndex] = newSubCriterionItem;
                         } else {
-                            criterionItem.subCriterions.push(subCriterionNewItem);
+                            criterionItem.subCriterions.push(newSubCriterionItem);
                         }
                         break;
+                        //Error
                     }
                 case 'suggestionType':
                     {
@@ -75,13 +93,18 @@ const directoryReducer = (state = initialState, action) => {
                             sarArray.push(directoryTree);
                             break;
                         }
-                        let criterionItem = sarItem.criterions.find(item => item.id === flow.criterionInfo.id);
-                        if (criterionItem === undefined) {
-                            sarItem.criterions.push(directoryTree.criterions[0]);
+                        let sarVersionItem = sarItem.versions.find(item => item.id === flow.sarVersion.id);
+                        if (sarVersionItem === undefined) {
+                            sarItem.versions.push(directoryTree.versions[0]);
                             break;
                         }
-                        let suggestionTypeNewItem = directoryTree.criterions[0].suggestions[flow.suggestionType];
-                        criterionItem.suggestions[flow.suggestionType] = suggestionTypeNewItem;
+                        let criterionItem = sarVersionItem.criterions.find(item => item.id === flow.criterionInfo.id);
+                        if (criterionItem === undefined) {
+                            sarVersionItem.criterions.push(directoryTree.versions[0].criterions[0]);
+                            break;
+                        }
+                        let newSuggestionTypeItem = directoryTree.versions[0].criterions[0].suggestions[flow.suggestionType];
+                        criterionItem.suggestions[flow.suggestionType] = newSuggestionTypeItem;
                         break;
                     }
                 case 'suggestion':
@@ -91,22 +114,27 @@ const directoryReducer = (state = initialState, action) => {
                             sarArray.push(directoryTree);
                             break;
                         }
-                        let criterionItem = sarItem.criterions.find(item => item.id === flow.criterionInfo.id);
+                        let sarVersionItem = sarItem.versions.find(item => item.id === flow.sarVersion.id);
+                        if (sarVersionItem === undefined) {
+                            sarItem.versions.push(directoryTree.versions[0]);
+                            break;
+                        }
+                        let criterionItem = sarVersionItem.criterions.find(item => item.id === flow.criterionInfo.id);
                         if (criterionItem === undefined) {
-                            sarItem.criterions.push(directoryTree.criterions[0]);
+                            sarVersionItem.criterions.push(directoryTree.versions[0].criterions[0]);
                             break;
                         }
                         let suggestions = criterionItem.suggestions;
-                        let suggestionTypeNewItem = directoryTree.criterions[0].suggestions[flow.suggestionType];
+                        let newSuggestionTypeItem = directoryTree.versions[0].criterions[0].suggestions[flow.suggestionType];
                         if (suggestions.hasOwnProperty(flow.suggestionType)) {
                             let suggestionIndex = suggestions[flow.suggestionType].findIndex(item => item.id === flow.suggestionInfo.id);
                             if (suggestionIndex !== -1) {
-                                suggestions[flow.suggestionType][suggestionIndex] = suggestionTypeNewItem[0];
+                                suggestions[flow.suggestionType][suggestionIndex] = newSuggestionTypeItem[0];
                             } else {
-                                suggestions[flow.suggestionType].push(suggestionTypeNewItem[0]);
+                                suggestions[flow.suggestionType].push(newSuggestionTypeItem[0]);
                             }
                         } else {
-                            suggestions[flow.suggestionType] = suggestionTypeNewItem;
+                            suggestions[flow.suggestionType] = newSuggestionTypeItem;
                         }
                         break;
                     }
@@ -117,30 +145,35 @@ const directoryReducer = (state = initialState, action) => {
                             sarArray.push(directoryTree);
                             break;
                         }
-                        let criterionItem = sarItem.criterions.find(item => item.id === flow.criterionInfo.id);
+                        let sarVersionItem = sarItem.versions.find(item => item.id === flow.sarVersion.id);
+                        if (sarVersionItem === undefined) {
+                            sarItem.versions.push(directoryTree.versions[0]);
+                            break;
+                        }
+                        let criterionItem = sarVersionItem.criterions.find(item => item.id === flow.criterionInfo.id);
                         if (criterionItem === undefined) {
-                            sarItem.criterions.push(directoryTree.criterions[0]);
+                            sarVersionItem.criterions.push(directoryTree.versions[0].criterions[0]);
                             break;
                         }
                         let suggestions = criterionItem.suggestions;
-                        let evidenceTypeNewArray = directoryTree.criterions[0].suggestions.evidences;
-                        if (evidenceTypeNewArray[0].evidences.length === 0) {
+                        let newEvidenceTypeArray = directoryTree.versions[0].criterions[0].suggestions.evidences;
+                        if (newEvidenceTypeArray[0].evidences.length === 0) {
                             break;
                         }
                         if (suggestions.hasOwnProperty('evidences')) {
                             let evidenceTypeItem = suggestions.evidences.find(item => item.id === flow.suggestionInfo.id);
                             if (evidenceTypeItem === undefined) {
-                                suggestions.evidences.push(evidenceTypeNewArray[0]);
+                                suggestions.evidences.push(newEvidenceTypeArray[0]);
                                 break;
                             }
                             let evidenceIndex = evidenceTypeItem.evidences.findIndex(item => item.id === flow.evidenceInfo.id);
                             if (evidenceIndex !== -1) {
-                                evidenceTypeItem.evidences[evidenceIndex] = evidenceTypeNewArray[0].evidences[0];
+                                evidenceTypeItem.evidences[evidenceIndex] = newEvidenceTypeArray[0].evidences[0];
                             } else {
-                                evidenceTypeItem.evidences.push(evidenceTypeNewArray[0].evidences[0]);
+                                evidenceTypeItem.evidences.push(newEvidenceTypeArray[0].evidences[0]);
                             }
                         } else {
-                            suggestions.evidences = evidenceTypeNewArray;
+                            suggestions.evidences = newEvidenceTypeArray;
                         }
                         break;
                     }

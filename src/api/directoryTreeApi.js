@@ -151,7 +151,7 @@ export async function getAllEvidences(token, suggestionId) {
 
 export async function downloadDataSar(token, id = 0, type = '') {
     switch (type) {
-        case 'sar': return downloadSar(token, id)
+        case 'sarVersion': return downloadSarVersion(token, id)
         case 'criterion': return downloadCriterion(token, id)
         case 'subCriterion': return downloadSubCriterion(token, id)
         case 'suggestion': return downloadSuggestion(token, id)
@@ -159,9 +159,9 @@ export async function downloadDataSar(token, id = 0, type = '') {
     }
 }
 
-export async function downloadSar(token, sarId) {
+export async function downloadSarVersion(token, sarId, versionId) {
     return new Promise((resolve, reject) => {
-        fetch(`${userAPI}/sars/${sarId}`, {
+        fetch(`${userAPI}/sars/${sarId}/versions/${versionId}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

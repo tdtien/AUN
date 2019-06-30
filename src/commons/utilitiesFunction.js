@@ -83,6 +83,8 @@ export function downloadEvidence(url, filePath) {
                         console.log('Error when download evidence:' + error);
                         reject(error);
                     })
+                } else {
+                    resolve(true);
                 }
             }).catch(error => {
                 console.log('Error when download evidence:' + error);
@@ -96,7 +98,8 @@ export function downloadAllEvidences(directoryTree, pdfFolderPath) {
         let promises = [];
         createFolder(pdfFolderPath)
             .then(response => {
-                let criterionArray = directoryTree.criterions;
+                console.log('4');
+                let criterionArray = directoryTree.versions[0].criterions;
                 for (let criterion of criterionArray) {
                     let suggestions = criterion.suggestions;
                     if (!suggestions.hasOwnProperty('evidences')) {
@@ -110,11 +113,13 @@ export function downloadAllEvidences(directoryTree, pdfFolderPath) {
                                     let filePath = pdfFolderPath + '/' + evidence.name + '_' + evidence.id + '.pdf';
                                     promises.push(downloadEvidence(evidence.link, filePath))
                                     evidence.link = filePath;
+                                    console.log('4.5')
                                 }
                             }
                         }
                     }
                 }
+                console.log('5');
                 Promise.all(promises)
                     .then(() => {
                         console.log('Download completed');
@@ -176,80 +181,109 @@ export function isEmptyJson(obj) {
 
 export function createDirectoryTreeWith(flow, data, type) {
     let directoryTree = {};
+    // console.log('flow: ' + JSON.stringify(flow));
+    // console.log('data: ' + JSON.stringify(data));
+    // console.log('type: ' + JSON.stringify(type));
     switch (type) {
-        case 'sar':
+        case 'sarVersion':
             directoryTree = data;
             break;
         case 'criterion':
             directoryTree = {
                 id: flow.sarInfo.id,
                 name: flow.sarInfo.name,
-                criterions: [data],
+                versions: [{
+                    id: flow.sarVersion.id,
+                    name: flow.sarInfo.name,
+                    version: flow.sarVersion.version,
+                    criterions: [data],
+                }]
             }
             break;
         case 'subCriterion':
             directoryTree = {
                 id: flow.sarInfo.id,
                 name: flow.sarInfo.name,
-                criterions: [{
-                    id: flow.criterionInfo.id,
-                    name: flow.criterionInfo.name,
-                    subCriterions: [data],
-                    suggestions: {},
-                }],
+                versions: [{
+                    id: flow.sarVersion.id,
+                    name: flow.sarInfo.name,
+                    version: flow.sarVersion.version,
+                    criterions: [{
+                        id: flow.criterionInfo.id,
+                        name: flow.criterionInfo.name,
+                        subCriterions: [data],
+                        suggestions: {},
+                    }],
+                }]
             }
             break;
         case 'suggestionType':
             directoryTree = {
                 id: flow.sarInfo.id,
                 name: flow.sarInfo.name,
-                criterions: [{
-                    id: flow.criterionInfo.id,
-                    name: flow.criterionInfo.name,
-                    subCriterions: [],
-                    suggestions: data.suggestions
-                }],
+                versions: [{
+                    id: flow.sarVersion.id,
+                    name: flow.sarInfo.name,
+                    version: flow.sarVersion.version,
+                    criterions: [{
+                        id: flow.criterionInfo.id,
+                        name: flow.criterionInfo.name,
+                        subCriterions: [],
+                        suggestions: data.suggestions
+                    }],
+                }]
             }
             break;
         case 'suggestion':
             directoryTree = {
                 id: flow.sarInfo.id,
                 name: flow.sarInfo.name,
-                criterions: [{
-                    id: flow.criterionInfo.id,
-                    name: flow.criterionInfo.name,
-                    subCriterions: [],
-                    suggestions: {
-                        [flow.suggestionType]: [data]
-                    }
-                }],
+                versions: [{
+                    id: flow.sarVersion.id,
+                    name: flow.sarInfo.name,
+                    version: flow.sarVersion.version,
+                    criterions: [{
+                        id: flow.criterionInfo.id,
+                        name: flow.criterionInfo.name,
+                        subCriterions: [],
+                        suggestions: {
+                            [flow.suggestionType]: [data]
+                        }
+                    }],
+                }]
             }
             break;
         case 'evidence':
             directoryTree = {
                 id: flow.sarInfo.id,
                 name: flow.sarInfo.name,
-                criterions: [{
-                    id: flow.criterionInfo.id,
-                    name: flow.criterionInfo.name,
-                    subCriterions: [],
-                    suggestions: {
-                        evidences: [{
-                            id: flow.suggestionInfo.id,
-                            content: flow.suggestionInfo.content,
-                            type: flow.suggestionInfo.type,
-                            evidences: [data]
-                        }]
-                    }
-                }],
+                versions: [{
+                    id: flow.sarVersion.id,
+                    name: flow.sarInfo.name,
+                    version: flow.sarVersion.version,
+                    criterions: [{
+                        id: flow.criterionInfo.id,
+                        name: flow.criterionInfo.name,
+                        subCriterions: [],
+                        suggestions: {
+                            evidences: [{
+                                id: flow.suggestionInfo.id,
+                                content: flow.suggestionInfo.content,
+                                type: flow.suggestionInfo.type,
+                                evidences: [data]
+                            }]
+                        }
+                    }],
+                }]
             }
             break;
         default:
             break;
     }
 
+    console.log('directoryTree: ' + JSON.stringify(directoryTree))
     //Delete evidence type = 'LINK'
-    directoryTree.criterions.forEach(criterion => {
+    directoryTree.versions[0].criterions.forEach(criterion => {
         let suggestions = criterion.suggestions;
         if (suggestions.hasOwnProperty('evidences')) {
             suggestions.evidences.forEach(evidenceType => {

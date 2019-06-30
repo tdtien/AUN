@@ -12,10 +12,11 @@ export default class SarFolder extends Component {
     render() {
         const { item, type, downloadMode, sceneKey, rootIndex, isConnected } = this.props;
         let isCommentVisible = (isConnected && (sceneKey === 'sars' || sceneKey === 'sarVersions' || sceneKey === 'criterions' || item.key === 'subCriterion')) ? true : false;
-        let isSarVersion = item.key === 'sarVersion';
+        let isSarVersion = sceneKey === 'sarVersions';
         if (item.disable) {
             return <View />
         }
+        console.log('item: ' + JSON.stringify(item));
         return (
             <TouchableOpacity
                 activeOpacity={0.5}
