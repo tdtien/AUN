@@ -84,7 +84,6 @@ const directoryReducer = (state = initialState, action) => {
                             criterionItem.subCriterions.push(newSubCriterionItem);
                         }
                         break;
-                        //Error
                     }
                 case 'suggestionType':
                     {

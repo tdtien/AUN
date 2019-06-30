@@ -186,7 +186,17 @@ export function createDirectoryTreeWith(flow, data, type) {
     // console.log('type: ' + JSON.stringify(type));
     switch (type) {
         case 'sarVersion':
-            directoryTree = data;
+            directoryTree = {
+                id: flow.sarInfo.id,
+                name: flow.sarInfo.name,
+                versions: [{
+                    id: flow.sarVersion.id,
+                    name: flow.sarInfo.name,
+                    version: flow.sarVersion.version,
+                    release: flow.sarVersion.release,
+                    criterions: data.version.criterions,
+                }]
+            };
             break;
         case 'criterion':
             directoryTree = {
@@ -196,6 +206,7 @@ export function createDirectoryTreeWith(flow, data, type) {
                     id: flow.sarVersion.id,
                     name: flow.sarInfo.name,
                     version: flow.sarVersion.version,
+                    release: flow.sarVersion.release,
                     criterions: [data],
                 }]
             }
@@ -208,6 +219,7 @@ export function createDirectoryTreeWith(flow, data, type) {
                     id: flow.sarVersion.id,
                     name: flow.sarInfo.name,
                     version: flow.sarVersion.version,
+                    release: flow.sarVersion.release,
                     criterions: [{
                         id: flow.criterionInfo.id,
                         name: flow.criterionInfo.name,
@@ -225,6 +237,7 @@ export function createDirectoryTreeWith(flow, data, type) {
                     id: flow.sarVersion.id,
                     name: flow.sarInfo.name,
                     version: flow.sarVersion.version,
+                    release: flow.sarVersion.release,
                     criterions: [{
                         id: flow.criterionInfo.id,
                         name: flow.criterionInfo.name,
@@ -242,6 +255,7 @@ export function createDirectoryTreeWith(flow, data, type) {
                     id: flow.sarVersion.id,
                     name: flow.sarInfo.name,
                     version: flow.sarVersion.version,
+                    release: flow.sarVersion.release,
                     criterions: [{
                         id: flow.criterionInfo.id,
                         name: flow.criterionInfo.name,
@@ -261,6 +275,7 @@ export function createDirectoryTreeWith(flow, data, type) {
                     id: flow.sarVersion.id,
                     name: flow.sarInfo.name,
                     version: flow.sarVersion.version,
+                    release: flow.sarVersion.release,
                     criterions: [{
                         id: flow.criterionInfo.id,
                         name: flow.criterionInfo.name,
@@ -281,7 +296,7 @@ export function createDirectoryTreeWith(flow, data, type) {
             break;
     }
 
-    console.log('directoryTree: ' + JSON.stringify(directoryTree))
+    // console.log('directoryTree: ' + JSON.stringify(directoryTree))
     //Delete evidence type = 'LINK'
     directoryTree.versions[0].criterions.forEach(criterion => {
         let suggestions = criterion.suggestions;

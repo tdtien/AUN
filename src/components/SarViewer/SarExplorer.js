@@ -159,12 +159,14 @@ class SarExplorer extends Component {
             })
         } else if (scene[currentIdx].key === 'sarVersions') {
             localData = (Object.keys(directoryInfo).length === 0) ? [] :
-            directoryInfo[email].find(item => item.id === id).versions;
+                directoryInfo[email]
+                    .find(item => item.id === id).versions
+                    .sort((a, b) => parseInt(b.version) - parseInt(a.version));
         } else if (scene[currentIdx].key === 'criterions') {
             localData = (Object.keys(directoryInfo).length === 0) ? [] :
                 directoryInfo[email]
-                .find(item => item.id === previousItem[0].id).versions
-                .find(item => item.id === id).criterions;
+                    .find(item => item.id === previousItem[0].id).versions
+                    .find(item => item.id === id).criterions;
         } else if (scene[currentIdx].key === 'suggestionTypes') {
             localData = [
                 { id: 'implications', name: I18n.t(keys.SarExplorer.Main.lblImplication) },
@@ -424,16 +426,16 @@ class SarExplorer extends Component {
         this.setState({ isDownloading: true })
         if (scene[currentIdx].key === 'sarVersions') {
             console.log('okk');
+            // console.log('selectedData: ' + JSON.stringify(selectedData));
             selectedData.forEach((selectedItem) => {
-                downloadSarVersion(token, selectedItem.id)
+                downloadSarVersion(token, currentItem.id, selectedItem.id)
                     .then((responseJson) => {
                         if (responseJson && responseJson.success) {
                             // console.log('response: ' + JSON.stringify(responseJson.data))
                             let downloadFlow = {
                                 sarInfo: currentItem,
-                                sarVersionInfo: selectedItem,
+                                sarVersion: selectedItem,
                             }
-                            console.log('flow: ' + JSON.stringify(downloadFlow));
                             console.log('0');
                             this.downloadTree(email, 'sarVersion', responseJson.data, downloadFlow);
                         }
@@ -447,27 +449,26 @@ class SarExplorer extends Component {
                     });
             })
         } else if (scene[currentIdx].key === 'criterions') {
-            // console.log('select: ' + JSON.stringify(selectedData));           
             selectedData.forEach((selectedItem) => {
                 downloadCriterion(token, selectedItem.id)
-                .then((responseJson) => {
-                    if (responseJson && responseJson.success) {
-                        let downloadFlow = {
-                            sarInfo: previousItem[0],
-                            sarVersion: currentItem,
-                            criterionInfo: selectedItem
+                    .then((responseJson) => {
+                        if (responseJson && responseJson.success) {
+                            let downloadFlow = {
+                                sarInfo: previousItem[0],
+                                sarVersion: currentItem,
+                                criterionInfo: selectedItem
+                            }
+                            console.log('1');
+                            this.downloadTree(email, 'criterion', responseJson.data, downloadFlow);
                         }
-                        console.log('1');
-                        this.downloadTree(email, 'criterion', responseJson.data, downloadFlow);
-                    }
-                })
-                .catch((error) => {
-                    this.mounted && this.setState({
-                        isDownloading: false
                     })
-                    console.log('Error when download: ' + error);
-                    Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
-                });
+                    .catch((error) => {
+                        this.mounted && this.setState({
+                            isDownloading: false
+                        })
+                        console.log('Error when download: ' + error);
+                        Alert.alert(I18n.t(keys.SarExplorer.Main.lblDownloadOption), I18n.t(keys.SarExplorer.Main.alertDownloadFail));
+                    });
             })
         } else if (subCriterionView) {
             console.log('11111');
@@ -481,7 +482,6 @@ class SarExplorer extends Component {
                                 criterionInfo: previousItem[2],
                                 subCriterionInfo: selectedItem
                             }
-                            console.log('downloadFlow: ' + JSON.stringify(downloadFlow));
                             this.downloadTree(email, 'subCriterion', responseJson.data, downloadFlow);
                         }
                     })

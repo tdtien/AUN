@@ -16,7 +16,6 @@ export default class SarFolder extends Component {
         if (item.disable) {
             return <View />
         }
-        console.log('item: ' + JSON.stringify(item));
         return (
             <TouchableOpacity
                 activeOpacity={0.5}
