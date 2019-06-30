@@ -59,7 +59,7 @@ export async function getAllAvailableSar(token) {
     })
 }
 
-export async function getAllSarVewe(token, id) {
+export async function getAllVersionSar(token, id) {
     return new Promise((resolve, reject) => {
         fetch(`${userAPI}/reviewer/sars/${id}/versions`, {
             method: 'GET',
