@@ -43,7 +43,7 @@ class SideMenu extends Component {
                                 <Text>{email}</Text>
                             </Body>
                         </ListItem>
-                        <ListItem button onPress={() => Actions.currentScene == '_sarExplorer' ? Actions.drawerClose() : Actions.sarExplorer()} icon >
+                        <ListItem button onPress={() => Actions.currentScene == '_sarExplorer' ? Actions.drawerClose() : Actions.replace('_sarExplorer')} icon >
                             <Left>
                                 <Icon name={AppCommon.icon("tv")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                             </Left>
@@ -51,7 +51,7 @@ class SideMenu extends Component {
                                 <Text>{I18n.t(keys.SideMenu.Main.lblSarEditor)}</Text>
                             </Body>
                         </ListItem>
-                        <ListItem button onPress={() => Actions.currentScene == '_sarViewer' ? Actions.drawerClose() : Actions.sarViewer()} icon  >
+                        <ListItem button onPress={() => Actions.currentScene == '_sarViewer' ? Actions.drawerClose() : Actions.replace('_sarViewer')} icon  >
                             <Left>
                                 <Icon name={AppCommon.icon("book")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                             </Left>
@@ -59,7 +59,7 @@ class SideMenu extends Component {
                                 <Text>{I18n.t(keys.SideMenu.Main.lblSarViewer)}</Text>
                             </Body>
                         </ListItem>
-                        <ListItem button icon onPress={() => Actions.setting()} >
+                        <ListItem button onPress={() => Actions.currentScene == '_setting' ? Actions.drawerClose() : Actions.replace('_setting')} icon>
                             <Left>
                                 <Icon name={AppCommon.icon("settings")} style={{ color: 'gray', fontSize: AppCommon.icon_size }} />
                             </Left>

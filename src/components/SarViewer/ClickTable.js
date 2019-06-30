@@ -9,8 +9,7 @@ const cssRules = cssRulesFromSpecs({
   ...defaultTableStylesSpecs,
   trEvenBackground: '#FFFFFF',
   trOddBackground: '#FFFFFF',
-  selectableText: true,
-  fitContainer: true
+  selectableText: true
 })
 
 const tableConfig = {
@@ -26,24 +25,23 @@ export default class ClickTable extends Component {
 
   render() {
     const { html, numOfRows, numOfColumns, numOfChars } = this.props
-    const shouldRenderTableInline = numOfChars < 400 && numOfColumns < 4 && numOfRows < 8
-    const description = (
-      <Text style={{ fontStyle: 'italic', fontSize: 11, textAlign: 'center' }}>
-        This table has {numOfColumns} columns, {numOfRows} rows and contains {numOfChars} readable characters.
-        {shouldRenderTableInline ? 'Therefore, it should be rendered inline.' : 'Therefore, it should be rendered in a modal.'}
-      </Text>
-    )
-    if (shouldRenderTableInline) {
-      return (
-        <View>
-          {description}
-          <HTMLTable autoheight={true} {...this.props} {...tableConfig} />
-        </View>
-      )
-    }
+    // const shouldRenderTableInline = numOfChars < 400 && numOfColumns < 4 && numOfRows < 8
+    // const description = (
+    //   <Text style={{ fontStyle: 'italic', fontSize: 11, textAlign: 'center' }}>
+    //     This table has {numOfColumns} columns, {numOfRows} rows and contains {numOfChars} readable characters.
+    //     {shouldRenderTableInline ? 'Therefore, it should be rendered inline.' : 'Therefore, it should be rendered in a modal.'}
+    //   </Text>
+    // )
+    // if (shouldRenderTableInline) {
+    //   return (
+    //     <View>
+    //       {description}
+    //       <HTMLTable autoheight={true} {...this.props} {...tableConfig} />
+    //     </View>
+    //   )
+    // }
     return (
       <View>
-        {description}
         <Button title="Show table" onPress={() => this.setState({ modalVisible: true })} />
         <Modal visible={this.state.modalVisible}>
           <View style={{ flex: 1, position: 'relative' }}>
