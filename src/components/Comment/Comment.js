@@ -36,6 +36,30 @@ import HTML from 'react-native-render-html';
 import I18n from '../../i18n/i18n';
 import keys from '../../i18n/keys';
 import { popWithUpdate } from '../../commons/utilitiesFunction';
+import { IGNORED_TAGS, alterNode, makeTableRenderer, defaultTableStylesSpecs, cssRulesFromSpecs } from 'react-native-render-html-table-bridge';
+import WebView from 'react-native-webview';
+
+const cssRules = cssRulesFromSpecs({
+    ...defaultTableStylesSpecs,
+    trEvenBackground: '#FFFFFF',
+    trOddBackground: '#FFFFFF',
+    selectableText: true
+})
+
+const config = {
+    WebViewComponent: WebView,
+    cssRules
+};
+
+const renderers = {
+    table: makeTableRenderer(config),
+};
+
+const htmlConfig = {
+    alterNode,
+    renderers,
+    ignoredTags: IGNORED_TAGS
+};
 
 class Comment extends Component {
     constructor(props) {
@@ -49,6 +73,7 @@ class Comment extends Component {
             message: '',
             comments: [],
             notes: [],
+            isChange: false
         };
         this.mounted = false
     }
@@ -213,6 +238,7 @@ class Comment extends Component {
         addComment(this.props.token, data)
             .then((result) => {
                 activeTabIndex === 0 ? this.handleGetComments(true, true) : this.handleGetNotes(true, true)
+                this.setState({ isChange: true })
             })
             .catch((error) => {
                 console.log('Error when add comments: ' + error);
@@ -233,13 +259,14 @@ class Comment extends Component {
     }
 
     render() {
-        const { isConnected, fullContent, activeTabIndex, isLoading, comments, notes } = this.state;
+        const { isConnected, fullContent, activeTabIndex, isLoading, comments, notes, isChange } = this.state;
         const { hasHeader, width } = this.props
         let content = this.props.subCriterionInfo.content;
         let marginHorizontal = 10;
         let iconSize = 35;
         let contentWidth = width == -1 ? Dimensions.get('window').width : width;
         let messageWidth = contentWidth - marginHorizontal * 3 - iconSize;
+        content = content.replace(/windowtext/g, '#000000');
         return (
             <Container style={{ backgroundColor: 'white' }}>
                 <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled={Platform.OS === 'ios'} keyboardVerticalOffset={0}>
@@ -249,7 +276,7 @@ class Comment extends Component {
                             iosBarStyle="light-content"
                             style={{ backgroundColor: AppCommon.colors }}
                         >
-                            <TouchableOpacity style={styles.menuButton} onPress={() => popWithUpdate()} >
+                            <TouchableOpacity style={styles.menuButton} onPress={() => isChange ? popWithUpdate() : Actions.pop()} >
                                 <Icon name={AppCommon.icon("arrow-back")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
                             </TouchableOpacity>
                             <Body style={{ flex: 1 }}>
@@ -272,11 +299,22 @@ class Comment extends Component {
                             {
                                 (fullContent || content.length <= 300) ? (
                                     <View style={styles.content} >
-                                        <HTML html={content} baseFontStyle={{ fontSize: AppCommon.font_size }} onLinkPress={(evt, href) => Linking.openURL(href)} />
+                                        <HTML
+                                            html={content}
+                                            onLinkPress={(evt, href) => Linking.openURL(href)}
+                                            baseFontStyle={{ color: 'black' }}
+                                            textSelectable={true}
+                                            {...htmlConfig}
+                                        />
                                     </View>
                                 ) : (
                                         <View style={styles.content}>
-                                            <HTML html={content.substring(0, 300)} baseFontStyle={{ fontSize: AppCommon.font_size }} onLinkPress={(evt, href) => Linking.openURL(href)} />
+                                            <HTML
+                                                html={content.substring(0, 300)}
+                                                onLinkPress={(evt, href) => Linking.openURL(href)}
+                                                baseFontStyle={{ color: 'black' }}
+                                                textSelectable={true}
+                                            />
                                             <Text style={[styles.text, { color: '#8c8c8c' }]}>... {I18n.t(keys.SarExplorer.Comment.btnSeeMore)}</Text>
                                         </View>
                                     )

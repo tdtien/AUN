@@ -17,7 +17,6 @@ import { Cache } from "react-native-cache";
 import SideMenu from "react-native-side-menu";
 import { IGNORED_TAGS, alterNode, makeCustomTableRenderer } from 'react-native-render-html-table-bridge';
 import ClickTable from './ClickTable';
-import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-menu";
 
 const window = Dimensions.get('window');
 
@@ -103,6 +102,7 @@ class SarViewer extends Component {
                                 if (response && response.success) {
                                     response.data.index = response.data.id
                                     response.data.internalId = _.uniqueId('tree_')
+                                    response.data.collapsed = false
                                     this.generateIndex(response.data, response.data.index, response.data.id)
                                     let foundIndex = this.state.dataTree.findIndex((value) => value === item)
                                     if (foundIndex >= 0) {
@@ -221,6 +221,7 @@ class SarViewer extends Component {
                             this.setState({ dataTree: value })
                         } else {
                             let foundIndex = this.state.dataTree.findIndex((value) => value.id === item.id)
+                            value.collapsed = false
                             if (foundIndex >= 0) {
                                 this.state.dataTree[foundIndex] = value
                             }
@@ -407,6 +408,10 @@ class SarViewer extends Component {
                                 imagesMaxWidth={this.state.isTablet ? this.state.contentWidth : this.state.width}
                                 onLinkPress={(evt, href) => Linking.openURL(href)}
                                 baseFontStyle={{ color: 'black' }}
+                                textSelectable={true}
+                                classesStyles={{'image': {
+                                    height: 350
+                                }}}
                                 {...htmlConfig}
                             />
                         </View>
