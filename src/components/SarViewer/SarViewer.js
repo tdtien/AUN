@@ -104,7 +104,7 @@ class SarViewer extends Component {
                                     response.data.internalId = _.uniqueId('tree_')
                                     response.data.collapsed = false
                                     this.generateIndex(response.data, response.data.index, response.data.id)
-                                    let foundIndex = this.state.dataTree.findIndex((value) => value === item)
+                                    let foundIndex = this.state.dataTree.findIndex((value) => value.id === item.id)
                                     if (foundIndex >= 0) {
                                         this.state.dataTree[foundIndex] = response.data
                                     }
@@ -248,11 +248,31 @@ class SarViewer extends Component {
                 if (error) {
                     console.log(error)
                 }
-                this.setState({ isLoading: false, isLoadingContent: false })
+                this.setState({
+                    isLoading: false,
+                    isLoadingContent: false,
+                    refreshing: false,
+                    refreshingTree: false
+                })
                 if (key === 'root') {
                     this.setState({ dataTree: value || [] })
                 } else {
-                    this.setState({ data: value || [] })
+                    if (value) {
+                        let foundIndex = this.state.dataTree.findIndex((value) => value.id === item.id)
+                        value.collapsed = false
+                        if (foundIndex >= 0) {
+                            this.state.dataTree[foundIndex] = value
+                        }
+                        this.setState({
+                            data: value,
+                        }, () => {
+                            if (typeof callback === 'function' && value) {
+                                setTimeout(callback, 100)
+                            }
+                        })
+                    } else {
+                        this.setState({ data: [] })
+                    }
                 }
             })
         }
@@ -409,9 +429,12 @@ class SarViewer extends Component {
                                 onLinkPress={(evt, href) => Linking.openURL(href)}
                                 baseFontStyle={{ color: 'black' }}
                                 textSelectable={true}
-                                classesStyles={{'image': {
-                                    height: 350
-                                }}}
+                                classesStyles={{
+                                    'image': {
+                                        height: 350,
+                                        textAlign: 'center',
+                                    }
+                                }}
                                 {...htmlConfig}
                             />
                         </View>
