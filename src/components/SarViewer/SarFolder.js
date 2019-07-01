@@ -7,6 +7,8 @@ import {
 } from "react-native";
 import { Icon, CheckBox } from "native-base";
 import { AppCommon } from "../../commons/commons";
+import I18n from '../../i18n/i18n';
+import keys from '../../i18n/keys';
 
 export default class SarFolder extends Component {
     render() {
@@ -31,7 +33,7 @@ export default class SarFolder extends Component {
                             </Text>
                             {isSarVersion ? (
                                 <Text style={{ color: 'gray', paddingLeft: 15, fontSize: 15 }}>
-                                {item.release ? `Released - Version ${item.version}` : 'Editing...'}
+                                {item.release ? `${I18n.t(keys.SarExplorer.Main.lblVersionRelease)} ${item.version}` : I18n.t(keys.SarExplorer.Main.lblVersionEditing)}
                                 </Text>
                             ) : <View />
                             }

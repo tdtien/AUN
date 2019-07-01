@@ -57,6 +57,8 @@ export default {
     [keys.SarExplorer.Main.lblDownloadOption]: 'Tải xuống',
     [keys.SarExplorer.Main.alertDownloadSuccess]: 'Tải xuống thành công!',
     [keys.SarExplorer.Main.alertDownloadFail]: 'Tải xuống thất bại!',
+    [keys.SarExplorer.Main.lblVersionEditing]: 'Đang biên soạn...',
+    [keys.SarExplorer.Main.lblVersionRelease]: 'Đã phát hành - Phiên bản',
 
     [keys.SarExplorer.Comment.alertEmptyComment]: 'Bình luận trống!',
     [keys.SarExplorer.Comment.alertEmptyNote]: 'Ghi chú trống!',

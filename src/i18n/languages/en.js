@@ -58,6 +58,8 @@ export default {
     [keys.SarExplorer.Main.lblDownloadOption]: 'Download offline',
     [keys.SarExplorer.Main.alertDownloadSuccess]: 'Download successful!',
     [keys.SarExplorer.Main.alertDownloadFail]: 'Download failed!',
+    [keys.SarExplorer.Main.lblVersionEditing]: 'Editing...',
+    [keys.SarExplorer.Main.lblVersionRelease]: 'Released - Version',
 
     [keys.SarExplorer.Comment.alertEmptyComment]: 'Empty comment!',
     [keys.SarExplorer.Comment.alertEmptyNote]: 'Empty note!',

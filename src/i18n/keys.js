@@ -62,6 +62,8 @@ export default {
             lblDownloadOption: 'SarExplorer_Main_lblDownloadOption',
             alertDownloadSuccess: 'SarExplorer_Main_alertDownloadSuccess',
             alertDownloadFail: 'SarExplorer_Main_alertDownloadFail',
+            lblVersionEditing: 'SarExplorer_Main_lblVersionEditing',
+            lblVersionRelease: 'SarExplorer_Main_lblVersionRelease',
         },
         Comment: {
             alertEmptyComment: 'Comment_alertEmptyComment',
