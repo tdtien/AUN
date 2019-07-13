@@ -310,7 +310,7 @@ class SarViewer extends Component {
                     }))
                 }
             } else {
-                if (item.offSet) {
+                if (item.offSet && !item.collapsed) {
                     this.scrollView.scrollTo({ x: 0, y: item.offSet, animated: true })
                 }
             }
@@ -433,6 +433,8 @@ class SarViewer extends Component {
                                     'image': {
                                         height: 350,
                                         textAlign: 'center',
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
                                     }
                                 }}
                                 {...htmlConfig}
@@ -457,9 +459,10 @@ class SarViewer extends Component {
             contentWidth,
             refreshing,
             isTablet,
-            refreshingTree
+            refreshingTree,
+            width
         } = this.state
-        if (!isTablet) {
+        // if (!isTablet) {
             return (
                 <SideMenu
                     bounceBackOnOverdraw={false}
@@ -565,111 +568,111 @@ class SarViewer extends Component {
                     </Container>
                 </SideMenu>
             )
-        }
-        return (
-            <Container onLayout={this.onLayout}>
-                <Header
-                    androidStatusBarColor={AppCommon.colors}
-                    iosBarStyle="light-content"
-                    style={{ backgroundColor: AppCommon.colors }}
-                >
-                    <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()}>
-                        <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
-                    </TouchableOpacity>
-                    <Body style={{ flex: 1 }}>
-                        <Title style={styles.header}>{I18n.t(keys.SarViewer.Main.lblTitle)}</Title>
-                    </Body>
-                </Header>
-                <BreadCrumb
-                    isConnected={isConnected}
-                    handlePress={this.handlePopTo}
-                    previousItem={previousItem}
-                    currentItem={currentItem}
-                />
-                <Grid>
-                    <Row>
-                        <Col
-                            style={{
-                                width: treeWidth,
-                                borderRightWidth: 1,
-                                borderRightColor: 'gray',
-                                borderTopWidth: 1,
-                                borderTopColor: 'gray',
-                            }}
-                        >
-                            <ScrollView
-                                style={styles.container}
-                                contentContainerStyle={styles.contentContainer}
-                                refreshControl={
-                                    <RefreshControl
-                                        style={{ backgroundColor: '#E0FFFF' }}
-                                        refreshing={refreshingTree}
-                                        onRefresh={this.handleRefreshTree}
-                                    />
-                                }
-                            >
-                                <Placeholder
-                                    animation="fade"
-                                    isReady={refreshingTree ? !refreshingTree : !isLoading}
-                                    whenReadyRender={() => (
-                                        <TreeView
-                                            ref={ref => (this.treeView = ref)}
-                                            data={dataTree}
-                                            idKey="internalId"
-                                            renderItem={this.renderItem}
-                                            onItemPress={this.handleClick}
-                                        />
-                                    )}
-                                >
-                                    {Array.from({ length: _.random(5, 10) }, () => _.random(30, 100)).map((item) => (
-                                        <Line key={_.uniqueId('view')} width={`${item}%`} />
-                                    ))}
-                                </Placeholder>
-                            </ScrollView>
-                        </Col>
-                        <Col
-                            style={{
-                                width: contentWidth,
-                                borderTopWidth: 1,
-                                borderTopWidth: 1,
-                                borderTopColor: 'gray',
-                            }}
-                        >
+        // }
+        // return (
+        //     <Container onLayout={this.onLayout}>
+        //         <Header
+        //             androidStatusBarColor={AppCommon.colors}
+        //             iosBarStyle="light-content"
+        //             style={{ backgroundColor: AppCommon.colors }}
+        //         >
+        //             <TouchableOpacity style={styles.menuButton} onPress={() => Actions.drawerOpen()}>
+        //                 <Icon name={AppCommon.icon("menu")} style={{ color: 'white', fontSize: AppCommon.icon_size }} />
+        //             </TouchableOpacity>
+        //             <Body style={{ flex: 1 }}>
+        //                 <Title style={styles.header}>{I18n.t(keys.SarViewer.Main.lblTitle)}</Title>
+        //             </Body>
+        //         </Header>
+        //         <BreadCrumb
+        //             isConnected={isConnected}
+        //             handlePress={this.handlePopTo}
+        //             previousItem={previousItem}
+        //             currentItem={currentItem}
+        //         />
+        //         <Grid>
+        //             <Row>
+        //                 <Col
+        //                     style={{
+        //                         width: treeWidth,
+        //                         borderRightWidth: 1,
+        //                         borderRightColor: 'gray',
+        //                         borderTopWidth: 1,
+        //                         borderTopColor: 'gray',
+        //                     }}
+        //                 >
+        //                     <ScrollView
+        //                         style={styles.container}
+        //                         contentContainerStyle={styles.contentContainer}
+        //                         refreshControl={
+        //                             <RefreshControl
+        //                                 style={{ backgroundColor: '#E0FFFF' }}
+        //                                 refreshing={refreshingTree}
+        //                                 onRefresh={this.handleRefreshTree}
+        //                             />
+        //                         }
+        //                     >
+        //                         <Placeholder
+        //                             animation="fade"
+        //                             isReady={refreshingTree ? !refreshingTree : !isLoading}
+        //                             whenReadyRender={() => (
+        //                                 <TreeView
+        //                                     ref={ref => (this.treeView = ref)}
+        //                                     data={dataTree}
+        //                                     idKey="internalId"
+        //                                     renderItem={this.renderItem}
+        //                                     onItemPress={this.handleClick}
+        //                                 />
+        //                             )}
+        //                         >
+        //                             {Array.from({ length: _.random(5, 10) }, () => _.random(30, 100)).map((item) => (
+        //                                 <Line key={_.uniqueId('view')} width={`${item}%`} />
+        //                             ))}
+        //                         </Placeholder>
+        //                     </ScrollView>
+        //                 </Col>
+        //                 <Col
+        //                     style={{
+        //                         width: contentWidth,
+        //                         borderTopWidth: 1,
+        //                         borderTopWidth: 1,
+        //                         borderTopColor: 'gray',
+        //                     }}
+        //                 >
 
-                            {_.isEmpty(this.state.data) && !isLoadingContent ? (
-                                <View style={styles.centerView}>
-                                    <Text style={{ color: '#BDBDBD' }}>{I18n.t(keys.Common.lblNoContent)}</Text>
-                                </View>
-                            ) : (
+        //                     {_.isEmpty(this.state.data) && !isLoadingContent ? (
+        //                         <View style={styles.centerView}>
+        //                             <Text style={{ color: '#BDBDBD' }}>{I18n.t(keys.Common.lblNoContent)}</Text>
+        //                         </View>
+        //                     ) : (
 
-                                    <ScrollView
-                                        style={styles.container}
-                                        contentContainerStyle={styles.contentContainer}
-                                        ref={(ref) => this.scrollView = ref}
-                                        refreshControl={
-                                            <RefreshControl
-                                                style={{ backgroundColor: '#E0FFFF' }}
-                                                refreshing={this.state.refreshing}
-                                                onRefresh={this.handleRefresh}
-                                            />
-                                        }
-                                    >
-                                        <Placeholder
-                                            animation="fade"
-                                            isReady={refreshing ? !refreshing : !isLoadingContent}
-                                            whenReadyRender={() => this.renderContent(this.state.data)}
-                                        >
-                                            {Array.from({ length: _.random(10, 15) }, () => _.random(30, 100)).map((item) => (
-                                                <Line key={_.uniqueId('view')} width={`${item}%`} />
-                                            ))}
-                                        </Placeholder>
-                                    </ScrollView>
-                                )}
-                        </Col>
-                    </Row>
-                </Grid>
-            </Container>
-        )
+        //                             <ScrollView
+        //                                 style={styles.container}
+        //                                 contentContainerStyle={styles.contentContainer}
+        //                                 ref={(ref) => this.scrollView = ref}
+        //                                 refreshControl={
+        //                                     <RefreshControl
+        //                                         style={{ backgroundColor: '#E0FFFF' }}
+        //                                         refreshing={this.state.refreshing}
+        //                                         onRefresh={this.handleRefresh}
+        //                                     />
+        //                                 }
+        //                             >
+        //                                 <Placeholder
+        //                                     animation="fade"
+        //                                     isReady={refreshing ? !refreshing : !isLoadingContent}
+        //                                     whenReadyRender={() => this.renderContent(this.state.data)}
+        //                                 >
+        //                                     {Array.from({ length: _.random(10, 15) }, () => _.random(30, 100)).map((item) => (
+        //                                         <Line key={_.uniqueId('view')} width={`${item}%`} />
+        //                                     ))}
+        //                                 </Placeholder>
+        //                             </ScrollView>
+        //                         )}
+        //                 </Col>
+        //             </Row>
+        //         </Grid>
+        //     </Container>
+        // )
     }
 }
 

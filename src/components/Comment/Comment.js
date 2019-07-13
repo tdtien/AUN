@@ -304,6 +304,14 @@ class Comment extends Component {
                                             onLinkPress={(evt, href) => Linking.openURL(href)}
                                             baseFontStyle={{ color: 'black' }}
                                             textSelectable={true}
+                                            classesStyles={{
+                                                'image': {
+                                                    height: 350,
+                                                    textAlign: 'center',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center'
+                                                }
+                                            }}
                                             {...htmlConfig}
                                         />
                                     </View>
@@ -314,6 +322,15 @@ class Comment extends Component {
                                                 onLinkPress={(evt, href) => Linking.openURL(href)}
                                                 baseFontStyle={{ color: 'black' }}
                                                 textSelectable={true}
+                                                classesStyles={{
+                                                    'image': {
+                                                        height: 350,
+                                                        textAlign: 'center',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center'
+                                                    }
+                                                }}
+                                                {...htmlConfig}
                                             />
                                             <Text style={[styles.text, { color: '#8c8c8c' }]}>... {I18n.t(keys.SarExplorer.Comment.btnSeeMore)}</Text>
                                         </View>
