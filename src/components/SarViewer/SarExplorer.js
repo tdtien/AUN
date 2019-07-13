@@ -612,9 +612,11 @@ class SarExplorer extends Component {
         item.index = index;
         var rootIndex = '';
         previousItem.forEach(item => {
-            rootIndex += `${item.index + 1}.`
+            if (item.key !== 'sarVersion' && item.key !== 'sar') {
+                rootIndex += `${item.index + 1}.`
+            }
         });
-        if (!isEmptyJson(currentItem)) {
+        if (!isEmptyJson(currentItem) && currentItem.key !== 'sarVersion' && currentItem.key !== 'sar') {
             rootIndex += `${currentItem.index + 1}.`
         }
         //Add name for version

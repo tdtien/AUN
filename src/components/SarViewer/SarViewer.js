@@ -401,7 +401,7 @@ class SarViewer extends Component {
                             this.state.position += nativeEvent.layout.height
                         }}
                         style={{ fontSize: 16, paddingLeft: 10, fontWeight: 'bold', color: 'black' }}>{`${rootIndex}.${index + 1}. ${item.name}`}</Text>}
-                    {item.key === 'subCriterion' &&
+                    {item.key === 'subCriterion' && this.state.isConnected &&
                         <TouchableOpacity
                             activeOpacity={0.8}
                             style={{ alignSelf: 'flex-end', flexDirection: 'row' }}

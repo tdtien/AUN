@@ -13,7 +13,7 @@ import keys from '../../i18n/keys';
 export default class SarFolder extends Component {
     render() {
         const { item, type, downloadMode, sceneKey, rootIndex, isConnected } = this.props;
-        let isCommentVisible = (isConnected && (sceneKey === 'sars' || sceneKey === 'sarVersions' || sceneKey === 'criterions' || item.key === 'subCriterion')) ? true : false;
+        let isCommentVisible = (isConnected && (sceneKey === 'sarVersions' || sceneKey === 'criterions' || item.key === 'subCriterion')) ? true : false;
         let isSarVersion = sceneKey === 'sarVersions';
         if (item.disable) {
             return <View />
@@ -33,7 +33,7 @@ export default class SarFolder extends Component {
                             </Text>
                             {isSarVersion ? (
                                 <Text style={{ color: 'gray', paddingLeft: 15, fontSize: 15 }}>
-                                {item.release ? `${I18n.t(keys.SarExplorer.Main.lblVersionRelease)} ${item.version}` : I18n.t(keys.SarExplorer.Main.lblVersionEditing)}
+                                    {item.release ? `${I18n.t(keys.SarExplorer.Main.lblVersionRelease)} ${item.version}` : I18n.t(keys.SarExplorer.Main.lblVersionEditing)}
                                 </Text>
                             ) : <View />
                             }
@@ -41,10 +41,10 @@ export default class SarFolder extends Component {
                     </View>
                     {isCommentVisible ? (
                         <View style={styles.commentArea}>
-                            <Text style={styles.comment}>{item.commentCount}</Text>
-                            <Icon name="comment" type="MaterialIcons" style={{ color: '#cccccc', fontSize: 13 }} />
-                            <Text style={styles.comment}>{' ' + item.noteCount}</Text>
-                            <Icon name="note" type="SimpleLineIcons" style={{ color: '#cccccc', fontSize: 13 }} />
+                            <Text style={{ paddingHorizontal: 5, color: item.commentCount > 0 ? AppCommon.colors : '#cccccc' }}>{item.commentCount}</Text>
+                            <Icon name="comment" type="MaterialIcons" style={{ color: item.commentCount > 0 ? AppCommon.colors : '#cccccc', fontSize: 13 }} />
+                            <Text style={{ paddingHorizontal: 5, color: item.noteCount > 0 ? AppCommon.colors : '#cccccc' }}>{item.noteCount}</Text>
+                            <Icon name="note" type="SimpleLineIcons" style={{ color: item.noteCount > 0 ? AppCommon.colors : '#cccccc', fontSize: 13 }} />
                         </View>
                     ) : <View />}
                     {downloadMode ? (<CheckBox checked={item.checked} onPress={this.props.toggleChecked} />) : (<View />)}

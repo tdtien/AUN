@@ -57,7 +57,7 @@ class App extends Component {
 
   render() {
     var backLoginScene = false;
-    let exitScene = ["login", "_sarViewer", "_sarExplorer"];
+    let exitScene = ["login", "_sarViewer", "_sarExplorer", "_setting", "sarViewer", "sarExplorer"];
     if (this.state.isSplashScreenVisible) {
       return (
         <View style={styles.splashScreenView}>
@@ -114,13 +114,13 @@ class App extends Component {
             >
               <Scene
                 hideNavBar
-                key="sarViewer"
-                component={SarViewer}
+                key="sarExplorer"
+                component={SarExplorer}
               />
               <Scene
                 hideNavBar
-                key="sarExplorer"
-                component={SarExplorer}
+                key="sarViewer"
+                component={SarViewer}
               />
               <Scene
                 key="setting"
