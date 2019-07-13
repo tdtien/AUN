@@ -536,7 +536,7 @@ class SarViewer extends Component {
                         />
                         {_.isEmpty(this.state.data) && !isLoadingContent ? (
                             <View style={styles.centerView}>
-                                <Text style={{ color: '#BDBDBD' }}>There is no content</Text>
+                                <Text style={{ color: '#BDBDBD' }}>{I18n.t(keys.Common.lblNoContent)}</Text>
                             </View>
                         ) : (
                                 <ScrollView
