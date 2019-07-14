@@ -625,9 +625,9 @@ class SarExplorer extends Component {
         }
         if (item.type && fileType.indexOf(item.type) >= 0) {
             let flow = {
-                sarInfo: previousItem[0],
-                criterionInfo: previousItem[1],
-                subCriterionInfo: previousItem[2],
+                sarVersion: previousItem[0],
+                sarInfo: previousItem[1],
+                criterionInfo: previousItem[2],
                 suggestionInfo: currentItem,
                 evidenceInfo: item
             }
