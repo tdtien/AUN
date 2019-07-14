@@ -127,6 +127,6 @@ export default {
 
     //SarViewer
     [keys.SarViewer.Main.lblTitle]: 'Trình xem SAR',
-    [keys.SarViewer.Main.lblCategory]: 'Loại',
+    [keys.SarViewer.Main.lblCategory]: 'Danh mục',
 
 }
