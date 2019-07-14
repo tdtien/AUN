@@ -115,7 +115,7 @@ export default class ImageModal extends Component {
                                 console.log('Folder empty');
                                 deleteItem(this.props.folderPath).then(result => {
                                     console.log('Delete original folder success');
-                                    popToSceneWithUpdate('_merchant', { version: Math.random() });
+                                    popToSceneWithUpdate('merchant', { version: Math.random() });
                                 })
                             } else {
                                 let index = 0;

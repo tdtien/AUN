@@ -183,7 +183,7 @@ class MerchantDetail extends Component {
                                     console.log('Folder empty');
                                     deleteItem(this.props.folderPath).then(result => {
                                         console.log('Delete original folder success');
-                                        popToSceneWithUpdate('_merchant');
+                                        popToSceneWithUpdate('merchant');
                                     })
                                 } else {
                                     this.setState({
