@@ -26,7 +26,7 @@ export default class CameraButton extends Component {
                 { name: 'chooseMultipleImage', title: I18n.t(keys.Merchant.CameraButton.lblChooseMultipleImages) }
             ],
             noData: true,
-            quality: 1,
+            quality: 0.75,
         }
         showImagePicker(options, (response) => {
             if (response.didCancel) {
